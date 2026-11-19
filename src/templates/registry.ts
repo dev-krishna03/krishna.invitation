@@ -32,7 +32,20 @@ export const templates: Record<string, RegisteredTemplate> = {
 };
 
 export function getTemplate(slug: string): RegisteredTemplate | null {
-  return templates[slug] ?? null;
+  if (templates[slug]) return templates[slug];
+
+  // Dynamic fallback for newly added database templates
+  return {
+    slug,
+    config: royalConfig as TemplateConfig,
+    preview: {
+      ...royalPreview,
+      primaryName: "Aarav Mehta",
+      secondaryName: "Priya Sharma",
+      message: "We cordially invite you to grace the auspicious occasion of the marriage of...",
+    },
+    Component: RoyalEleganceTemplate,
+  };
 }
 
 export function listTemplates(): RegisteredTemplate[] {

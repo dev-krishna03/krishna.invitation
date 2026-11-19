@@ -1,4 +1,13 @@
 import { prisma } from "@/lib/prisma";
+import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PricingView } from "@/components/pricing/PricingView";
+import { Reveal } from "@/components/motion/Reveal";
+import { Sparkles, ShieldCheck } from "lucide-react";
+
+export const metadata = {
+  title: "Pricing & Plans • Krishna Invitations",
+  description: "Transparent, one-time payment pricing for individual invitations, and subscriptions for event planners.",
+};
 
 export default async function PricingPage() {
   const [templates, plans] = await Promise.all([
@@ -10,60 +19,44 @@ export default async function PricingPage() {
     prisma.subscriptionPlan.findMany({ where: { is_active: true }, orderBy: { sort_order: "asc" } }),
   ]);
 
+  const templateItems = templates.map((t) => ({
+    id: t.id,
+    name: t.name,
+    slug: t.slug,
+    pricing: t.pricing.map((p) => ({ duration_days: p.duration_days, price: p.price })),
+  }));
+
+  const planItems = plans.map((p) => ({
+    id: p.id,
+    name: p.name,
+    type: p.type,
+    price: p.price,
+    billing_period: p.billing_period,
+    max_members: p.max_members,
+    max_invitations: p.max_invitations,
+    features: Array.isArray(p.features) ? (p.features as string[]) : [],
+  }));
+
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
-      <h1 className="text-3xl font-semibold">Pricing</h1>
-      <p className="mt-2 text-gray-600">Pay once per invitation, or subscribe as a company.</p>
-
-      <h2 className="mt-10 text-xl font-semibold">Individual</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {templates.map((t) => (
-          <div key={t.id} className="rounded-xl border p-5">
-            <h3 className="font-semibold">{t.name}</h3>
-            <ul className="mt-4 space-y-1 text-sm">
-              {t.pricing.map((p) => (
-                <li key={p.duration_days} className="flex justify-between border-b py-1">
-                  <span>{p.duration_days} days</span>
-                  <span>₹{p.price.toLocaleString()}</span>
-                </li>
-              ))}
-            </ul>
+    <PublicPageShell>
+      <main className="mx-auto max-w-6xl px-6 py-14">
+        <Reveal>
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-amber-50 px-3.5 py-1 text-xs font-semibold text-amber-800">
+              <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+              <span>Simple, Transparent Pricing</span>
+            </div>
+            <h1 className="mt-4 font-serif text-3xl font-bold sm:text-5xl text-stone-900">
+              Celebration Plans & Pricing
+            </h1>
+            <p className="mt-3 text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Pay once per event with zero recurring surprises, or subscribe as an agency or planner.
+            </p>
           </div>
-        ))}
-      </div>
+        </Reveal>
 
-      <h2 className="mt-12 text-xl font-semibold">Company</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {plans.filter((p) => p.type === "COMPANY").map((p) => (
-          <div key={p.id} className="rounded-xl border p-5">
-            <h3 className="font-semibold">{p.name}</h3>
-            <p className="mt-2 text-3xl">₹{p.price.toLocaleString()}<span className="text-sm text-gray-500"> / {p.billing_period.toLowerCase()}</span></p>
-            <ul className="mt-4 space-y-1 text-sm">
-              <li>Members: {p.max_members ?? "∞"}</li>
-              <li>Invitations: {p.max_invitations ?? "∞"}</li>
-              {Array.isArray(p.features) && (p.features as string[]).map((f) => <li key={f}>{f}</li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <section className="mt-14">
-        <h2 className="text-xl font-semibold">FAQ</h2>
-        <details className="mt-4 rounded border p-4">
-          <summary>Which event types are supported?</summary>
-          <p className="mt-2 text-sm">
-            Wedding, engagement, birthday, baby shower, Gruh Vastu, anniversary, Namkaran, Mundan, Haldi,
-            Mehndi, Sangeet, reception, pooja, festival, corporate, and more.
-          </p>
-        </details>
-        <details className="mt-2 rounded border p-4">
-          <summary>Which languages?</summary>
-          <p className="mt-2 text-sm">
-            English, Hindi, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Bengali, Punjabi,
-            Urdu, Spanish, French, Arabic.
-          </p>
-        </details>
-      </section>
-    </main>
+        <PricingView templates={templateItems} plans={planItems} />
+      </main>
+    </PublicPageShell>
   );
 }

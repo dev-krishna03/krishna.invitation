@@ -3,12 +3,18 @@
 import { motion, useMotionValue, useTransform, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
-export function TiltCard({ children }: { children: ReactNode }) {
+export function TiltCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const reduce = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rx = useTransform(y, [-40, 40], [8, -8]);
-  const ry = useTransform(x, [-40, 40], [-8, 8]);
+  const rx = useTransform(y, [-40, 40], [6, -6]);
+  const ry = useTransform(x, [-40, 40], [-6, 6]);
 
   function onMove(e: React.MouseEvent<HTMLDivElement>) {
     if (reduce) return;
@@ -27,8 +33,8 @@ export function TiltCard({ children }: { children: ReactNode }) {
       onMouseLeave={onLeave}
       style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
       whileHover={reduce ? undefined : { scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 180, damping: 18 }}
-      className="rounded-xl border bg-white p-4 shadow-sm will-change-transform"
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      className={`rounded-2xl border border-stone-200/80 bg-white/95 p-4 shadow-sm hover:border-amber-300 hover:shadow-xl hover:shadow-stone-900/5 transition-colors will-change-transform ${className}`}
     >
       {children}
     </motion.div>
