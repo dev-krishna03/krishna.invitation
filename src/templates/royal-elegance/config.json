@@ -1,0 +1,41 @@
+{
+  "slug": "royal-elegance",
+  "name": "Royal Elegance",
+  "supportsEventTypes": ["WEDDING", "ENGAGEMENT", "RECEPTION", "SANGEET"],
+  "defaultLocale": "en",
+  "sections": [
+    {
+      "id": "hosts",
+      "title": "Hosts",
+      "fields": [
+        { "id": "primaryName", "label": "Primary Host Name", "type": "text", "required": true },
+        { "id": "secondaryName", "label": "Secondary Host Name", "type": "text" },
+        { "id": "hashtag", "label": "Event Hashtag", "type": "text", "placeholder": "#AliAndAnaya" },
+        { "id": "coverPhoto", "label": "Cover Photo", "type": "image" }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Events",
+      "fields": [{ "id": "events", "label": "Event List", "type": "eventList" }]
+    },
+    {
+      "id": "gallery",
+      "title": "Photo Gallery",
+      "fields": [{ "id": "photos", "label": "Photos", "type": "photoGallery" }]
+    },
+    {
+      "id": "family",
+      "title": "Family",
+      "fields": [{ "id": "family", "label": "Family Members", "type": "nameList" }]
+    },
+    {
+      "id": "details",
+      "title": "Details",
+      "fields": [
+        { "id": "message", "label": "Welcome Message", "type": "textarea" },
+        { "id": "theme", "label": "Theme Color", "type": "color" }
+      ]
+    }
+  ]
+}

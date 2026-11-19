@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Invitation Platform
 
-## Getting Started
+Multi-tenant SaaS for creating and sharing digital invitations across every
+occasion — wedding, engagement, birthday, baby shower, Gruh Vastu, anniversary,
+Namkaran, Mundan, Haldi, Mehndi, Sangeet, reception, corporate, pooja, festival,
+and more — with 14 languages, RTL support, a referral program, and per-template
+pricing or company subscriptions.
 
-First, run the development server:
+## Stack
+
+- Next.js 14 (App Router, TypeScript, Tailwind v4, Turbopack)
+- Supabase Auth + Postgres + Storage
+- Prisma 6 ORM
+- next-intl (14 locales: en, hi, gu, mr, ta, te, kn, ml, bn, pa, ur, es, fr, ar)
+- Payment gateway abstraction: Razorpay, Cashfree, PhonePe, Stripe
+- Brevo for transactional email (configured in `/admin/integrations`)
+- Credential encryption: AES-256-GCM
+
+## Setup
 
 ```bash
+cp .env.example .env.local      # fill in Supabase + DATABASE_URL + encryption key
+openssl rand -base64 32          # value for CREDENTIALS_ENCRYPTION_KEY
+npx prisma db push               # push schema to Supabase Postgres
+npx prisma generate              # generate client
+npx prisma db seed               # seed templates, plans, gateways, integrations, settings, super admin row
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create your super-admin in Supabase Auth with email `admin@invites.local` — the
+seed binds this email to the SUPER_ADMIN row. For a different email, update the
+seed before running it.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Phases shipped in this repo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| # | Phase | Key files |
+|---|-------|-----------|
+| 1 | Next.js + Supabase + auth | `src/lib/supabase/*`, `src/app/(auth)/*`, `src/app/api/auth/*` |
+| 2 | Prisma schema (15 models + enums) + seed | `prisma/schema.prisma`, `prisma/seed.ts` |
+| 3 | Payment abstraction + 4 providers + webhooks | `src/lib/payments/*`, `src/app/api/webhooks/[gateway]/route.ts` |
+| 4 | Template engine + public gallery / try / invite | `src/templates/*`, `src/app/(public)/*` |
+| 5 | Super Admin (11 pages + APIs + audit log) | `src/app/admin/*`, `src/app/api/admin/*` |
+| 6 | User dashboard + create wizard + invitations API | `src/app/dashboard/*`, `src/app/api/invitations/*` |
+| 7 | Company dashboard + org API | `src/app/company/*`, `src/app/api/org/*` |
+| 8 | Brevo email + template mapping via SiteSetting | `src/lib/email.ts`, `src/lib/email-templates.ts` |
+| 9 | Landing, pricing, contact, about, RSVP, sitemap, robots | `src/app/page.tsx`, `src/app/(public)/pricing/*`, etc. |
+| 10 | Credential encryption, rate-limit, error boundaries | `src/lib/crypto.ts`, `src/lib/rate-limit.ts`, `src/app/error.tsx` |
 
-## Learn More
+## URL map
 
-To learn more about Next.js, take a look at the following resources:
+Public: `/`, `/gallery`, `/try/:slug`, `/invite/:slug`, `/invite/:slug/:guestSlug`, `/pricing`, `/contact`, `/about`
+Auth: `/login`, `/register`, `/forgot-password`, `/reset-password`
+User: `/dashboard`, `/dashboard/create`, `/dashboard/invitations/:id`, `/dashboard/analytics`, `/dashboard/settings`
+Company: `/company`, `/company/invitations`, `/company/team`, `/company/subscription`, `/company/settings`
+Super admin: `/admin`, `/admin/templates|users|organizations|plans|gateways|integrations|coupons|payments|settings|audit-log`
+Webhooks: `/api/webhooks/razorpay|cashfree|phonepe|stripe`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Secrets strategy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The only secret in env is `CREDENTIALS_ENCRYPTION_KEY`. All other provider
+credentials — Razorpay keys, Stripe keys, Brevo API key, Google Maps key — are
+stored encrypted in Postgres through `/admin/gateways` and `/admin/integrations`.
+AES-256-GCM via `lib/crypto.ts`.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Vercel for Next.js hosting
+- Supabase for DB + Auth + Storage
+- Set up RLS policies in Supabase for multi-tenant isolation
+- Configure webhook URLs in each gateway dashboard pointing to
+  `https://<host>/api/webhooks/{razorpay|cashfree|phonepe|stripe}`

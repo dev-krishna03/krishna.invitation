@@ -1,0 +1,33 @@
+{
+  "slug": "minimal-love",
+  "name": "Minimal Love",
+  "supportsEventTypes": ["WEDDING", "ANNIVERSARY", "BIRTHDAY", "BABY_SHOWER", "GRUH_VASTU"],
+  "defaultLocale": "en",
+  "sections": [
+    {
+      "id": "hosts",
+      "title": "Hosts",
+      "fields": [
+        { "id": "primaryName", "label": "Primary Name", "type": "text", "required": true },
+        { "id": "secondaryName", "label": "Secondary Name", "type": "text" }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Events",
+      "fields": [{ "id": "events", "label": "Event List", "type": "eventList" }]
+    },
+    {
+      "id": "gallery",
+      "title": "Photos",
+      "fields": [{ "id": "photos", "label": "Photos", "type": "photoGallery" }]
+    },
+    {
+      "id": "details",
+      "title": "Details",
+      "fields": [
+        { "id": "message", "label": "Message", "type": "textarea" }
+      ]
+    }
+  ]
+}

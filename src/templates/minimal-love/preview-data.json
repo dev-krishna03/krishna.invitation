@@ -1,0 +1,10 @@
+{
+  "primaryName": "Ishita",
+  "secondaryName": "Rohan",
+  "message": "Please join us as we say I do.",
+  "events": [
+    { "name": "Ceremony", "venue": "Garden Hall", "address": "Bengaluru", "date": "2027-02-20", "start_time": "16:30" },
+    { "name": "Reception", "venue": "Rooftop", "address": "Bengaluru", "date": "2027-02-20", "start_time": "19:30" }
+  ],
+  "photos": []
+}

@@ -1,0 +1,14 @@
+{
+  "primaryName": "Aarav Mehta",
+  "secondaryName": "Priya Sharma",
+  "hashtag": "#AaravAndPriya",
+  "message": "With the blessings of our families, we invite you to celebrate the beginning of our forever.",
+  "theme": "#8b1e3f",
+  "events": [
+    { "name": "Haldi", "venue": "Mehta Residence", "address": "Udaipur", "date": "2026-12-14", "start_time": "11:00" },
+    { "name": "Sangeet", "venue": "The Oberoi", "address": "Udaipur", "date": "2026-12-15", "start_time": "19:00" },
+    { "name": "Wedding", "venue": "City Palace Lawns", "address": "Udaipur", "date": "2026-12-16", "start_time": "18:30" }
+  ],
+  "photos": [{ "url": "/placeholder-couple.jpg", "caption": "Our story" }],
+  "family": ["Mr. & Mrs. Mehta", "Mr. & Mrs. Sharma"]
+}

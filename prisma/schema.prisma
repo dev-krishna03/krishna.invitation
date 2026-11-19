@@ -1,0 +1,457 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ enums ============
+
+enum UserRole {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  USER
+}
+
+enum OrgMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum SubscriptionStatus {
+  NONE
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+enum TemplateCategory {
+  LUXURY
+  MINIMAL
+  TRADITIONAL
+  MODERN
+  FLORAL
+  RUSTIC
+}
+
+enum BillingPeriod {
+  MONTHLY
+  YEARLY
+}
+
+enum PlanType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum RsvpStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  MAYBE
+}
+
+enum Gateway {
+  RAZORPAY
+  CASHFREE
+  PHONEPE
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum SubStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum Environment {
+  TEST
+  LIVE
+}
+
+enum TestStatus {
+  PASS
+  FAIL
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
+// ============ models ============
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String   @unique
+  name            String?
+  role            UserRole @default(USER)
+  avatar_url      String?
+  locale          String   @default("en")
+  referral_code   String   @unique
+  referred_by_id  String?  @db.Uuid
+  referral_credit Int      @default(0)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  referred_by  User?          @relation("Referrals", fields: [referred_by_id], references: [id])
+  referrals    User[]         @relation("Referrals")
+  memberships  OrgMember[]
+  invitations  Invitation[]
+  payments     Payment[]
+  audit_logs   AuditLog[]
+  gateways     PaymentGateway[]     @relation("GatewayUpdatedBy")
+  integrations IntegrationCredential[] @relation("IntegrationUpdatedBy")
+  settings     SiteSetting[]        @relation("SettingUpdatedBy")
+
+  @@index([referred_by_id])
+  @@map("users")
+}
+
+model Organization {
+  id                  String             @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String             @unique
+  logo_url            String?
+  subscription_status SubscriptionStatus @default(NONE)
+  is_active           Boolean            @default(true)
+  created_at          DateTime           @default(now())
+
+  members       OrgMember[]
+  invitations   Invitation[]
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@map("organizations")
+}
+
+model OrgMember {
+  id         String        @id @default(uuid()) @db.Uuid
+  org_id     String        @db.Uuid
+  user_id    String        @db.Uuid
+  role       OrgMemberRole @default(MEMBER)
+  invited_at DateTime?
+  joined_at  DateTime?
+
+  org  Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
+  user User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([org_id, user_id])
+  @@map("org_members")
+}
+
+model Template {
+  id            String           @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String           @unique
+  description   String?
+  thumbnail_url String?
+  preview_url   String?
+  category      TemplateCategory
+  event_types   String[]
+  is_active     Boolean          @default(true)
+  is_featured   Boolean          @default(false)
+  sort_order    Int              @default(0)
+  created_at    DateTime         @default(now())
+
+  pricing     TemplatePricing[]
+  invitations Invitation[]
+
+  @@map("templates")
+}
+
+model TemplatePricing {
+  id            String  @id @default(uuid()) @db.Uuid
+  template_id   String  @db.Uuid
+  duration_days Int
+  price         Int
+  currency      String  @default("INR")
+  is_active     Boolean @default(true)
+
+  template Template @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@unique([template_id, duration_days])
+  @@map("template_pricing")
+}
+
+model Invitation {
+  id           String    @id @default(uuid()) @db.Uuid
+  user_id      String    @db.Uuid
+  org_id       String?   @db.Uuid
+  template_id  String    @db.Uuid
+  slug         String    @unique
+  title        String
+  event_type   String    @default("wedding")
+  locale       String    @default("en")
+  data         Json
+  music_url    String?
+  is_published Boolean   @default(false)
+  published_at DateTime?
+  expires_at   DateTime?
+  view_count   Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  user     User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  org      Organization?     @relation(fields: [org_id], references: [id], onDelete: SetNull)
+  template Template          @relation(fields: [template_id], references: [id])
+  events   InvitationEvent[]
+  photos   InvitationPhoto[]
+  guests   Guest[]
+  views    InvitationView[]
+  payments Payment[]
+
+  @@index([user_id])
+  @@index([org_id])
+  @@map("invitations")
+}
+
+model InvitationEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  invitation_id String   @db.Uuid
+  name          String
+  venue         String?
+  address       String?
+  map_lat       Float?
+  map_lng       Float?
+  date          DateTime?
+  start_time    String?
+  end_time      String?
+  sort_order    Int      @default(0)
+
+  invitation Invitation @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+
+  @@map("invitation_events")
+}
+
+model InvitationPhoto {
+  id            String  @id @default(uuid()) @db.Uuid
+  invitation_id String  @db.Uuid
+  url           String
+  caption       String?
+  sort_order    Int     @default(0)
+
+  invitation Invitation @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+
+  @@map("invitation_photos")
+}
+
+model Guest {
+  id             String     @id @default(uuid()) @db.Uuid
+  invitation_id  String     @db.Uuid
+  name           String
+  slug           String
+  phone          String?
+  email          String?
+  group_name     String?
+  plus_allowed   Int        @default(0)
+  rsvp_status    RsvpStatus @default(PENDING)
+  rsvp_at        DateTime?
+  rsvp_message   String?
+  dietary_notes  String?
+  viewed_at      DateTime?
+
+  invitation Invitation       @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+  views      InvitationView[]
+
+  @@unique([invitation_id, slug])
+  @@map("guests")
+}
+
+model InvitationView {
+  id            String   @id @default(uuid()) @db.Uuid
+  invitation_id String   @db.Uuid
+  guest_id      String?  @db.Uuid
+  device_type   String?
+  browser       String?
+  ip_hash       String?
+  viewed_at     DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+  guest      Guest?     @relation(fields: [guest_id], references: [id], onDelete: SetNull)
+
+  @@index([invitation_id])
+  @@map("invitation_views")
+}
+
+model SubscriptionPlan {
+  id               String        @id @default(uuid()) @db.Uuid
+  name             String
+  slug             String        @unique
+  type             PlanType
+  max_members      Int?
+  max_invitations  Int?
+  features         Json
+  price            Int
+  currency         String        @default("INR")
+  billing_period   BillingPeriod
+  is_active        Boolean       @default(true)
+  sort_order       Int           @default(0)
+
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id                      String    @id @default(uuid()) @db.Uuid
+  org_id                  String    @db.Uuid
+  plan_id                 String    @db.Uuid
+  status                  SubStatus @default(ACTIVE)
+  gateway_subscription_id String?
+  current_period_start    DateTime
+  current_period_end      DateTime
+  created_at              DateTime  @default(now())
+
+  org  Organization     @relation(fields: [org_id], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [plan_id], references: [id])
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                   String        @id @default(uuid()) @db.Uuid
+  user_id              String        @db.Uuid
+  org_id               String?       @db.Uuid
+  invitation_id        String?       @db.Uuid
+  subscription_plan_id String?       @db.Uuid
+  gateway              Gateway
+  gateway_order_id     String?
+  gateway_payment_id   String?
+  amount               Int
+  currency             String        @default("INR")
+  status               PaymentStatus @default(PENDING)
+  coupon_id            String?       @db.Uuid
+  discount_amount      Int           @default(0)
+  metadata             Json?
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+
+  user         User              @relation(fields: [user_id], references: [id])
+  org          Organization?     @relation(fields: [org_id], references: [id])
+  invitation   Invitation?       @relation(fields: [invitation_id], references: [id])
+  plan         SubscriptionPlan? @relation(fields: [subscription_plan_id], references: [id])
+  coupon       Coupon?           @relation(fields: [coupon_id], references: [id])
+
+  @@index([user_id])
+  @@index([status])
+  @@map("payments")
+}
+
+model PaymentGateway {
+  id             String      @id @default(uuid()) @db.Uuid
+  name           Gateway     @unique
+  slug           String      @unique
+  display_name   String
+  is_active      Boolean     @default(false)
+  credentials    Json
+  environment    Environment @default(TEST)
+  webhook_secret String?
+  updated_by_id  String?     @db.Uuid
+  updated_at     DateTime    @updatedAt
+
+  updated_by User? @relation("GatewayUpdatedBy", fields: [updated_by_id], references: [id])
+
+  @@map("payment_gateways")
+}
+
+model IntegrationCredential {
+  id             String       @id @default(uuid()) @db.Uuid
+  service_name   String
+  service_slug   String       @unique
+  display_name   String
+  credentials    Json
+  is_configured  Boolean      @default(false)
+  is_active      Boolean      @default(false)
+  environment    Environment  @default(TEST)
+  last_tested_at DateTime?
+  test_status    TestStatus?
+  updated_by_id  String?      @db.Uuid
+  updated_at     DateTime     @updatedAt
+
+  updated_by User? @relation("IntegrationUpdatedBy", fields: [updated_by_id], references: [id])
+
+  @@map("integration_credentials")
+}
+
+model SiteSetting {
+  id            String   @id @default(uuid()) @db.Uuid
+  key           String   @unique
+  value         Json
+  updated_by_id String?  @db.Uuid
+  updated_at    DateTime @updatedAt
+
+  updated_by User? @relation("SettingUpdatedBy", fields: [updated_by_id], references: [id])
+
+  @@map("site_settings")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  actor_id    String?  @db.Uuid
+  action      String
+  entity_type String
+  entity_id   String?
+  old_value   Json?
+  new_value   Json?
+  ip_address  String?
+  created_at  DateTime @default(now())
+
+  actor User? @relation(fields: [actor_id], references: [id])
+
+  @@index([entity_type, entity_id])
+  @@index([actor_id])
+  @@map("audit_logs")
+}
+
+model EventTypeConfig {
+  id          String   @id @default(uuid()) @db.Uuid
+  slug        String   @unique
+  name        String
+  labels      Json     @default("{}")
+  icon        String?
+  parent_id   String?  @db.Uuid
+  is_active   Boolean  @default(true)
+  is_featured Boolean  @default(false)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  parent   EventTypeConfig?  @relation("EventTypeChildren", fields: [parent_id], references: [id], onDelete: SetNull)
+  children EventTypeConfig[] @relation("EventTypeChildren")
+
+  @@index([parent_id])
+  @@map("event_types")
+}
+
+model Coupon {
+  id          String     @id @default(uuid()) @db.Uuid
+  code        String     @unique
+  type        CouponType
+  value       Int
+  max_uses    Int?
+  used_count  Int        @default(0)
+  min_amount  Int?
+  valid_from  DateTime?
+  valid_until DateTime?
+  is_active   Boolean    @default(true)
+  created_at  DateTime   @default(now())
+
+  payments Payment[]
+
+  @@map("coupons")
+}
