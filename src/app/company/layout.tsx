@@ -1,36 +1,52 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { CompanyShell } from "@/components/company/CompanyShell";
 
-const nav = [
-  { href: "/company", label: "Dashboard" },
-  { href: "/company/invitations", label: "Invitations" },
-  { href: "/company/team", label: "Team" },
-  { href: "/company/subscription", label: "Subscription" },
-  { href: "/company/settings", label: "Settings" },
-];
+export const metadata = {
+  title: "Agency Studio & Canva Editor • Krishna Invitations",
+  description: "Canva-like visual editor for event planners and wedding studios.",
+};
 
 export default async function CompanyLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/company");
-  const member = await prisma.orgMember.findFirst({ where: { user_id: user.id } });
-  if (!member) redirect("/pricing?plan=company");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return (
-    <div className="flex min-h-screen">
-      <aside className="w-56 border-r bg-gray-50 p-4">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-gray-500">Company</h2>
-        <nav className="space-y-1">
-          {nav.map((n) => (
-            <Link key={n.href} href={n.href} className="block rounded px-3 py-2 text-sm hover:bg-white">
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-      <div className="flex-1">{children}</div>
-    </div>
-  );
+  let orgName = "Krishna Celebrations Studio";
+
+  if (user) {
+    let member = await prisma.orgMember.findFirst({
+      where: { user_id: user.id },
+      include: { org: true },
+    });
+
+    // Auto-provision demo studio if none exists so they can test immediately
+    if (!member) {
+      let defaultOrg = await prisma.organization.findFirst();
+      if (!defaultOrg) {
+        defaultOrg = await prisma.organization.create({
+          data: {
+            name: "Krishna Celebrations Studio",
+            slug: "krishna-studio",
+            subscription_status: "ACTIVE",
+          },
+        });
+      }
+      member = await prisma.orgMember.create({
+        data: {
+          org_id: defaultOrg.id,
+          user_id: user.id,
+          role: "OWNER",
+        },
+        include: { org: true },
+      });
+    }
+
+    if (member?.org) {
+      orgName = member.org.name;
+    }
+  }
+
+  return <CompanyShell orgName={orgName}>{children}</CompanyShell>;
 }
