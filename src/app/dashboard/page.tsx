@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { Sparkles, Eye, Users, PlusCircle, ArrowRight, Calendar, ExternalLink } from "lucide-react";
+import { Sparkles, Eye, Users, PlusCircle, ArrowRight, ExternalLink } from "lucide-react";
+import { FlowDiagram } from "@/components/dashboard/FlowDiagram";
 
 export default async function MyInvitationsPage() {
   const supabase = await createClient();
@@ -19,6 +20,9 @@ export default async function MyInvitationsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Workflow overview */}
+      <FlowDiagram />
+
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

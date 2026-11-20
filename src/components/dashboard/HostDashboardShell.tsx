@@ -17,12 +17,16 @@ import {
   User,
   Home,
   CheckCircle,
+  Compass,
+  Library,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "My Invitations", icon: Sparkles },
   { href: "/dashboard/create", label: "Create Invitation", icon: PlusCircle },
+  { href: "/community", label: "Explore Community", icon: Compass },
+  { href: "/dashboard/library", label: "My Library", icon: Library },
   { href: "/dashboard/analytics", label: "Guest Analytics", icon: BarChart3 },
   { href: "/dashboard/settings", label: "Account Settings", icon: Settings },
 ];

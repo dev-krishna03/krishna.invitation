@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { CompanyShell } from "@/components/company/CompanyShell";
 
 export const metadata = {
-  title: "Agency Studio & Canva Editor • Krishna Invitations",
-  description: "Canva-like visual editor for event planners and wedding studios.",
+  title: "Agency Studio & Invitation Editor • Krishna Invitations",
+  description: "Visual web invitation editor for event planners and wedding studios.",
 };
 
 export default async function CompanyLayout({ children }: { children: React.ReactNode }) {

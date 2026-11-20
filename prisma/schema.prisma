@@ -202,6 +202,15 @@ model Invitation {
   published_at DateTime?
   expires_at   DateTime?
   view_count   Int       @default(0)
+
+  // Community marketplace + access-limited sharing.
+  is_in_community    Boolean   @default(false)
+  community_price    Int?
+  community_currency String    @default("INR")
+  access_limit       Int?
+  access_used        Int       @default(0)
+  preview_token      String?   @unique
+  preview_approved   Boolean   @default(false)
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
