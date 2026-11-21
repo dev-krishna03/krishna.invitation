@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Compass, ShoppingBag, Sparkles, ArrowRight, Store } from "lucide-react";
+import { formatPrice, type Currency } from "@/lib/currency";
 
 export default async function CommunityPage() {
   const templates = await prisma.template.findMany({
-    where: { is_in_marketplace: true },
+    where: {
+      is_in_marketplace: true,
+      // Only approved user templates reach the public marketplace.
+      // Platform-seeded templates have no owner, so skip moderation for them.
+      OR: [
+        { owner_user_id: null },
+        { moderation_status: "APPROVED" },
+      ],
+    },
     include: {
       owner: { select: { name: true, email: true } },
     },
@@ -51,7 +60,7 @@ export default async function CommunityPage() {
               </div>
               <div className="mt-4 flex items-center justify-between">
                 <span className="font-serif text-xl font-bold text-stone-900">
-                  {t.price ? `${t.currency === "INR" ? "₹" : t.currency}${t.price.toLocaleString()}` : "Free"}
+                  {t.price ? formatPrice(t.price, t.currency as Currency) : "Free"}
                 </span>
                 <Link
                   href={`/community/${t.slug}`}

@@ -379,9 +379,21 @@ async function main() {
     { key: "site_name", value: "Invitation Platform" },
     { key: "support_email", value: "support@invites.local" },
     { key: "default_currency", value: "INR" },
+    { key: "supported_currencies", value: ["INR", "USD"] },
+    { key: "usd_to_inr", value: 84 },
     { key: "maintenance_mode", value: false },
     { key: "brevo_sender", value: { email: "", name: "" } },
     { key: "brevo_template_map", value: {} },
+    {
+      key: "landing_copy",
+      value: {
+        hero_badge: "Over 50,000+ Sacred Celebrations Crafted",
+        hero_title: "Bespoke Digital Invitations for Every Moment That Matters.",
+        hero_subtitle:
+          "Luxury interactive invitations with background music, multi-day timelines, Google Maps directions, and 1-click WhatsApp RSVP tracking.",
+        footer_tagline: "Crafted with love in India, trusted by families worldwide.",
+      },
+    },
   ];
   for (const s of settings) {
     await prisma.siteSetting.upsert({
@@ -391,6 +403,60 @@ async function main() {
     });
   }
 
+  // Seed policies once; super admin can edit from /krishna/admin/policies.
+  const policies: { slug: string; title: string; summary: string; content: string }[] = [
+    {
+      slug: "terms",
+      title: "Terms of Service",
+      summary: "The rules you agree to when using the platform.",
+      content:
+        "# Terms of Service\n\nBy using this platform you agree to these terms. The platform is provided as-is. You retain ownership of the content you upload. The platform may remove content that violates our acceptable-use policy.",
+    },
+    {
+      slug: "privacy",
+      title: "Privacy Policy",
+      summary: "What we collect, why, and how to control it.",
+      content:
+        "# Privacy Policy\n\nWe collect your email, invitation data and payment metadata to run the service. We never sell your data. You can export or delete your data at any time from account settings.",
+    },
+    {
+      slug: "refund",
+      title: "Refund Policy",
+      summary: "When and how refunds are issued.",
+      content:
+        "# Refund Policy\n\nMarketplace purchases are generally final. You may request a refund within 48 hours if the template is clearly broken or materially misrepresented. Contact support with your purchase id.",
+    },
+    {
+      slug: "acceptable-use",
+      title: "Acceptable Use",
+      summary: "Content and behavior the platform does not allow.",
+      content:
+        "# Acceptable Use\n\nNo hate speech, harassment, illegal content, or impersonation. No misleading pricing. The platform may take down any listing that violates this policy.",
+    },
+    {
+      slug: "creator-agreement",
+      title: "Creator Agreement",
+      summary: "The terms sellers accept when listing templates.",
+      content:
+        "# Creator Agreement\n\nWhen you list a template on the marketplace, you grant the platform a non-exclusive license to display and sell copies at the price you set. The platform fee for your active plan is applied to each sale.",
+    },
+  ];
+  for (const p of policies) {
+    await prisma.policy.upsert({
+      where: { slug: p.slug },
+      update: {}, // leave existing text alone on re-seed; super admin edits are authoritative
+      create: {
+        slug: p.slug,
+        title: p.title,
+        summary: p.summary,
+        content: p.content,
+      },
+    });
+  }
+
+  // (settings block is handled above; keeping original list behavior for completeness)
+  const _settings_placeholder: { key: string; value: unknown }[] = [];
+  void _settings_placeholder;
   console.log("Seed complete.");
 }
 

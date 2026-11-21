@@ -12,7 +12,8 @@ const Patch = z.object({
   thumbnail_url: z.string().url().optional(),
   is_in_marketplace: z.boolean().optional(),
   price: z.number().int().nonnegative().nullable().optional(),
-  currency: z.string().length(3).optional(),
+  price_usd: z.number().int().nonnegative().nullable().optional(),
+  currency: z.enum(["INR", "USD"]).optional(),
 });
 
 async function own(id: string, userId: string) {
@@ -30,17 +31,27 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   const parsed = Patch.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: "Invalid" }, { status: 400 });
 
-  if (parsed.data.is_in_marketplace === true && !existing.is_in_marketplace) {
+  // Requesting a listing: validate plan, require a price, and move the
+  // template into the moderation queue — not straight to APPROVED.
+  const requestingListing = parsed.data.is_in_marketplace === true && !existing.is_in_marketplace;
+  if (requestingListing) {
     const check = await canSellMoreTemplates(user.id);
     if (!check.ok) return NextResponse.json({ error: check.reason }, { status: 402 });
-    if (parsed.data.price == null && existing.price == null) {
-      return NextResponse.json({ error: "Set a price before listing." }, { status: 400 });
+    const effectiveInr = parsed.data.price ?? existing.price;
+    const effectiveUsd = parsed.data.price_usd ?? existing.price_usd;
+    if (effectiveInr == null && effectiveUsd == null) {
+      return NextResponse.json({ error: "Set a price (INR or USD) before listing." }, { status: 400 });
     }
   }
 
   const template = await prisma.template.update({
     where: { id },
-    data: parsed.data,
+    data: {
+      ...parsed.data,
+      ...(requestingListing
+        ? { moderation_status: "PENDING", submitted_at: new Date() }
+        : {}),
+    },
   });
   return NextResponse.json({ template });
 }

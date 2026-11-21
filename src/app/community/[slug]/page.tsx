@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Compass, ArrowLeft } from "lucide-react";
 import { BuyTemplateButton } from "./BuyTemplateButton";
+import { formatPrice, type Currency } from "@/lib/currency";
 
 export default async function CommunityDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -13,6 +14,7 @@ export default async function CommunityDetail({ params }: { params: Promise<{ sl
     },
   });
   if (!template || !template.is_in_marketplace) notFound();
+  if (template.owner_user_id && template.moderation_status !== "APPROVED") notFound();
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -47,7 +49,7 @@ export default async function CommunityDetail({ params }: { params: Promise<{ sl
             </p>
             <div className="mt-5 flex items-baseline gap-2">
               <span className="font-serif text-3xl font-bold text-stone-900">
-                {template.price ? `${template.currency === "INR" ? "₹" : template.currency}${template.price.toLocaleString()}` : "Free"}
+                {template.price ? formatPrice(template.price, template.currency as Currency) : "Free"}
               </span>
               {template.price ? <span className="text-[11px] text-stone-500">one-time</span> : null}
             </div>

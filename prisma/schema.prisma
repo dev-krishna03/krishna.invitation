@@ -59,7 +59,21 @@ enum TemplateSource {
   PLATFORM
   USER_CREATED
   USER_IMPORTED
+  USER_UPLOADED
   FROM_INVITATION
+}
+
+enum ModerationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  TAKEN_DOWN
+}
+
+enum Currency {
+  INR
+  USD
 }
 
 enum RsvpStatus {
@@ -132,6 +146,9 @@ model User {
   owned_templates      Template[]   @relation("TemplateOwner")
   creator_subscription UserCreatorSubscription?
   template_purchases   TemplatePurchase[]
+  policies_updated     Policy[]     @relation("PolicyUpdatedBy")
+  templates_reviewed   Template[]   @relation("TemplateReviewer")
+  preferred_currency   Currency    @default(INR)
 
   @@index([referred_by_id])
   @@map("users")
@@ -198,11 +215,20 @@ model Template {
   // the owner's active creator plan at that time.
   is_in_marketplace Boolean  @default(false)
   price             Int?
-  currency          String   @default("INR")
+  price_usd         Int?
+  currency          Currency @default(INR)
   sales_count       Int      @default(0)
   revenue_total     Int      @default(0)
 
+  // Moderation (super admin review before a user template goes public).
+  moderation_status  ModerationStatus @default(DRAFT)
+  moderation_notes   String?
+  submitted_at       DateTime?
+  reviewed_at        DateTime?
+  reviewed_by_id     String?         @db.Uuid
+
   owner                User?               @relation("TemplateOwner", fields: [owner_user_id], references: [id], onDelete: Cascade)
+  reviewed_by          User?               @relation("TemplateReviewer", fields: [reviewed_by_id], references: [id], onDelete: SetNull)
   source_invitation    Invitation?         @relation("TemplateFromInvitation", fields: [source_invitation_id], references: [id], onDelete: SetNull)
   imported_from        Template?           @relation("TemplateImport", fields: [imported_from_template_id], references: [id], onDelete: SetNull)
   imports              Template[]          @relation("TemplateImport")
@@ -212,6 +238,7 @@ model Template {
 
   @@index([owner_user_id])
   @@index([is_in_marketplace])
+  @@index([moderation_status])
   @@map("templates")
 }
 
@@ -539,7 +566,7 @@ model TemplatePurchase {
   gross_amount     Int
   platform_fee     Int
   seller_amount    Int
-  currency         String   @default("INR")
+  currency         Currency @default(INR)
   copy_template_id String?  @db.Uuid
   created_at       DateTime @default(now())
 
@@ -549,6 +576,24 @@ model TemplatePurchase {
   @@index([template_id])
   @@index([buyer_user_id])
   @@map("template_purchases")
+}
+
+model Policy {
+  id            String   @id @default(uuid()) @db.Uuid
+  slug          String   @unique
+  title         String
+  summary       String?
+  content       String
+  version       String   @default("1.0")
+  is_published  Boolean  @default(true)
+  effective_at  DateTime @default(now())
+  updated_by_id String?  @db.Uuid
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  updated_by User? @relation("PolicyUpdatedBy", fields: [updated_by_id], references: [id], onDelete: SetNull)
+
+  @@map("policies")
 }
 
 model Coupon {

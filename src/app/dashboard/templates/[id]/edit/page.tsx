@@ -27,9 +27,12 @@ export default async function TemplateEditPage({ params }: { params: Promise<{ i
           event_types: template.event_types,
           is_in_marketplace: template.is_in_marketplace,
           price: template.price,
+          price_usd: template.price_usd,
           currency: template.currency,
           sales_count: template.sales_count,
           revenue_total: template.revenue_total,
+          moderation_status: template.moderation_status,
+          moderation_notes: template.moderation_notes,
         }}
       />
     </div>

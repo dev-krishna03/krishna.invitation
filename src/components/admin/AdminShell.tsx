@@ -25,15 +25,21 @@ import {
   Shield,
   Activity,
   Layers,
+  ShieldCheck,
+  Crown,
+  Scale,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/krishna/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/krishna/admin/templates", label: "Templates", icon: Palette },
+  { href: "/krishna/admin/moderation", label: "Moderation", icon: ShieldCheck },
   { href: "/krishna/admin/event-types", label: "Occasions", icon: Sparkles },
   { href: "/krishna/admin/users", label: "Users", icon: Users },
   { href: "/krishna/admin/organizations", label: "Companies", icon: Building2 },
-  { href: "/krishna/admin/plans", label: "Plans", icon: CreditCard },
+  { href: "/krishna/admin/plans", label: "Subscription Plans", icon: CreditCard },
+  { href: "/krishna/admin/creator-plans", label: "Creator Plans", icon: Crown },
+  { href: "/krishna/admin/policies", label: "Policies", icon: Scale },
   { href: "/krishna/admin/gateways", label: "Payment Gateways", icon: Wallet },
   { href: "/krishna/admin/integrations", label: "Integrations", icon: Boxes },
   { href: "/krishna/admin/coupons", label: "Coupons", icon: TicketPercent },

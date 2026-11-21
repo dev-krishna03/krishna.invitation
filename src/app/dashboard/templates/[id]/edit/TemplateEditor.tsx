@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Store, Tag, Loader2, CheckCircle2, Lock } from "lucide-react";
+import { Store, Loader2, CheckCircle2, Lock, ShieldCheck, Clock, XCircle } from "lucide-react";
 
 const CATEGORIES = ["LUXURY", "MINIMAL", "TRADITIONAL", "MODERN", "FLORAL", "RUSTIC"] as const;
 
@@ -19,9 +19,12 @@ export function TemplateEditor({
     event_types: string[];
     is_in_marketplace: boolean;
     price: number | null;
+    price_usd: number | null;
     currency: string;
     sales_count: number;
     revenue_total: number;
+    moderation_status: string;
+    moderation_notes: string | null;
   };
   canSell: boolean;
   feePct: number;
@@ -30,14 +33,18 @@ export function TemplateEditor({
   const [description, setDescription] = useState(template.description ?? "");
   const [category, setCategory] = useState(template.category);
   const [eventTypesText, setEventTypesText] = useState(template.event_types.join(", "));
-  const [price, setPrice] = useState<string>(template.price?.toString() ?? "");
+  const [priceInr, setPriceInr] = useState<string>(template.price?.toString() ?? "");
+  const [priceUsd, setPriceUsd] = useState<string>(template.price_usd?.toString() ?? "");
   const [listed, setListed] = useState(template.is_in_marketplace);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  const priceNum = parseInt(price || "0", 10);
-  const sellerShare = priceNum > 0 ? Math.round((priceNum * (100 - feePct)) / 100) : 0;
+  const priceInrNum = parseInt(priceInr || "0", 10);
+  const priceUsdNum = parseInt(priceUsd || "0", 10);
+  const sellerShareInr = priceInrNum > 0 ? Math.round((priceInrNum * (100 - feePct)) / 100) : 0;
+  const sellerShareUsd = priceUsdNum > 0 ? Math.round((priceUsdNum * (100 - feePct)) / 100) : 0;
+  const status = template.moderation_status;
 
   async function save() {
     setBusy(true);
@@ -50,7 +57,8 @@ export function TemplateEditor({
         description,
         category,
         event_types: eventTypesText.split(",").map((s) => s.trim()).filter(Boolean),
-        price: price ? priceNum : null,
+        price: priceInr ? priceInrNum : null,
+        price_usd: priceUsd ? priceUsdNum : null,
         is_in_marketplace: listed,
       }),
     });
@@ -119,38 +127,65 @@ export function TemplateEditor({
               <span>Your current plan doesn&apos;t allow selling. Upgrade on the <a href="/dashboard/plan" className="font-bold underline">plans</a> page.</span>
             </div>
           )}
-          <div className="mt-4">
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-stone-500">Price (INR)</label>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-xs text-stone-500">₹</span>
-              <input
-                type="number"
-                min={0}
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
-              />
+          {/* Moderation banner */}
+          <ModerationBadge status={status} notes={template.moderation_notes} />
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-stone-500">Price (INR)</label>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-xs text-stone-500">₹</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={priceInr}
+                  onChange={(e) => setPriceInr(e.target.value)}
+                  className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                />
+              </div>
+              {priceInrNum > 0 && (
+                <p className="mt-1 text-[11px] text-stone-500">
+                  You keep <span className="font-bold text-emerald-700">₹{sellerShareInr.toLocaleString()}</span>
+                </p>
+              )}
             </div>
-            {priceNum > 0 && (
-              <p className="mt-1 text-[11px] text-stone-500">
-                You receive <span className="font-bold text-emerald-700">₹{sellerShare.toLocaleString()}</span> ·
-                platform fee {feePct}%
-              </p>
-            )}
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-stone-500">Price (USD)</label>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-xs text-stone-500">$</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={priceUsd}
+                  onChange={(e) => setPriceUsd(e.target.value)}
+                  className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                />
+              </div>
+              {priceUsdNum > 0 && (
+                <p className="mt-1 text-[11px] text-stone-500">
+                  You keep <span className="font-bold text-emerald-700">${sellerShareUsd.toLocaleString()}</span>
+                </p>
+              )}
+            </div>
           </div>
+          <p className="mt-2 text-[11px] text-stone-500">
+            Buyers see price in their preferred currency. Set at least one; the other can be left blank and will convert using the platform FX rate.
+          </p>
 
           <label className="mt-4 flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-3 text-xs">
             <span>
-              <p className="font-bold text-stone-900">List in marketplace</p>
-              <p className="text-[11px] text-stone-500">Other users can buy a copy.</p>
+              <p className="font-bold text-stone-900">Submit to marketplace</p>
+              <p className="text-[11px] text-stone-500">
+                Enabling this submits your template for moderation. Our team usually responds within 24 hours.
+              </p>
             </span>
             <button
               type="button"
               onClick={() => setListed(!listed)}
-              disabled={!canSell || (!listed && !priceNum)}
+              disabled={!canSell || (!listed && !priceInrNum && !priceUsdNum)}
               className={`inline-flex h-6 w-11 items-center rounded-full border transition-colors ${
                 listed ? "bg-emerald-500 border-emerald-500" : "bg-stone-200 border-stone-200"
-              } ${!canSell || (!listed && !priceNum) ? "opacity-50 cursor-not-allowed" : ""}`}
+              } ${!canSell || (!listed && !priceInrNum && !priceUsdNum) ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${listed ? "translate-x-5" : "translate-x-0.5"}`} />
             </button>
@@ -176,6 +211,27 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-[11px] font-bold uppercase tracking-wide text-stone-500">{label}</span>
       <div className="mt-1">{children}</div>
     </label>
+  );
+}
+
+function ModerationBadge({ status, notes }: { status: string; notes: string | null }) {
+  if (status === "DRAFT") return null;
+  const map: Record<string, { label: string; tone: string; icon: React.ElementType }> = {
+    PENDING: { label: "In review", tone: "bg-amber-50 text-amber-800 border-amber-200", icon: Clock },
+    APPROVED: { label: "Approved — live on marketplace", tone: "bg-emerald-50 text-emerald-800 border-emerald-200", icon: ShieldCheck },
+    REJECTED: { label: "Changes requested", tone: "bg-rose-50 text-rose-800 border-rose-200", icon: XCircle },
+    TAKEN_DOWN: { label: "Taken down by admin", tone: "bg-stone-100 text-stone-700 border-stone-300", icon: XCircle },
+  };
+  const entry = map[status] ?? map.PENDING;
+  const Icon = entry.icon;
+  return (
+    <div className={`mt-3 rounded-xl border p-3 text-xs ${entry.tone}`}>
+      <div className="flex items-center gap-2 font-bold">
+        <Icon className="h-3.5 w-3.5" />
+        {entry.label}
+      </div>
+      {notes && <p className="mt-1 opacity-80">Reviewer notes: {notes}</p>}
+    </div>
   );
 }
 
