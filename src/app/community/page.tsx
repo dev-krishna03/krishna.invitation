@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Compass, ShoppingBag, Sparkles, ArrowRight } from "lucide-react";
-import { EventIcon } from "@/components/EventIcon";
+import { Compass, ShoppingBag, Sparkles, ArrowRight, Store } from "lucide-react";
 
 export default async function CommunityPage() {
-  const items = await prisma.invitation.findMany({
-    where: { is_in_community: true },
+  const templates = await prisma.template.findMany({
+    where: { is_in_marketplace: true },
     include: {
-      template: true,
-      user: { select: { name: true, email: true } },
-      _count: { select: { views: true } },
+      owner: { select: { name: true, email: true } },
     },
     orderBy: { updated_at: "desc" },
     take: 60,
@@ -26,57 +23,38 @@ export default async function CommunityPage() {
           Templates from our creators
         </h1>
         <p className="mt-2 text-sm text-stone-600 max-w-xl mx-auto">
-          Buy a design built by another host, adapt it to your event, and save hours.
+          Buy a design built by another creator at the price they set.
+          Each creator keeps the lion&apos;s share — the platform takes a small fee from the sale.
         </p>
       </div>
 
-      {items.length === 0 ? (
-        <div className="mt-12 rounded-3xl border border-dashed border-stone-300 bg-white/70 p-12 text-center max-w-md mx-auto">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-50 to-rose-50 text-amber-700">
-            <Sparkles className="h-7 w-7" />
-          </div>
-          <h3 className="mt-4 font-serif text-xl font-bold text-stone-900">Nothing shared yet</h3>
-          <p className="mt-2 text-xs text-stone-500">
-            As creators publish templates to the community, they will show up here.
-          </p>
-          <Link
-            href="/dashboard/library"
-            className="mt-6 inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 px-5 py-2.5 text-xs font-bold text-white"
-          >
-            Open my library
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
+      {templates.length === 0 ? (
+        <EmptyState />
       ) : (
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((inv) => (
+          {templates.map((t) => (
             <article
-              key={inv.id}
+              key={t.id}
               className="group relative overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 shadow-sm hover:shadow-xl hover:shadow-rose-900/5 transition-all"
             >
               <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500" />
               <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-amber-100 via-rose-200 to-fuchsia-200" />
               <div className="mt-3 flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-rose-50 text-rose-700">
-                    <EventIcon name={null} className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <h3 className="font-serif text-base font-bold text-stone-900 leading-tight">
-                      {inv.title}
-                    </h3>
-                    <p className="text-[11px] text-stone-500">
-                      By {inv.user.name ?? inv.user.email} · {inv._count.views} views
-                    </p>
-                  </div>
+                <div className="min-w-0">
+                  <h3 className="truncate font-serif text-base font-bold text-stone-900 leading-tight">
+                    {t.name}
+                  </h3>
+                  <p className="text-[11px] text-stone-500 truncate">
+                    By {t.owner?.name ?? t.owner?.email ?? "Platform"} · {t.category.toLowerCase()}
+                  </p>
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between">
                 <span className="font-serif text-xl font-bold text-stone-900">
-                  {inv.community_price ? `₹${inv.community_price.toLocaleString()}` : "Free"}
+                  {t.price ? `${t.currency === "INR" ? "₹" : t.currency}${t.price.toLocaleString()}` : "Free"}
                 </span>
                 <Link
-                  href={`/community/${inv.slug}`}
+                  href={`/community/${t.slug}`}
                   className="inline-flex items-center gap-1 rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-stone-800 transition-colors"
                 >
                   <ShoppingBag className="h-3 w-3" />
@@ -88,5 +66,27 @@ export default async function CommunityPage() {
         </div>
       )}
     </main>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="mt-12 rounded-3xl border border-dashed border-stone-300 bg-white/70 p-12 text-center max-w-md mx-auto">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-50 to-rose-50 text-amber-700">
+        <Sparkles className="h-7 w-7" />
+      </div>
+      <h3 className="mt-4 font-serif text-xl font-bold text-stone-900">Nothing listed yet</h3>
+      <p className="mt-2 text-xs text-stone-500">
+        Creators list templates from their workspace. Be the first.
+      </p>
+      <Link
+        href="/dashboard/templates/new"
+        className="mt-6 inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 px-5 py-2.5 text-xs font-bold text-white"
+      >
+        <Store className="h-3 w-3" />
+        Create a template
+        <ArrowRight className="h-3 w-3" />
+      </Link>
+    </div>
   );
 }

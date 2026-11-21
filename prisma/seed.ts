@@ -6,6 +6,7 @@ import {
   BillingPeriod,
   Gateway,
   Environment,
+  CreatorPlanTier,
 } from "@prisma/client";
 import { generateReferralCode } from "../src/lib/referral";
 
@@ -219,6 +220,133 @@ async function main() {
       sort_order: 2,
     },
   });
+
+  // ---- Creator plans ----
+  const creatorPlans: {
+    slug: string;
+    tier: CreatorPlanTier;
+    name: string;
+    tagline: string;
+    monthly: number;
+    yearly: number;
+    max_templates_for_sale: number | null;
+    max_live_invitations: number | null;
+    platform_fee_pct: number;
+    can_sell: boolean;
+    white_label: boolean;
+    features: string[];
+    sort_order: number;
+  }[] = [
+    {
+      slug: "creator-free",
+      tier: CreatorPlanTier.FREE,
+      name: "Free Hobbyist",
+      tagline: "Build invitations for your own events.",
+      monthly: 0,
+      yearly: 0,
+      max_templates_for_sale: 0,
+      max_live_invitations: 1,
+      platform_fee_pct: 30,
+      can_sell: false,
+      white_label: false,
+      features: [
+        "Create templates in your workspace",
+        "Import community templates",
+        "1 live invitation at a time",
+        "Not available for sale",
+      ],
+      sort_order: 1,
+    },
+    {
+      slug: "creator-pro",
+      tier: CreatorPlanTier.PRO,
+      name: "Creator Pro",
+      tagline: "Earn from your designs.",
+      monthly: 499,
+      yearly: 4999,
+      max_templates_for_sale: 10,
+      max_live_invitations: 10,
+      platform_fee_pct: 20,
+      can_sell: true,
+      white_label: false,
+      features: [
+        "Sell up to 10 templates on the marketplace",
+        "20% platform fee per sale",
+        "10 live invitations at once",
+        "Priority creator support",
+      ],
+      sort_order: 2,
+    },
+    {
+      slug: "creator-studio",
+      tier: CreatorPlanTier.STUDIO,
+      name: "Studio Elite",
+      tagline: "Run an invitation agency.",
+      monthly: 1999,
+      yearly: 19999,
+      max_templates_for_sale: null,
+      max_live_invitations: null,
+      platform_fee_pct: 10,
+      can_sell: true,
+      white_label: true,
+      features: [
+        "Unlimited templates for sale",
+        "10% platform fee per sale",
+        "Unlimited live invitations",
+        "White-label customer links",
+        "Team workspace + API access",
+      ],
+      sort_order: 3,
+    },
+  ];
+  for (const p of creatorPlans) {
+    await prisma.creatorPlan.upsert({
+      where: { tier: p.tier },
+      update: {
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        monthly_price: p.monthly,
+        yearly_price: p.yearly,
+        max_templates_for_sale: p.max_templates_for_sale,
+        max_live_invitations: p.max_live_invitations,
+        platform_fee_pct: p.platform_fee_pct,
+        can_sell: p.can_sell,
+        white_label: p.white_label,
+        features: p.features,
+        sort_order: p.sort_order,
+      },
+      create: {
+        slug: p.slug,
+        tier: p.tier,
+        name: p.name,
+        tagline: p.tagline,
+        monthly_price: p.monthly,
+        yearly_price: p.yearly,
+        max_templates_for_sale: p.max_templates_for_sale,
+        max_live_invitations: p.max_live_invitations,
+        platform_fee_pct: p.platform_fee_pct,
+        can_sell: p.can_sell,
+        white_label: p.white_label,
+        features: p.features,
+        sort_order: p.sort_order,
+      },
+    });
+  }
+
+  // Default every existing user to the Free plan if they don't have one.
+  const freePlan = await prisma.creatorPlan.findUnique({ where: { tier: CreatorPlanTier.FREE } });
+  if (freePlan) {
+    const users = await prisma.user.findMany({ select: { id: true } });
+    for (const u of users) {
+      const existing = await prisma.userCreatorSubscription.findUnique({ where: { user_id: u.id } });
+      if (!existing) {
+        await prisma.userCreatorSubscription.create({
+          data: { user_id: u.id, plan_id: freePlan.id },
+        });
+      }
+    }
+  }
 
   const gateways: { name: Gateway; slug: string; display_name: string }[] = [
     { name: Gateway.RAZORPAY, slug: "razorpay", display_name: "Razorpay" },

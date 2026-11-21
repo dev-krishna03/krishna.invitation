@@ -23,10 +23,12 @@ import {
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
+  { href: "/dashboard/workspace", label: "Workspace", icon: Home },
   { href: "/dashboard", label: "My Invitations", icon: Sparkles },
   { href: "/dashboard/create", label: "Create Invitation", icon: PlusCircle },
+  { href: "/dashboard/templates", label: "My Templates", icon: Library },
+  { href: "/dashboard/plan", label: "Plans & Pricing", icon: BarChart3 },
   { href: "/community", label: "Explore Community", icon: Compass },
-  { href: "/dashboard/library", label: "My Library", icon: Library },
   { href: "/dashboard/analytics", label: "Guest Analytics", icon: BarChart3 },
   { href: "/dashboard/settings", label: "Account Settings", icon: Settings },
 ];

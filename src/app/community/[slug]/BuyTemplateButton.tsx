@@ -6,11 +6,11 @@ import { ShoppingBag, Loader2, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function BuyTemplateButton({
-  invitationId,
+  templateId,
   price,
   currency,
 }: {
-  invitationId: string;
+  templateId: string;
   price: number;
   currency: string;
 }) {
@@ -21,16 +21,16 @@ export function BuyTemplateButton({
   async function buy() {
     setState("loading");
     setError(null);
-    const res = await fetch(`/api/community/${invitationId}/buy`, { method: "POST" });
+    const res = await fetch(`/api/community/templates/${templateId}/buy`, { method: "POST" });
     if (!res.ok) {
       const d = (await res.json().catch(() => ({}))) as { error?: string };
       setError(d.error ?? "Failed to purchase");
       setState("error");
       return;
     }
-    const d = (await res.json()) as { invitationId: string };
+    const d = (await res.json()) as { templateId: string };
     setState("done");
-    setTimeout(() => router.push(`/dashboard/invitations/${d.invitationId}`), 600);
+    setTimeout(() => router.push(`/dashboard/templates/${d.templateId}/edit`), 600);
   }
 
   return (
@@ -50,12 +50,12 @@ export function BuyTemplateButton({
         ) : state === "done" ? (
           <>
             <CheckCircle2 className="h-4 w-4" />
-            Added to your library
+            Added to your workspace
           </>
         ) : (
           <>
             <ShoppingBag className="h-4 w-4" />
-            {price > 0 ? `Buy for ${currency === "INR" ? "₹" : currency}${price.toLocaleString()}` : "Add to library — free"}
+            {price > 0 ? `Buy for ${currency === "INR" ? "₹" : currency}${price.toLocaleString()}` : "Add to workspace — free"}
           </>
         )}
       </motion.button>

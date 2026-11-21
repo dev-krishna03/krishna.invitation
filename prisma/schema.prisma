@@ -49,6 +49,19 @@ enum PlanType {
   COMPANY
 }
 
+enum CreatorPlanTier {
+  FREE
+  PRO
+  STUDIO
+}
+
+enum TemplateSource {
+  PLATFORM
+  USER_CREATED
+  USER_IMPORTED
+  FROM_INVITATION
+}
+
 enum RsvpStatus {
   PENDING
   ACCEPTED
@@ -116,6 +129,9 @@ model User {
   gateways     PaymentGateway[]     @relation("GatewayUpdatedBy")
   integrations IntegrationCredential[] @relation("IntegrationUpdatedBy")
   settings     SiteSetting[]        @relation("SettingUpdatedBy")
+  owned_templates      Template[]   @relation("TemplateOwner")
+  creator_subscription UserCreatorSubscription?
+  template_purchases   TemplatePurchase[]
 
   @@index([referred_by_id])
   @@map("users")
@@ -166,10 +182,36 @@ model Template {
   is_featured   Boolean          @default(false)
   sort_order    Int              @default(0)
   created_at    DateTime         @default(now())
+  updated_at    DateTime?        @updatedAt
 
-  pricing     TemplatePricing[]
-  invitations Invitation[]
+  // ---- Creator-workspace fields ----
+  // owner_user_id null = platform template (seeded by the system).
+  // owner_user_id set  = template inside a user's workspace (created,
+  // imported from another creator, or saved from an invitation).
+  owner_user_id              String?        @db.Uuid
+  source                     TemplateSource @default(PLATFORM)
+  source_invitation_id       String?        @db.Uuid
+  imported_from_template_id  String?        @db.Uuid
 
+  // Marketplace settings: the owner chooses whether to list it and at
+  // what price. The platform fee % is snapshot on the sale, taken from
+  // the owner's active creator plan at that time.
+  is_in_marketplace Boolean  @default(false)
+  price             Int?
+  currency          String   @default("INR")
+  sales_count       Int      @default(0)
+  revenue_total     Int      @default(0)
+
+  owner                User?               @relation("TemplateOwner", fields: [owner_user_id], references: [id], onDelete: Cascade)
+  source_invitation    Invitation?         @relation("TemplateFromInvitation", fields: [source_invitation_id], references: [id], onDelete: SetNull)
+  imported_from        Template?           @relation("TemplateImport", fields: [imported_from_template_id], references: [id], onDelete: SetNull)
+  imports              Template[]          @relation("TemplateImport")
+  pricing              TemplatePricing[]
+  invitations          Invitation[]
+  purchases            TemplatePurchase[]
+
+  @@index([owner_user_id])
+  @@index([is_in_marketplace])
   @@map("templates")
 }
 
@@ -222,6 +264,7 @@ model Invitation {
   guests   Guest[]
   views    InvitationView[]
   payments Payment[]
+  saved_as_templates Template[] @relation("TemplateFromInvitation")
 
   @@index([user_id])
   @@index([org_id])
@@ -445,6 +488,67 @@ model EventTypeConfig {
 
   @@index([parent_id])
   @@map("event_types")
+}
+
+model CreatorPlan {
+  id                 String           @id @default(uuid()) @db.Uuid
+  slug               String           @unique
+  name               String
+  tier               CreatorPlanTier  @unique
+  tagline            String?
+  monthly_price      Int              @default(0)
+  yearly_price       Int              @default(0)
+  currency           String           @default("INR")
+  // Marketplace limits
+  max_templates_for_sale Int?         // null = unlimited
+  max_live_invitations   Int?         // null = unlimited
+  platform_fee_pct       Int          @default(20)
+  // Capability flags
+  can_sell               Boolean      @default(false)
+  can_import_community   Boolean      @default(true)
+  white_label            Boolean      @default(false)
+  features               Json         @default("[]")
+  is_active              Boolean      @default(true)
+  sort_order             Int          @default(0)
+
+  subscriptions UserCreatorSubscription[]
+
+  @@map("creator_plans")
+}
+
+model UserCreatorSubscription {
+  id         String              @id @default(uuid()) @db.Uuid
+  user_id    String              @unique @db.Uuid
+  plan_id    String              @db.Uuid
+  status     SubscriptionStatus  @default(ACTIVE)
+  billing    BillingPeriod       @default(MONTHLY)
+  period_start DateTime          @default(now())
+  period_end   DateTime?
+  created_at   DateTime          @default(now())
+
+  user User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  plan CreatorPlan @relation(fields: [plan_id], references: [id])
+
+  @@map("user_creator_subscriptions")
+}
+
+model TemplatePurchase {
+  id               String   @id @default(uuid()) @db.Uuid
+  template_id      String   @db.Uuid
+  buyer_user_id    String   @db.Uuid
+  gross_amount     Int
+  platform_fee     Int
+  seller_amount    Int
+  currency         String   @default("INR")
+  copy_template_id String?  @db.Uuid
+  created_at       DateTime @default(now())
+
+  template Template @relation(fields: [template_id], references: [id])
+  buyer    User     @relation(fields: [buyer_user_id], references: [id])
+
+  @@index([template_id])
+  @@index([buyer_user_id])
+  @@map("template_purchases")
 }
 
 model Coupon {
