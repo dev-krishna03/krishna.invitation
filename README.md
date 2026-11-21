@@ -1,66 +1,122 @@
 # Invitation Platform
 
-Multi-tenant SaaS for creating and sharing digital invitations across every
+Multi-tenant SaaS for creating and selling digital invitations across every
 occasion — wedding, engagement, birthday, baby shower, Gruh Vastu, anniversary,
-Namkaran, Mundan, Haldi, Mehndi, Sangeet, reception, corporate, pooja, festival,
-and more — with 14 languages, RTL support, a referral program, and per-template
-pricing or company subscriptions.
+Namkaran, Mundan, Haldi, Mehndi, Sangeet, reception, corporate, pooja, festival
+and more. Each user gets a creator workspace where they design templates, set
+their own prices (INR + USD), and sell them in a moderated community marketplace.
 
 ## Stack
 
 - Next.js 14 (App Router, TypeScript, Tailwind v4, Turbopack)
 - Supabase Auth + Postgres + Storage
 - Prisma 6 ORM
-- next-intl (14 locales: en, hi, gu, mr, ta, te, kn, ml, bn, pa, ur, es, fr, ar)
+- Framer Motion + Lucide icons
 - Payment gateway abstraction: Razorpay, Cashfree, PhonePe, Stripe
-- Brevo for transactional email (configured in `/admin/integrations`)
-- Credential encryption: AES-256-GCM
+- Brevo for transactional email (configured in Super Admin → Integrations)
+- AES-256-GCM encryption for all third-party credentials
 
 ## Setup
 
 ```bash
-cp .env.example .env.local      # fill in Supabase + DATABASE_URL + encryption key
-openssl rand -base64 32          # value for CREDENTIALS_ENCRYPTION_KEY
-npx prisma db push               # push schema to Supabase Postgres
-npx prisma generate              # generate client
-npx prisma db seed               # seed templates, plans, gateways, integrations, settings, super admin row
-npm run dev
+cp .env.example .env.local
 ```
 
-Create your super-admin in Supabase Auth with email `admin@invites.local` — the
-seed binds this email to the SUPER_ADMIN row. For a different email, update the
-seed before running it.
+```bash
+openssl rand -base64 32   # value for CREDENTIALS_ENCRYPTION_KEY
+```
 
-## Phases shipped in this repo
+```bash
+npx prisma db push && npx prisma generate && npx prisma db seed && npm run dev
+```
 
-| # | Phase | Key files |
-|---|-------|-----------|
-| 1 | Next.js + Supabase + auth | `src/lib/supabase/*`, `src/app/(auth)/*`, `src/app/api/auth/*` |
-| 2 | Prisma schema (15 models + enums) + seed | `prisma/schema.prisma`, `prisma/seed.ts` |
-| 3 | Payment abstraction + 4 providers + webhooks | `src/lib/payments/*`, `src/app/api/webhooks/[gateway]/route.ts` |
-| 4 | Template engine + public gallery / try / invite | `src/templates/*`, `src/app/(public)/*` |
-| 5 | Super Admin (11 pages + APIs + audit log) | `src/app/admin/*`, `src/app/api/admin/*` |
-| 6 | User dashboard + create wizard + invitations API | `src/app/dashboard/*`, `src/app/api/invitations/*` |
-| 7 | Company dashboard + org API | `src/app/company/*`, `src/app/api/org/*` |
-| 8 | Brevo email + template mapping via SiteSetting | `src/lib/email.ts`, `src/lib/email-templates.ts` |
-| 9 | Landing, pricing, contact, about, RSVP, sitemap, robots | `src/app/page.tsx`, `src/app/(public)/pricing/*`, etc. |
-| 10 | Credential encryption, rate-limit, error boundaries | `src/lib/crypto.ts`, `src/lib/rate-limit.ts`, `src/app/error.tsx` |
+The seed creates: platform templates, subscription plans, payment gateways,
+integrations, site settings, 3 creator plans (Free / Pro / Studio), and the
+5 default policies. It also upserts a Super Admin row bound to
+`admin@invites.local`.
 
-## URL map
+## Super Admin
 
-Public: `/`, `/gallery`, `/try/:slug`, `/invite/:slug`, `/invite/:slug/:guestSlug`, `/pricing`, `/contact`, `/about`
-Auth: `/login`, `/register`, `/forgot-password`, `/reset-password`
-User: `/dashboard`, `/dashboard/create`, `/dashboard/invitations/:id`, `/dashboard/analytics`, `/dashboard/settings`
-Company: `/company`, `/company/invitations`, `/company/team`, `/company/subscription`, `/company/settings`
-Super admin: `/admin`, `/admin/templates|users|organizations|plans|gateways|integrations|coupons|payments|settings|audit-log`
-Webhooks: `/api/webhooks/razorpay|cashfree|phonepe|stripe`
+Hidden entry: **`/krishna`** + code **`123456`** (override with
+`ADMIN_ACCESS_CODE`). Signs a short-lived HMAC cookie that unlocks
+`/krishna/admin/*` for 8 hours.
+
+| Admin page | What it controls |
+|------------|------------------|
+| `/krishna/admin` | Dashboard — users, active invitations, revenue, companies |
+| `/krishna/admin/templates` | All templates on the platform |
+| `/krishna/admin/moderation` | Pending user-submitted templates — Approve / Reject with notes |
+| `/krishna/admin/event-types` | Occasions tree (parent + sub-occasions, icons) |
+| `/krishna/admin/users` | All users, roles |
+| `/krishna/admin/organizations` | All companies, plan, status |
+| `/krishna/admin/plans` | SaaS subscription plans (Individual / Company) |
+| `/krishna/admin/creator-plans` | Creator plan tiers — name, price, platform fee %, limits, features |
+| `/krishna/admin/policies` | TOS, Privacy, Refund, Acceptable Use, Creator Agreement |
+| `/krishna/admin/gateways` | Razorpay / Cashfree / PhonePe / Stripe credentials + active gateway |
+| `/krishna/admin/integrations` | Brevo, Google Maps, WhatsApp credentials |
+| `/krishna/admin/coupons` | Discount codes |
+| `/krishna/admin/payments` | All payments, refunds |
+| `/krishna/admin/settings` | Site name, support email, currencies, USD→INR FX rate |
+| `/krishna/admin/audit-log` | Every mutation audit-logged |
+
+The admin UI uses a **white base** (stone-50) with brand-accent rose/amber
+highlights on active nav + CTAs.
+
+## Creator workspace
+
+Each user automatically gets a workspace with the Free tier.
+
+| User route | Purpose |
+|------------|---------|
+| `/dashboard/workspace` | Plan badge, stats, quick actions, recent sales |
+| `/dashboard` | Flow overview + My Invitations |
+| `/dashboard/create` | Create wizard — pick template → tier → details → pay |
+| `/dashboard/templates` | My templates — inline price editor + marketplace toggle |
+| `/dashboard/templates/new` | New template: blank / import community / from invitation |
+| `/dashboard/templates/[id]/edit` | Metadata + INR+USD pricing + moderation status |
+| `/dashboard/library` | Downloaded + Created lists |
+| `/dashboard/plan` | Free Hobbyist · Creator Pro · Studio Elite |
+| `/dashboard/invitations/[id]/share` | Preview → Approval → User cap → Pay → Share Access, or Direct Share |
+| `/community` | Marketplace — only APPROVED user templates visible |
+| `/community/[slug]` | Buy a community template (copies into buyer's workspace) |
+
+### Creator plans
+
+| Tier | Price | Platform fee | Templates for sale | Live invitations | White-label |
+|------|-------|--------------|--------------------|------------------|-------------|
+| Free Hobbyist | ₹0 | 30% | 0 (can't sell) | 1 | — |
+| Creator Pro | ₹4,999 / yr | 20% | 10 | 10 | — |
+| Studio Elite | ₹19,999 / yr | 10% | Unlimited | Unlimited | ✓ |
+
+Fee is read from the seller's plan at sale time; each sale writes a
+`TemplatePurchase` row with `gross / platform_fee / seller_amount` and
+rolls up `sales_count` + `revenue_total` on the source template.
+
+## Pricing & currency
+
+- Every price is stored in both **INR** (`price`) and **USD** (`price_usd`);
+  either can be left blank and the missing one converts from the platform
+  `usd_to_inr` FX rate (SiteSetting, admin-editable).
+- `src/lib/currency.ts` holds `formatPrice`, `currencySymbol`, `convertPrice`
+  and `templatePriceFor` — every surface routes through it so **₹ renders with
+  Indian grouping** (₹1,23,456) and **$ with US grouping** ($123,456).
+- Users have `preferred_currency` (defaults to INR).
+
+## Public site
+
+`/`, `/gallery`, `/try/:slug`, `/invite/:slug`, `/invite/:slug/:guestSlug`,
+`/pricing`, `/contact`, `/about`, `/community`, `/community/[slug]`,
+`/policies`, `/policies/[slug]`.
+
+All five policies are editable from Super Admin → Policies with versioning
+and a Published toggle.
 
 ## Secrets strategy
 
-The only secret in env is `CREDENTIALS_ENCRYPTION_KEY`. All other provider
-credentials — Razorpay keys, Stripe keys, Brevo API key, Google Maps key — are
-stored encrypted in Postgres through `/admin/gateways` and `/admin/integrations`.
-AES-256-GCM via `lib/crypto.ts`.
+The only secret in env is `CREDENTIALS_ENCRYPTION_KEY`. Every third-party
+credential (Razorpay, Stripe, Cashfree, PhonePe, Brevo API key, Google Maps
+key) is stored **encrypted in Postgres** and managed from Super Admin. Rotate
+by editing the integration row in the panel.
 
 ## Deployment
 
@@ -69,3 +125,5 @@ AES-256-GCM via `lib/crypto.ts`.
 - Set up RLS policies in Supabase for multi-tenant isolation
 - Configure webhook URLs in each gateway dashboard pointing to
   `https://<host>/api/webhooks/{razorpay|cashfree|phonepe|stripe}`
+- Rotate `ADMIN_ACCESS_CODE` for prod and set `CREDENTIALS_ENCRYPTION_KEY` from
+  `openssl rand -base64 32`.
