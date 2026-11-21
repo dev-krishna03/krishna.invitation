@@ -578,6 +578,47 @@ model TemplatePurchase {
   @@map("template_purchases")
 }
 
+enum ElementKind {
+  TEXT
+  HEADING
+  NAMES
+  MESSAGE
+  BUTTON
+  DIVIDER
+  MOTIF
+  IMAGE
+  QRCODE
+  BADGE
+  COUNTDOWN
+  MAP
+  MUSIC
+  VIDEO
+  GALLERY
+  RSVP
+  SOCIAL
+  CONTAINER
+}
+
+model TemplateElement {
+  id            String      @id @default(uuid()) @db.Uuid
+  slug          String      @unique
+  name          String
+  kind          ElementKind
+  category      String      @default("basic")
+  icon          String?
+  description   String?
+  default_props Json        @default("{}")
+  is_pro_only   Boolean     @default(false)
+  is_active     Boolean     @default(true)
+  sort_order    Int         @default(0)
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  @@index([is_active])
+  @@index([category])
+  @@map("template_elements")
+}
+
 model Policy {
   id            String   @id @default(uuid()) @db.Uuid
   slug          String   @unique

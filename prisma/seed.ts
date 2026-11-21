@@ -403,6 +403,67 @@ async function main() {
     });
   }
 
+  // Editor element catalog — the palette the invitation editor shows. Admin can
+  // extend / toggle these from /krishna/admin/elements.
+  const elements: {
+    slug: string;
+    name: string;
+    kind:
+      | "TEXT" | "HEADING" | "NAMES" | "MESSAGE" | "BUTTON" | "DIVIDER" | "MOTIF"
+      | "IMAGE" | "QRCODE" | "BADGE" | "COUNTDOWN" | "MAP" | "MUSIC" | "VIDEO"
+      | "GALLERY" | "RSVP" | "SOCIAL" | "CONTAINER";
+    category: string;
+    icon: string;
+    description: string;
+    default_props: Record<string, unknown>;
+    is_pro_only?: boolean;
+  }[] = [
+    { slug: "heading", name: "Heading", kind: "HEADING", category: "text", icon: "Type", description: "Section headings and titles.", default_props: { content: "A Royal Affair", fontSize: 42, fontWeight: 700 } },
+    { slug: "names", name: "Couple Names", kind: "NAMES", category: "text", icon: "Heart", description: "Primary + secondary host name.", default_props: { primary: "Aarav", secondary: "Priya", separator: "&" } },
+    { slug: "message", name: "Message", kind: "MESSAGE", category: "text", icon: "MessageSquare", description: "Welcome note or verse.", default_props: { content: "With the blessings of our families…" } },
+    { slug: "divider", name: "Divider", kind: "DIVIDER", category: "decor", icon: "Minus", description: "Ornamental line between sections.", default_props: { style: "ornament", color: "#8b1e3f" } },
+    { slug: "motif", name: "Motif", kind: "MOTIF", category: "decor", icon: "Sparkles", description: "Decorative emblem.", default_props: { symbol: "🕉️" } },
+    { slug: "button", name: "RSVP Button", kind: "BUTTON", category: "action", icon: "MousePointerClick", description: "Call-to-action button.", default_props: { label: "RSVP", href: "#rsvp" } },
+    { slug: "image", name: "Image", kind: "IMAGE", category: "media", icon: "Image", description: "Upload a photo or illustration.", default_props: {} },
+    { slug: "gallery", name: "Photo Gallery", kind: "GALLERY", category: "media", icon: "Images", description: "Multi-photo swipe gallery.", default_props: { photos: [] }, is_pro_only: true },
+    { slug: "music", name: "Background Music", kind: "MUSIC", category: "media", icon: "Music", description: "Looped audio with mute control.", default_props: { autoplay: true } },
+    { slug: "video", name: "Video", kind: "VIDEO", category: "media", icon: "Video", description: "Embed a short clip.", default_props: {}, is_pro_only: true },
+    { slug: "countdown", name: "Countdown", kind: "COUNTDOWN", category: "data", icon: "Clock", description: "Live countdown to the event.", default_props: { targetDate: "" } },
+    { slug: "map", name: "Venue Map", kind: "MAP", category: "data", icon: "Map", description: "Google Maps embed.", default_props: { address: "" } },
+    { slug: "qrcode", name: "QR Code", kind: "QRCODE", category: "action", icon: "QrCode", description: "QR for RSVP or location link.", default_props: { value: "" } },
+    { slug: "rsvp-form", name: "RSVP Form", kind: "RSVP", category: "action", icon: "ClipboardCheck", description: "Guest RSVP capture.", default_props: { allowPlusOne: true } },
+    { slug: "social", name: "Social Icons", kind: "SOCIAL", category: "action", icon: "Share2", description: "Share to WhatsApp / Instagram.", default_props: { networks: ["whatsapp", "instagram"] } },
+    { slug: "badge-seal", name: "Save-The-Date Seal", kind: "BADGE", category: "decor", icon: "BadgeCheck", description: "Wax-seal-style badge.", default_props: { label: "Save The Date", icon: "💍" } },
+    { slug: "event-row", name: "Event Row", kind: "CONTAINER", category: "layout", icon: "Layers", description: "Date + venue + time for one event.", default_props: { name: "Ceremony" } },
+  ];
+  for (let i = 0; i < elements.length; i++) {
+    const e = elements[i];
+    await prisma.templateElement.upsert({
+      where: { slug: e.slug },
+      update: {
+        name: e.name,
+        kind: e.kind,
+        category: e.category,
+        icon: e.icon,
+        description: e.description,
+        default_props: e.default_props as object,
+        is_pro_only: !!e.is_pro_only,
+        sort_order: i,
+      },
+      create: {
+        slug: e.slug,
+        name: e.name,
+        kind: e.kind,
+        category: e.category,
+        icon: e.icon,
+        description: e.description,
+        default_props: e.default_props as object,
+        is_pro_only: !!e.is_pro_only,
+        sort_order: i,
+      },
+    });
+  }
+
   // Seed policies once; super admin can edit from /krishna/admin/policies.
   const policies: { slug: string; title: string; summary: string; content: string }[] = [
     {

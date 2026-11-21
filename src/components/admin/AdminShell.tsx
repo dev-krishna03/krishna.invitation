@@ -34,6 +34,7 @@ const NAV_ITEMS = [
   { href: "/krishna/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/krishna/admin/templates", label: "Templates", icon: Palette },
   { href: "/krishna/admin/moderation", label: "Moderation", icon: ShieldCheck },
+  { href: "/krishna/admin/elements", label: "Editor Elements", icon: Layers },
   { href: "/krishna/admin/event-types", label: "Occasions", icon: Sparkles },
   { href: "/krishna/admin/users", label: "Users", icon: Users },
   { href: "/krishna/admin/organizations", label: "Companies", icon: Building2 },
