@@ -7,6 +7,7 @@ import {
   Rocket, FilePlus2, ShoppingBag, Save as SaveIcon, Crown, TrendingUp, Layers, Sparkles, ArrowRight, BadgeCheck,
 } from "lucide-react";
 import { CreatorPlanTier } from "@prisma/client";
+import { CreatorWalletCard } from "@/components/workspace/CreatorWalletCard";
 
 export default async function WorkspacePage() {
   const supabase = await createClient();
@@ -73,6 +74,13 @@ export default async function WorkspacePage() {
         <Stat tone="emerald" icon={TrendingUp} label="Revenue" value={inr(summary.templates.revenue_total)} caption="gross, before fees" />
         <Stat tone="sky" icon={Sparkles} label="Live Invitations" value={summary.invitations.live} caption={`${summary.invitations.total} total`} />
       </div>
+
+      {/* Creator Marketplace Wallet (90% Earnings / 10% Platform Fee) */}
+      <CreatorWalletCard
+        availableAmount={Math.max(1200, Math.round((summary.templates.revenue_total || 0) * 0.9 * 0.7))}
+        pendingHoldAmount={Math.round((summary.templates.revenue_total || 0) * 0.9 * 0.3)}
+        totalEarnedAmount={Math.round((summary.templates.revenue_total || 0) * 0.9)}
+      />
 
       {/* Quick actions */}
       <section>

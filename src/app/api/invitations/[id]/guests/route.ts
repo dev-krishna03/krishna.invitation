@@ -43,3 +43,16 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   }
   return NextResponse.json({ guests: created });
 }
+
+export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const user = await requireUser();
+  if (user instanceof NextResponse) return user;
+  const { id } = await ctx.params;
+  const inv = await prisma.invitation.findUnique({ where: { id } });
+  if (!inv || inv.user_id !== user.id) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const url = new URL(req.url);
+  const guestId = url.searchParams.get("guestId");
+  if (!guestId) return NextResponse.json({ error: "Missing guestId" }, { status: 400 });
+  await prisma.guest.deleteMany({ where: { id: guestId, invitation_id: id } });
+  return NextResponse.json({ ok: true });
+}

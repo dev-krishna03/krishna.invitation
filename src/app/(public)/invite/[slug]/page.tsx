@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getIntegration } from "@/lib/settings";
 import { getTemplate } from "@/templates/registry";
 import { RsvpForm } from "@/components/RsvpForm";
+import { EventEndedView } from "@/components/invite/EventEndedView";
 
 type Params = Promise<{ slug: string }>;
 
@@ -24,7 +25,27 @@ export default async function InvitePage({ params }: { params: Params }) {
     include: { template: true, events: { orderBy: { sort_order: "asc" } }, photos: { orderBy: { sort_order: "asc" } } },
   });
   if (!invitation || !invitation.is_published) notFound();
-  if (invitation.expires_at && invitation.expires_at < new Date()) notFound();
+
+  // If expired, render the celebration recap page instead of 404
+  if (invitation.expires_at && invitation.expires_at < new Date()) {
+    const rawData = (invitation.data as Record<string, unknown>) || {};
+    const primary = (rawData.primaryName as string) || "";
+    const secondary = (rawData.secondaryName as string) || "";
+    const names = primary && secondary ? `${primary} & ${secondary}` : primary || secondary;
+    const dateStr = (rawData.eventDate as string) || (invitation.events[0]?.date ? new Date(invitation.events[0].date).toLocaleDateString() : undefined);
+    const venue = (rawData.venueName as string) || invitation.events[0]?.venue || undefined;
+
+    return (
+      <EventEndedView
+        title={invitation.title}
+        eventType={invitation.event_type}
+        names={names}
+        dateStr={dateStr}
+        venue={venue}
+        photos={invitation.photos}
+      />
+    );
+  }
 
   const registered = getTemplate(invitation.template.slug);
   if (!registered) notFound();
