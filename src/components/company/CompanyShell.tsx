@@ -64,7 +64,7 @@ export function CompanyShell({
     NAV_ITEMS[0];
 
   return (
-    <div className="flex min-h-screen bg-[#FAF8F5] text-stone-900 font-sans selection:bg-purple-100 selection:text-purple-900">
+    <div className="flex min-h-screen bg-[#FAF8F5] text-stone-900 font-sans selection:bg-rose-100 selection:text-rose-950">
       {/* Mobile Drawer Backdrop */}
       <AnimatePresence>
         {mobileOpen && (
@@ -88,14 +88,14 @@ export function CompanyShell({
           {/* Brand header */}
           <div className="flex items-center justify-between border-b border-stone-200 pb-5">
             <Link href="/company" className="group flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-rose-600 text-white shadow-md shadow-purple-900/20">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-700 via-rose-600 to-amber-600 text-white shadow-md shadow-rose-950/20">
                 <Building2 className="h-5 w-5" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="font-serif text-base font-bold tracking-tight text-stone-900 group-hover:text-purple-700 transition-colors truncate">
+                <span className="font-serif text-base font-bold tracking-tight text-stone-900 group-hover:text-rose-700 transition-colors truncate">
                   {orgName}
                 </span>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-purple-700 font-semibold">
+                <span className="text-[10px] font-mono tracking-widest uppercase text-rose-700 font-semibold">
                   Agency Studio
                 </span>
               </div>
@@ -113,7 +113,7 @@ export function CompanyShell({
           <div className="mt-5">
             <Link
               href="/company/editor"
-              className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 p-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
+              className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 p-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
             >
               <Palette className="h-4 w-4" />
               <span>Open Studio</span>
@@ -135,7 +135,7 @@ export function CompanyShell({
                   href={item.href}
                   className={`group relative flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
                     isActive
-                      ? "bg-purple-50 text-purple-900 border border-purple-200 shadow-xs font-bold"
+                      ? "bg-rose-50 text-rose-950 border border-rose-200 shadow-xs font-bold"
                       : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                   }`}
                 >
@@ -143,7 +143,7 @@ export function CompanyShell({
                     <span
                       className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
                         isActive
-                          ? "bg-purple-600 text-white shadow-xs"
+                          ? "bg-rose-600 text-white shadow-xs"
                           : "text-stone-500 group-hover:text-stone-800"
                       }`}
                     >
@@ -153,7 +153,7 @@ export function CompanyShell({
                   </div>
 
                   {item.badge && (
-                    <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-700 border border-purple-200">
+                    <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200">
                       {item.badge}
                     </span>
                   )}
@@ -167,12 +167,12 @@ export function CompanyShell({
         <div className="border-t border-stone-200 pt-4">
           <div className="flex items-center justify-between rounded-xl bg-stone-50 p-3 border border-stone-200">
             <div className="flex items-center gap-2.5 min-w-0 pr-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-700 font-bold text-xs border border-purple-200">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200">
                 AP
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs font-semibold text-stone-900 truncate">Agency Pro</span>
-                <span className="text-[10px] text-purple-700 font-mono">Unlimited Templates</span>
+                <span className="text-[10px] text-rose-700 font-mono">Unlimited Templates</span>
               </div>
             </div>
 
@@ -218,7 +218,7 @@ export function CompanyShell({
 
             <Link
               href="/company/editor"
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
             >
               <Palette className="h-3.5 w-3.5" />
               <span>Launch Studio</span>

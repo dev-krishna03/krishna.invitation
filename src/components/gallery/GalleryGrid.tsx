@@ -221,7 +221,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
 
                       <button
                         onClick={() => setActivePlanModalItem(t)}
-                        className="rounded-full bg-stone-100 hover:bg-stone-200 px-2.5 py-1 text-[10px] font-bold text-purple-700 transition-colors cursor-pointer"
+                        className="rounded-full bg-stone-100 hover:bg-stone-200 px-2.5 py-1 text-[10px] font-bold text-rose-700 transition-colors cursor-pointer"
                       >
                         View Plans
                       </button>
@@ -258,7 +258,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
           <div className="w-full max-w-xl rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl text-stone-900 space-y-4">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">
                   Pay-by-Days Pricing
                 </span>
                 <h3 className="font-serif text-lg font-bold text-stone-900">
@@ -319,7 +319,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
                   key={tier.plan}
                   className={`rounded-2xl border p-4 flex flex-col justify-between ${
                     tier.highlight
-                      ? "border-purple-400 bg-purple-50/40 ring-1 ring-purple-300 shadow-2xs"
+                      ? "border-rose-400 bg-rose-50/40 ring-1 ring-rose-300 shadow-2xs"
                       : "border-stone-200 bg-stone-50/50"
                   }`}
                 >
@@ -329,7 +329,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
                         {tier.plan} ({tier.days} Days)
                       </span>
                       {tier.highlight && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
                           Most Popular
                         </span>
                       )}
@@ -359,7 +359,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
                     href={`/dashboard/create?template=${activePlanModalItem.slug}&days=${tier.days}`}
                     className={`mt-4 w-full flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all ${
                       tier.highlight
-                        ? "bg-purple-600 text-white hover:bg-purple-700 shadow-xs"
+                        ? "bg-rose-600 text-white hover:bg-rose-700 shadow-xs"
                         : "bg-stone-900 text-white hover:bg-stone-800"
                     }`}
                   >

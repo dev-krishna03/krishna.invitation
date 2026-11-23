@@ -108,11 +108,11 @@ export default async function DevCommandCenterPreview() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F5] p-4 sm:p-8">
-      <div className="mb-4 rounded-xl border border-purple-200 bg-purple-50 p-3 text-xs text-purple-900 flex items-center justify-between">
+      <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900 flex items-center justify-between">
         <span>
           <strong>Live Preview Mode:</strong> This renders the Host Invitation Command Center with WhatsApp Sharing, Host Editor, and Pay-by-Days Extensions.
         </span>
-        <span className="font-mono text-[10px] bg-purple-200/80 px-2 py-0.5 rounded">
+        <span className="font-mono text-[10px] bg-rose-200/80 px-2 py-0.5 rounded">
           /dashboard/invitations/[id]
         </span>
       </div>

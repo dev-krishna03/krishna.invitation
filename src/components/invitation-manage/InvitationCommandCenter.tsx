@@ -388,7 +388,7 @@ export function InvitationCommandCenter({
             target="_blank"
             className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-bold text-stone-700 hover:bg-stone-50 transition-colors shadow-2xs"
           >
-            <Eye className="h-3.5 w-3.5 text-purple-600" />
+            <Eye className="h-3.5 w-3.5 text-rose-600" />
             <span>Preview Guest Page</span>
             <ExternalLink className="h-3 w-3 text-stone-400" />
           </Link>
@@ -413,11 +413,11 @@ export function InvitationCommandCenter({
           onClick={() => setActiveTab("editor")}
           className={`flex items-center gap-2 border-b-2 py-3 px-3 text-xs font-bold transition-all cursor-pointer ${
             activeTab === "editor"
-              ? "border-purple-600 text-purple-800"
+              ? "border-rose-600 text-rose-900"
               : "border-transparent text-stone-500 hover:text-stone-800"
           }`}
         >
-          <Sliders className="h-4 w-4 text-purple-600" />
+          <Sliders className="h-4 w-4 text-rose-600" />
           <span>Host Details Editor</span>
         </button>
 
@@ -437,11 +437,11 @@ export function InvitationCommandCenter({
           onClick={() => setActiveTab("analytics")}
           className={`flex items-center gap-2 border-b-2 py-3 px-3 text-xs font-bold transition-all cursor-pointer ${
             activeTab === "analytics"
-              ? "border-indigo-600 text-indigo-800"
+              ? "border-rose-600 text-rose-800"
               : "border-transparent text-stone-500 hover:text-stone-800"
           }`}
         >
-          <Eye className="h-4 w-4 text-indigo-600" />
+          <Eye className="h-4 w-4 text-rose-600" />
           <span>Guest View Analytics ({invitation._count?.views || invitation.view_count || 0})</span>
         </button>
       </div>
@@ -477,12 +477,12 @@ export function InvitationCommandCenter({
               <span className="text-[10px] text-rose-600">Regretfully absent</span>
             </div>
 
-            <div className="rounded-2xl border border-purple-200 bg-purple-50/50 p-4 shadow-2xs">
-              <span className="text-[11px] font-bold uppercase text-purple-700">Card Views</span>
-              <p className="mt-1 font-serif text-2xl font-bold text-purple-800">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/50 p-4 shadow-2xs">
+              <span className="text-[11px] font-bold uppercase text-rose-700">Card Views</span>
+              <p className="mt-1 font-serif text-2xl font-bold text-rose-900">
                 {invitation._count?.views || invitation.view_count || 0}
               </p>
-              <span className="text-[10px] text-purple-600">Total guest visits</span>
+              <span className="text-[10px] text-rose-600">Total guest visits</span>
             </div>
           </div>
 
@@ -552,7 +552,7 @@ export function InvitationCommandCenter({
                 placeholder="Search guest by name, phone or group..."
                 value={searchGuest}
                 onChange={(e) => setSearchGuest(e.target.value)}
-                className="w-full md:w-64 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-purple-500"
+                className="w-full md:w-64 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-rose-500"
               />
 
               <select
@@ -570,7 +570,7 @@ export function InvitationCommandCenter({
             <div className="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
               <button
                 onClick={() => setIsAddGuestOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-colors cursor-pointer shadow-2xs"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add Guest</span>
@@ -629,7 +629,7 @@ export function InvitationCommandCenter({
                           <td className="py-3 px-4 font-semibold text-stone-900">
                             <div>{guest.name}</div>
                             {guest.group_name && (
-                              <span className="text-[10px] text-purple-700 font-normal">
+                              <span className="text-[10px] text-rose-700 font-normal">
                                 {guest.group_name}
                               </span>
                             )}
@@ -744,7 +744,7 @@ export function InvitationCommandCenter({
               <button
                 onClick={handleSaveHostEditor}
                 disabled={isSaving}
-                className="inline-flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-5 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-5 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>{isSaving ? "Saving..." : "Publish Edits"}</span>
@@ -760,7 +760,7 @@ export function InvitationCommandCenter({
 
             {/* 1. Couple / Host Names */}
             <div className="space-y-4">
-              <span className="block text-xs font-bold uppercase tracking-wider text-purple-700">
+              <span className="block text-xs font-bold uppercase tracking-wider text-rose-700">
                 1. Names & Cultural Invocations
               </span>
 
@@ -773,7 +773,7 @@ export function InvitationCommandCenter({
                   value={invData.invocation || "श्री गणेशाय नमः"}
                   onChange={(e) => setInvData({ ...invData, invocation: e.target.value })}
                   placeholder="e.g. श्री गणेशाय नमः or Together with our families"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -787,7 +787,7 @@ export function InvitationCommandCenter({
                     value={invData.primaryName || ""}
                     onChange={(e) => setInvData({ ...invData, primaryName: e.target.value })}
                     placeholder="Aarav Mehta"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
 
@@ -800,7 +800,7 @@ export function InvitationCommandCenter({
                     value={invData.secondaryName || ""}
                     onChange={(e) => setInvData({ ...invData, secondaryName: e.target.value })}
                     placeholder="Priya Sharma"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -808,7 +808,7 @@ export function InvitationCommandCenter({
 
             {/* 2. Date, Time & Venue */}
             <div className="space-y-4 pt-2 border-t border-stone-100">
-              <span className="block text-xs font-bold uppercase tracking-wider text-purple-700">
+              <span className="block text-xs font-bold uppercase tracking-wider text-rose-700">
                 2. Date & Venue Location
               </span>
 
@@ -822,7 +822,7 @@ export function InvitationCommandCenter({
                     value={invData.eventDate || "12 December 2026"}
                     onChange={(e) => setInvData({ ...invData, eventDate: e.target.value })}
                     placeholder="e.g. 12 December 2026"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
 
@@ -835,7 +835,7 @@ export function InvitationCommandCenter({
                     value={invData.eventTime || "7:00 PM Onwards"}
                     onChange={(e) => setInvData({ ...invData, eventTime: e.target.value })}
                     placeholder="e.g. 7:00 PM Onwards"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -849,7 +849,7 @@ export function InvitationCommandCenter({
                   value={invData.venueName || "The Imperial Palace Grounds"}
                   onChange={(e) => setInvData({ ...invData, venueName: e.target.value })}
                   placeholder="e.g. The Imperial Palace Grounds"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -862,7 +862,7 @@ export function InvitationCommandCenter({
                   value={invData.venueAddress || "Lake Pichola Road, Udaipur, Rajasthan"}
                   onChange={(e) => setInvData({ ...invData, venueAddress: e.target.value })}
                   placeholder="Full physical address"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -875,14 +875,14 @@ export function InvitationCommandCenter({
                   value={invData.mapUrl || "https://maps.google.com"}
                   onChange={(e) => setInvData({ ...invData, mapUrl: e.target.value })}
                   placeholder="https://maps.google.com/?q=..."
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none font-mono"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none font-mono"
                 />
               </div>
             </div>
 
             {/* 3. Welcome Message & Family Details */}
             <div className="space-y-4 pt-2 border-t border-stone-100">
-              <span className="block text-xs font-bold uppercase tracking-wider text-purple-700">
+              <span className="block text-xs font-bold uppercase tracking-wider text-rose-700">
                 3. Wording & Family Blessings
               </span>
 
@@ -897,7 +897,7 @@ export function InvitationCommandCenter({
                     "We cordially invite you to join us in celebrating the holy matrimony and shower your auspicious blessings on the new couple."
                   }
                   onChange={(e) => setInvData({ ...invData, welcomeMessage: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -909,14 +909,14 @@ export function InvitationCommandCenter({
                   type="text"
                   value={invData.familyBlessings || "With best compliments from Mehta & Sharma Families"}
                   onChange={(e) => setInvData({ ...invData, familyBlessings: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
             </div>
 
             {/* 4. Section Toggles */}
             <div className="space-y-3 pt-2 border-t border-stone-100">
-              <span className="block text-xs font-bold uppercase tracking-wider text-purple-700">
+              <span className="block text-xs font-bold uppercase tracking-wider text-rose-700">
                 4. Features & Section Toggles
               </span>
 
@@ -926,7 +926,7 @@ export function InvitationCommandCenter({
                     type="checkbox"
                     checked={invData.showRsvp !== false}
                     onChange={(e) => setInvData({ ...invData, showRsvp: e.target.checked })}
-                    className="accent-purple-600 rounded"
+                    className="accent-rose-600 rounded"
                   />
                   <span className="font-semibold text-stone-800">Show RSVP Form</span>
                 </label>
@@ -936,7 +936,7 @@ export function InvitationCommandCenter({
                     type="checkbox"
                     checked={invData.showMusic !== false}
                     onChange={(e) => setInvData({ ...invData, showMusic: e.target.checked })}
-                    className="accent-purple-600 rounded"
+                    className="accent-rose-600 rounded"
                   />
                   <span className="font-semibold text-stone-800">Background Music</span>
                 </label>
@@ -946,7 +946,7 @@ export function InvitationCommandCenter({
                     type="checkbox"
                     checked={invData.showMap !== false}
                     onChange={(e) => setInvData({ ...invData, showMap: e.target.checked })}
-                    className="accent-purple-600 rounded"
+                    className="accent-rose-600 rounded"
                   />
                   <span className="font-semibold text-stone-800">Google Map Button</span>
                 </label>
@@ -956,7 +956,7 @@ export function InvitationCommandCenter({
                     type="checkbox"
                     checked={invData.showCountdown !== false}
                     onChange={(e) => setInvData({ ...invData, showCountdown: e.target.checked })}
-                    className="accent-purple-600 rounded"
+                    className="accent-rose-600 rounded"
                   />
                   <span className="font-semibold text-stone-800">Event Countdown</span>
                 </label>
@@ -968,7 +968,7 @@ export function InvitationCommandCenter({
           <div className="lg:col-span-5 sticky top-8">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
-                <Smartphone className="h-4 w-4 text-purple-600" />
+                <Smartphone className="h-4 w-4 text-rose-600" />
                 <span>Live Interactive Preview</span>
               </span>
               <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold">
@@ -1010,7 +1010,7 @@ export function InvitationCommandCenter({
                 </div>
 
                 {invData.showRsvp !== false && (
-                  <div className="rounded-xl bg-purple-600 text-white p-2 text-[10px] font-bold">
+                  <div className="rounded-xl bg-rose-600 text-white p-2 text-[10px] font-bold">
                     RSVP Enabled • Guests Respond Here
                   </div>
                 )}
@@ -1047,18 +1047,18 @@ export function InvitationCommandCenter({
               ].map((plan) => (
                 <div
                   key={plan.name}
-                  className="rounded-2xl border border-stone-200 bg-stone-50/60 p-5 flex flex-col justify-between hover:border-purple-300 transition-all"
+                  className="rounded-2xl border border-stone-200 bg-stone-50/60 p-5 flex flex-col justify-between hover:border-rose-300 transition-all"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-serif text-base font-bold text-stone-900">{plan.name}</span>
                       {plan.tag && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
                           {plan.tag}
                         </span>
                       )}
                     </div>
-                    <p className="font-serif text-2xl font-bold text-purple-900">₹{plan.price.toLocaleString()}</p>
+                    <p className="font-serif text-2xl font-bold text-rose-950">₹{plan.price.toLocaleString()}</p>
                     <span className="text-[11px] text-stone-500 font-semibold">{plan.days} Days Validity ({plan.mult})</span>
 
                     <ul className="mt-4 space-y-1.5 text-xs text-stone-600">
@@ -1121,7 +1121,7 @@ export function InvitationCommandCenter({
 
             <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
               <span className="text-xs font-bold uppercase text-stone-400">Response Rate</span>
-              <p className="mt-1 font-serif text-3xl font-bold text-purple-700">
+              <p className="mt-1 font-serif text-3xl font-bold text-rose-700">
                 {guests.length > 0 ? Math.round(((guests.length - rsvpCounts.PENDING) / guests.length) * 100) : 0}%
               </p>
             </div>
@@ -1147,7 +1147,7 @@ export function InvitationCommandCenter({
                   value={newGuestName}
                   onChange={(e) => setNewGuestName(e.target.value)}
                   placeholder="e.g. Ramesh & Sunita Sharma"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -1158,7 +1158,7 @@ export function InvitationCommandCenter({
                   value={newGuestPhone}
                   onChange={(e) => setNewGuestPhone(e.target.value)}
                   placeholder="e.g. +91 98765 43210"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                 />
               </div>
 
@@ -1170,7 +1170,7 @@ export function InvitationCommandCenter({
                     value={newGuestGroup}
                     onChange={(e) => setNewGuestGroup(e.target.value)}
                     placeholder="e.g. Groom Family"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
 
@@ -1182,14 +1182,14 @@ export function InvitationCommandCenter({
                     max={10}
                     value={newGuestPlus}
                     onChange={(e) => setNewGuestPlus(Number(e.target.value))}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full mt-4 rounded-xl bg-purple-600 hover:bg-purple-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
+                className="w-full mt-4 rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
               >
                 Add Guest to List
               </button>
@@ -1217,12 +1217,12 @@ export function InvitationCommandCenter({
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
                 placeholder="Ramesh Sharma, 9876543210, Groom Family, 2&#10;Sunita Verma, 9812345678, Bride College, 1&#10;Kunal Patel, 9765432109, Friends, 0"
-                className="w-full font-mono rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-800 focus:bg-white focus:border-purple-500 focus:outline-none"
+                className="w-full font-mono rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-800 focus:bg-white focus:border-rose-500 focus:outline-none"
               />
 
               <button
                 type="submit"
-                className="w-full mt-2 rounded-xl bg-purple-600 hover:bg-purple-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
+                className="w-full mt-2 rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
               >
                 Import Guests
               </button>
@@ -1247,38 +1247,38 @@ export function InvitationCommandCenter({
             <div className="space-y-2.5 pt-2">
               <button
                 onClick={() => handleExtendValidity(15)}
-                className="w-full flex items-center justify-between p-3 rounded-2xl border border-stone-200 bg-stone-50 hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer text-xs"
+                className="w-full flex items-center justify-between p-3 rounded-2xl border border-stone-200 bg-stone-50 hover:border-rose-400 hover:bg-rose-50/40 transition-all cursor-pointer text-xs"
               >
                 <div>
                   <span className="font-bold text-stone-900 block">+15 Days Extension</span>
                   <span className="text-[11px] text-stone-500">Quick wedding ceremony extension</span>
                 </div>
-                <span className="font-serif font-bold text-purple-700 text-sm">₹499</span>
+                <span className="font-serif font-bold text-rose-700 text-sm">₹499</span>
               </button>
 
               <button
                 onClick={() => handleExtendValidity(30)}
-                className="w-full flex items-center justify-between p-3 rounded-2xl border border-purple-300 bg-purple-50/50 hover:bg-purple-50 transition-all cursor-pointer text-xs"
+                className="w-full flex items-center justify-between p-3 rounded-2xl border border-rose-300 bg-rose-50/50 hover:bg-rose-50 transition-all cursor-pointer text-xs"
               >
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-stone-900">+30 Days Extension</span>
-                    <span className="text-[9px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded-full">Recommended</span>
+                    <span className="text-[9px] font-bold text-rose-900 bg-rose-100 px-2 py-0.5 rounded-full">Recommended</span>
                   </div>
                   <span className="text-[11px] text-stone-500">Full month coverage with photo galleries</span>
                 </div>
-                <span className="font-serif font-bold text-purple-700 text-sm">₹799</span>
+                <span className="font-serif font-bold text-rose-700 text-sm">₹799</span>
               </button>
 
               <button
                 onClick={() => handleExtendValidity(90)}
-                className="w-full flex items-center justify-between p-3 rounded-2xl border border-stone-200 bg-stone-50 hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer text-xs"
+                className="w-full flex items-center justify-between p-3 rounded-2xl border border-stone-200 bg-stone-50 hover:border-rose-400 hover:bg-rose-50/40 transition-all cursor-pointer text-xs"
               >
                 <div>
                   <span className="font-bold text-stone-900 block">+90 Days Extension</span>
                   <span className="text-[11px] text-stone-500">Long-term celebration memories</span>
                 </div>
-                <span className="font-serif font-bold text-purple-700 text-sm">₹1,499</span>
+                <span className="font-serif font-bold text-rose-700 text-sm">₹1,499</span>
               </button>
             </div>
           </div>
@@ -1309,7 +1309,7 @@ export function InvitationCommandCenter({
 
             <button
               onClick={() => copyText(commonLink, "qr_copy")}
-              className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
+              className="w-full rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
             >
               {copiedLink === "qr_copy" ? "Link Copied!" : "Copy Link"}
             </button>

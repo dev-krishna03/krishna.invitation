@@ -910,7 +910,7 @@ export function InvitationStudioEditor() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-white text-stone-900 font-sans selection:bg-purple-100 selection:text-purple-900">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-white text-stone-900 font-sans selection:bg-rose-100 selection:text-rose-900">
       {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
@@ -929,8 +929,8 @@ export function InvitationStudioEditor() {
         className="sr-only"
       />
 
-      {/* ================= 1. STUDIO SIGNATURE PURPLE TOP HEADER BAR ================= */}
-      <header className="flex h-14 shrink-0 items-center justify-between bg-gradient-to-r from-[#7D2AE8] via-[#6B21A8] to-[#581C87] px-4 shadow-md z-40 text-white">
+      {/* ================= 1. STUDIO SIGNATURE ROYAL ROSE & WINE TOP HEADER BAR ================= */}
+      <header className="flex h-14 shrink-0 items-center justify-between bg-gradient-to-r from-[#701a2e] via-[#881337] to-[#9f1239] px-4 shadow-md z-40 text-white">
         <div className="flex items-center gap-3">
           <Link
             href="/company"
@@ -973,7 +973,7 @@ export function InvitationStudioEditor() {
               onClick={() => setViewMode("mobile")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
                 viewMode === "mobile"
-                  ? "bg-white text-purple-900 shadow-xs font-bold"
+                  ? "bg-white text-rose-900 shadow-xs font-bold"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -984,7 +984,7 @@ export function InvitationStudioEditor() {
               onClick={() => setViewMode("desktop")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
                 viewMode === "desktop"
-                  ? "bg-white text-purple-900 shadow-xs font-bold"
+                  ? "bg-white text-rose-900 shadow-xs font-bold"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -1033,7 +1033,7 @@ export function InvitationStudioEditor() {
                     setIsLivePreviewOpen(true);
                     setPresentMenuOpen(false);
                   }}
-                  className="w-full text-left rounded-xl p-2.5 hover:bg-purple-50 transition-colors"
+                  className="w-full text-left rounded-xl p-2.5 hover:bg-rose-50 transition-colors"
                 >
                   <div className="text-xs font-bold text-stone-900">Standard Continuous Web Scroll</div>
                   <div className="text-[10px] text-stone-500">Unfolds live with celebratory audio & petals</div>
@@ -1043,7 +1043,7 @@ export function InvitationStudioEditor() {
                     alert("Presenter view with RSVP counter & timeline queue activated!");
                     setPresentMenuOpen(false);
                   }}
-                  className="w-full text-left rounded-xl p-2.5 hover:bg-purple-50 transition-colors"
+                  className="w-full text-left rounded-xl p-2.5 hover:bg-rose-50 transition-colors"
                 >
                   <div className="text-xs font-bold text-stone-900">Presenter View with Notes</div>
                   <div className="text-[10px] text-stone-500">Display RSVP count and stage cues</div>
@@ -1056,7 +1056,7 @@ export function InvitationStudioEditor() {
             onClick={() => setShareModalOpen(true)}
             className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-1.5 text-xs font-bold text-stone-900 shadow-md hover:bg-stone-50 active:scale-95 transition-all cursor-pointer"
           >
-            <Share2 className="h-3.5 w-3.5 text-purple-700" />
+            <Share2 className="h-3.5 w-3.5 text-rose-700" />
             <span>Share</span>
           </button>
         </div>
@@ -1070,7 +1070,7 @@ export function InvitationStudioEditor() {
             <div className="relative">
               <button
                 onClick={() => setActivePopover(activePopover === "font" ? null : "font")}
-                className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-purple-300"
+                className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-rose-300"
               >
                 <span className="truncate max-w-[110px]">{selectedElement.fontFamily}</span>
                 <span className="text-[10px] text-stone-400">▼</span>
@@ -1089,8 +1089,8 @@ export function InvitationStudioEditor() {
                         setActivePopover(null);
                       }}
                       style={{ fontFamily: f.name }}
-                      className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold hover:bg-purple-50 transition-colors ${
-                        selectedElement.fontFamily === f.name ? "bg-purple-50 text-purple-800 font-bold" : "text-stone-800"
+                      className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-50 transition-colors ${
+                        selectedElement.fontFamily === f.name ? "bg-rose-50 text-rose-800 font-bold" : "text-stone-800"
                       }`}
                     >
                       {f.label}
@@ -1114,7 +1114,7 @@ export function InvitationStudioEditor() {
                 type="number"
                 value={selectedElement.fontSize}
                 onChange={(e) => updateSelected("fontSize", Number(e.target.value))}
-                className="w-8 text-center font-mono text-xs font-bold bg-transparent outline-none text-purple-800"
+                className="w-8 text-center font-mono text-xs font-bold bg-transparent outline-none text-rose-800"
               />
               <button
                 onClick={() => updateSelected("fontSize", Math.min(72, selectedElement.fontSize + 1))}
@@ -1128,7 +1128,7 @@ export function InvitationStudioEditor() {
             <div className="relative">
               <button
                 onClick={() => setActivePopover(activePopover === "color" ? null : "color")}
-                className="flex flex-col items-center justify-center h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 hover:bg-white hover:border-purple-300"
+                className="flex flex-col items-center justify-center h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 hover:bg-white hover:border-rose-300"
                 title="Text Color"
               >
                 <span className="font-serif font-bold text-xs leading-none">A</span>
@@ -1152,7 +1152,7 @@ export function InvitationStudioEditor() {
                       htmlFor={colorPickerInputId}
                       className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:bg-stone-100 cursor-pointer"
                     >
-                      <Pipette className="h-3 w-3 text-purple-600" />
+                      <Pipette className="h-3 w-3 text-rose-600" />
                       <span>Custom Picker</span>
                       <input
                         id={colorPickerInputId}
@@ -1187,7 +1187,7 @@ export function InvitationStudioEditor() {
                           style={{ backgroundColor: c }}
                           className={`h-5 w-5 rounded-full border transition-transform ${
                             selectedElement.color.toLowerCase() === c.toLowerCase()
-                              ? "scale-120 border-purple-600 ring-2 ring-purple-200"
+                              ? "scale-120 border-rose-600 ring-2 ring-rose-200"
                               : "border-stone-300 hover:scale-110"
                           }`}
                         />
@@ -1204,7 +1204,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isBold", !selectedElement.isBold)}
                 className={`h-7 w-7 rounded flex items-center justify-center font-bold ${
-                  selectedElement.isBold ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isBold ? "bg-rose-600 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Bold"
               >
@@ -1213,7 +1213,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isItalic", !selectedElement.isItalic)}
                 className={`h-7 w-7 rounded flex items-center justify-center ${
-                  selectedElement.isItalic ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isItalic ? "bg-rose-600 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Italic"
               >
@@ -1222,7 +1222,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isUnderline", !selectedElement.isUnderline)}
                 className={`h-7 w-7 rounded flex items-center justify-center ${
-                  selectedElement.isUnderline ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isUnderline ? "bg-rose-600 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Underline"
               >
@@ -1231,7 +1231,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isUppercase", !selectedElement.isUppercase)}
                 className={`h-7 w-7 rounded flex items-center justify-center font-bold text-[10px] ${
-                  selectedElement.isUppercase ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isUppercase ? "bg-rose-600 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Uppercase toggle"
               >
@@ -1263,7 +1263,7 @@ export function InvitationStudioEditor() {
                       step={0.5}
                       value={selectedElement.letterSpacing}
                       onChange={(e) => updateSelected("letterSpacing", Number(e.target.value))}
-                      className="w-full accent-purple-600 cursor-pointer"
+                      className="w-full accent-rose-600 cursor-pointer"
                     />
                   </div>
 
@@ -1279,7 +1279,7 @@ export function InvitationStudioEditor() {
                       step={0.1}
                       value={selectedElement.lineHeight}
                       onChange={(e) => updateSelected("lineHeight", Number(e.target.value))}
-                      className="w-full accent-purple-600 cursor-pointer"
+                      className="w-full accent-rose-600 cursor-pointer"
                     />
                   </div>
                 </div>
@@ -1292,7 +1292,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePopover(activePopover === "effects" ? null : "effects")}
                 className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-semibold transition-colors ${
                   selectedElement.effect !== "none"
-                    ? "bg-purple-50 text-purple-700 border-purple-300 font-bold"
+                    ? "bg-rose-50 text-rose-700 border-rose-300 font-bold"
                     : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
                 }`}
               >
@@ -1320,7 +1320,7 @@ export function InvitationStudioEditor() {
                       }}
                       className={`w-full text-left rounded-xl p-2 text-xs font-semibold border transition-all ${
                         selectedElement.effect === eff.id
-                          ? "bg-purple-50 border-purple-400 text-purple-900"
+                          ? "bg-rose-50 border-rose-400 text-rose-900"
                           : "border-stone-200 hover:bg-stone-50 text-stone-700"
                       }`}
                     >
@@ -1337,7 +1337,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePopover(activePopover === "animate" ? null : "animate")}
                 className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-semibold transition-colors ${
                   selectedElement.animation !== "none"
-                    ? "bg-purple-50 text-purple-700 border-purple-300 font-bold"
+                    ? "bg-rose-50 text-rose-700 border-rose-300 font-bold"
                     : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
                 }`}
               >
@@ -1365,7 +1365,7 @@ export function InvitationStudioEditor() {
                       }}
                       className={`w-full text-left rounded-xl p-2 text-xs font-semibold border transition-all ${
                         selectedElement.animation === anim.id
-                          ? "bg-purple-50 border-purple-400 text-purple-900"
+                          ? "bg-rose-50 border-rose-400 text-rose-900"
                           : "border-stone-200 hover:bg-stone-50 text-stone-700"
                       }`}
                     >
@@ -1421,7 +1421,7 @@ export function InvitationStudioEditor() {
                     onClick={() => setCurrentTemplate(t)}
                     className={`h-6 w-9 rounded-md bg-gradient-to-r ${t.bg} border transition-all ${
                       currentTemplate.id === t.id
-                        ? "border-purple-600 scale-110 shadow-xs ring-1 ring-purple-300"
+                        ? "border-rose-600 scale-110 shadow-xs ring-1 ring-rose-300"
                         : "border-stone-300 hover:scale-105"
                     }`}
                     title={t.name}
@@ -1446,7 +1446,7 @@ export function InvitationStudioEditor() {
             <div className="h-4 w-px bg-stone-200" />
 
             {/* Section Count Pill */}
-            <div className="flex items-center gap-1 bg-purple-50 text-purple-800 px-2.5 py-0.5 rounded-full border border-purple-200 font-semibold text-[11px]">
+            <div className="flex items-center gap-1 bg-rose-50 text-rose-800 px-2.5 py-0.5 rounded-full border border-rose-200 font-semibold text-[11px]">
               <Scroll className="h-3 w-3" />
               <span>{pages.length} Continuous Web Sections</span>
             </div>
@@ -1483,11 +1483,11 @@ export function InvitationStudioEditor() {
                 }}
                 className={`group flex flex-col items-center justify-center w-14 h-13 rounded-xl transition-all cursor-pointer ${
                   isActive
-                    ? "bg-purple-50 text-purple-700 font-bold border border-purple-200 shadow-xs"
+                    ? "bg-rose-50 text-rose-700 font-bold border border-rose-200 shadow-xs"
                     : "text-stone-500 hover:bg-stone-50 hover:text-stone-900 font-medium"
                 }`}
               >
-                <Icon className={`h-4.5 w-4.5 transition-transform group-hover:scale-110 ${isActive ? "text-purple-700" : "text-stone-500"}`} />
+                <Icon className={`h-4.5 w-4.5 transition-transform group-hover:scale-110 ${isActive ? "text-rose-700" : "text-stone-500"}`} />
                 <span className="mt-1 text-[9px] tracking-tight">{tab.label}</span>
               </button>
             );
@@ -1508,14 +1508,14 @@ export function InvitationStudioEditor() {
               <div className="p-3.5 border-b border-stone-200 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif text-sm font-bold text-stone-900 capitalize flex items-center gap-1.5">
-                    {activeTab === "uploads" && <Upload className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "tools" && <Wrench className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "templates" && <Palette className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "elements" && <Sparkles className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "text" && <Type className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "music" && <Music className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "background" && <ImageIcon className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "layers" && <Layers className="h-4 w-4 text-purple-600" />}
+                    {activeTab === "uploads" && <Upload className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "tools" && <Wrench className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "templates" && <Palette className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "elements" && <Sparkles className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "text" && <Type className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "music" && <Music className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "background" && <ImageIcon className="h-4 w-4 text-rose-600" />}
+                    {activeTab === "layers" && <Layers className="h-4 w-4 text-rose-600" />}
                     <span>{activeTab === "background" ? "Background & Theme" : activeTab}</span>
                   </h3>
                   <button
@@ -1546,7 +1546,7 @@ export function InvitationStudioEditor() {
                   <div className="space-y-4">
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 py-3 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
                     >
                       <Upload className="h-4 w-4" />
                       <span>Upload Wedding Media</span>
@@ -1557,7 +1557,7 @@ export function InvitationStudioEditor() {
                         onClick={() => setUploadActiveSubTab("images")}
                         className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-all ${
                           uploadActiveSubTab === "images"
-                            ? "bg-white text-purple-800 font-bold shadow-xs"
+                            ? "bg-white text-rose-800 font-bold shadow-xs"
                             : "text-stone-600"
                         }`}
                       >
@@ -1567,7 +1567,7 @@ export function InvitationStudioEditor() {
                         onClick={() => setUploadActiveSubTab("audio")}
                         className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-all ${
                           uploadActiveSubTab === "audio"
-                            ? "bg-white text-purple-800 font-bold shadow-xs"
+                            ? "bg-white text-rose-800 font-bold shadow-xs"
                             : "text-stone-600"
                         }`}
                       >
@@ -1585,7 +1585,7 @@ export function InvitationStudioEditor() {
                             <div
                               key={photo.id}
                               onClick={() => addElement("image", photo.name, { imageUrl: photo.url })}
-                              className="group relative cursor-pointer rounded-xl border border-stone-200 bg-stone-50 overflow-hidden hover:border-purple-400 hover:shadow-xs transition-all"
+                              className="group relative cursor-pointer rounded-xl border border-stone-200 bg-stone-50 overflow-hidden hover:border-rose-400 hover:shadow-xs transition-all"
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
@@ -1608,7 +1608,7 @@ export function InvitationStudioEditor() {
                           Custom Celebration Tracks
                         </span>
                         <div className="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-4 text-center">
-                          <Music className="h-6 w-6 text-purple-600 mx-auto" />
+                          <Music className="h-6 w-6 text-rose-600 mx-auto" />
                           <p className="mt-1 text-xs font-semibold text-stone-700">Upload Your Own Song</p>
                           <p className="text-[10px] text-stone-500">Supports MP3, WAV, AAC up to 15MB</p>
                           <button
@@ -1629,7 +1629,7 @@ export function InvitationStudioEditor() {
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-3.5 space-y-2.5">
                       <div className="flex items-center gap-1.5 font-bold text-xs text-stone-900">
-                        <QrCode className="h-4 w-4 text-purple-600" />
+                        <QrCode className="h-4 w-4 text-rose-600" />
                         <span>Wedding RSVP QR Code</span>
                       </div>
                       <p className="text-[11px] text-stone-500">
@@ -1649,7 +1649,7 @@ export function InvitationStudioEditor() {
                             fontSize: 12,
                           })
                         }
-                        className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors cursor-pointer"
+                        className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-colors cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Add QR Code to Card</span>
@@ -1670,7 +1670,7 @@ export function InvitationStudioEditor() {
                           <button
                             key={idx}
                             onClick={() => addElement(tool.type, tool.label)}
-                            className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-2.5 hover:border-purple-400 hover:bg-purple-50/30 transition-all cursor-pointer"
+                            className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-2.5 hover:border-rose-400 hover:bg-rose-50/30 transition-all cursor-pointer"
                           >
                             <span className="text-2xl">{tool.icon}</span>
                             <span className="mt-1 text-[11px] font-semibold text-stone-800">{tool.label}</span>
@@ -1693,13 +1693,13 @@ export function InvitationStudioEditor() {
                         onClick={() => setCurrentTemplate(tmpl)}
                         className={`cursor-pointer rounded-2xl border p-3 transition-all ${
                           currentTemplate.id === tmpl.id
-                            ? "border-purple-500 bg-purple-50/50 ring-2 ring-purple-300 shadow-xs"
-                            : "border-stone-200 bg-stone-50 hover:border-purple-300 hover:bg-white"
+                            ? "border-rose-500 bg-rose-50/50 ring-2 ring-rose-300 shadow-xs"
+                            : "border-stone-200 bg-stone-50 hover:border-rose-300 hover:bg-white"
                         }`}
                       >
                         <div className="flex justify-between items-center mb-2">
                           <span className="font-serif text-xs font-bold text-stone-900">{tmpl.name}</span>
-                          <span className="text-[9px] font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                          <span className="text-[9px] font-semibold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
                             {tmpl.tag}
                           </span>
                         </div>
@@ -1734,7 +1734,7 @@ export function InvitationStudioEditor() {
                         <button
                           key={idx}
                           onClick={() => addElement(m.type, m.icon)}
-                          className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-3 hover:border-purple-400 hover:bg-purple-50/30 transition-all cursor-pointer"
+                          className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-3 hover:border-rose-400 hover:bg-rose-50/30 transition-all cursor-pointer"
                         >
                           <span className="text-2xl">{m.icon}</span>
                           <span className="mt-1 text-[11px] font-semibold text-stone-800">{m.label}</span>
@@ -1752,7 +1752,7 @@ export function InvitationStudioEditor() {
                     </span>
                     <button
                       onClick={() => addElement("heading", "शुभ विवाह निमंत्रण")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-rose-50/40 transition-all cursor-pointer"
                     >
                       <span className="font-serif text-base font-bold text-stone-900 block">
                         Add Royal Heading
@@ -1761,7 +1761,7 @@ export function InvitationStudioEditor() {
                     </button>
                     <button
                       onClick={() => addElement("names", "Bride & Groom Names")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-rose-50/40 transition-all cursor-pointer"
                     >
                       <span className="font-serif text-sm font-bold text-stone-800 block">
                         Add Couple Names
@@ -1770,7 +1770,7 @@ export function InvitationStudioEditor() {
                     </button>
                     <button
                       onClick={() => addElement("message", "We cordially invite you to celebrate the marriage of...")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-rose-50/40 transition-all cursor-pointer"
                     >
                       <span className="text-xs font-semibold text-stone-800 block">
                         Add Invitation Body
@@ -1800,15 +1800,15 @@ export function InvitationStudioEditor() {
                           }}
                           className={`cursor-pointer flex items-center justify-between rounded-xl p-3 border transition-all ${
                             isCur
-                              ? "bg-purple-50 border-purple-400 text-purple-900 ring-1 ring-purple-300"
+                              ? "bg-rose-50 border-rose-400 text-rose-900 ring-1 ring-rose-300"
                               : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-white"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-2">
-                            <Music className="h-3.5 w-3.5 text-purple-600 shrink-0" />
+                            <Music className="h-3.5 w-3.5 text-rose-600 shrink-0" />
                             <span className="text-xs font-semibold truncate">{song.name}</span>
                           </div>
-                          {isCur && <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0" />}
+                          {isCur && <CheckCircle2 className="h-4 w-4 text-rose-600 shrink-0" />}
                         </div>
                       );
                     })}
@@ -1827,7 +1827,7 @@ export function InvitationStudioEditor() {
                         onClick={() => setSelectedElementId(el.id)}
                         className={`flex items-center justify-between p-2 rounded-xl border text-xs cursor-pointer transition-colors ${
                           selectedElementId === el.id
-                            ? "bg-purple-50 border-purple-400 text-purple-900 font-bold"
+                            ? "bg-rose-50 border-rose-400 text-rose-900 font-bold"
                             : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-white"
                         }`}
                       >
@@ -1930,13 +1930,13 @@ export function InvitationStudioEditor() {
                       setActivePageIndex(pageIdx);
                     }}
                     className={`relative rounded-3xl border-2 transition-all ${
-                      isPageActive ? "border-purple-500/80 shadow-2xl" : "border-amber-400/80 shadow-xl"
+                      isPageActive ? "border-rose-500/80 shadow-2xl" : "border-amber-400/80 shadow-xl"
                     } bg-gradient-to-b ${currentTemplate.bg} p-6 sm:p-8 backdrop-blur-md overflow-hidden min-h-[500px] flex flex-col justify-between`}
                   >
                     {/* Section Header Controls Above Each Web Section */}
                     <div className="flex items-center justify-between border-b border-amber-300/40 pb-2 mb-4 -mt-2">
                       <div className="flex items-center gap-2">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white">
                           {pageIdx + 1}
                         </span>
                         <input
@@ -2033,18 +2033,18 @@ export function InvitationStudioEditor() {
                             }}
                             className={`group relative cursor-move p-2 rounded-xl transition-all ${
                               isSelected
-                                ? "ring-2 ring-purple-600 bg-purple-500/10 shadow-sm z-30"
+                                ? "ring-2 ring-rose-600 bg-rose-500/10 shadow-sm z-30"
                                 : "hover:ring-1 hover:ring-amber-400/50"
                             }`}
                           >
                             {isSelected && (
                               <>
-                                <div className="absolute -top-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -top-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
 
-                                <div className="absolute -top-6 right-0 flex items-center gap-1 rounded-md bg-purple-600 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs z-20">
+                                <div className="absolute -top-6 right-0 flex items-center gap-1 rounded-md bg-rose-600 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs z-20">
                                   <span>{el.type}</span>
                                   {el.isLocked && <Lock className="h-2.5 w-2.5 ml-0.5" />}
                                 </div>
@@ -2167,7 +2167,7 @@ export function InvitationStudioEditor() {
               <div className="flex flex-col items-center justify-center pt-2">
                 <button
                   onClick={() => addNewPage()}
-                  className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-purple-400 bg-white/80 hover:bg-purple-50 px-6 py-3.5 text-xs font-bold text-purple-700 shadow-sm transition-all hover:scale-102 cursor-pointer"
+                  className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-rose-400 bg-white/80 hover:bg-rose-50 px-6 py-3.5 text-xs font-bold text-rose-700 shadow-sm transition-all hover:scale-102 cursor-pointer"
                 >
                   <Plus className="h-4 w-4" />
                   <span>+ Add Page / Web Section</span>
@@ -2178,28 +2178,28 @@ export function InvitationStudioEditor() {
                   <span>Quick Add:</span>
                   <button
                     onClick={() => addNewPage("Ceremony Timeline")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-rose-700 underline cursor-pointer"
                   >
                     + Timeline
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Couple Photo Gallery")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-rose-700 underline cursor-pointer"
                   >
                     + Photos
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Venue & Google Directions")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-rose-700 underline cursor-pointer"
                   >
                     + Venue Map
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Digital RSVP & Wishes")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-rose-700 underline cursor-pointer"
                   >
                     + RSVP
                   </button>
@@ -2224,7 +2224,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePageIndex(idx)}
                 className={`rounded-lg px-2.5 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
                   activePageIndex === idx
-                    ? "bg-purple-600 text-white shadow-xs font-bold"
+                    ? "bg-rose-600 text-white shadow-xs font-bold"
                     : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
               >
@@ -2233,7 +2233,7 @@ export function InvitationStudioEditor() {
             ))}
             <button
               onClick={() => addNewPage()}
-              className="rounded-lg border border-dashed border-purple-400 bg-purple-50/60 px-2 py-0.5 text-[11px] font-bold text-purple-700 hover:bg-purple-100 transition-colors cursor-pointer"
+              className="rounded-lg border border-dashed border-rose-400 bg-rose-50/60 px-2 py-0.5 text-[11px] font-bold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
               title="Add a new page/section"
             >
               + Add Page
@@ -2256,7 +2256,7 @@ export function InvitationStudioEditor() {
             max={140}
             value={zoomLevel}
             onChange={(e) => setZoomLevel(Number(e.target.value))}
-            className="w-20 accent-purple-600 cursor-pointer"
+            className="w-20 accent-rose-600 cursor-pointer"
           />
           <span className="font-mono text-[11px] font-bold text-stone-700 w-8 text-center">{zoomLevel}%</span>
           <button
@@ -2346,7 +2346,7 @@ export function InvitationStudioEditor() {
                 </span>
                 <button
                   onClick={() => setIsLivePreviewOpen(false)}
-                  className="rounded-xl bg-purple-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors cursor-pointer"
+                  className="rounded-xl bg-rose-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-rose-700 transition-colors cursor-pointer"
                 >
                   Done Testing
                 </button>
@@ -2368,7 +2368,7 @@ export function InvitationStudioEditor() {
             >
               <div className="flex items-center justify-between border-b border-stone-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-purple-600" />
+                  <Share2 className="h-4 w-4 text-rose-600" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Share this Wedding Invitation
                   </span>
@@ -2384,10 +2384,10 @@ export function InvitationStudioEditor() {
               <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-1.5">
-                    <LinkIcon className="h-3.5 w-3.5 text-purple-600" />
+                    <LinkIcon className="h-3.5 w-3.5 text-rose-600" />
                     <span>Client View-Only Link</span>
                   </span>
-                  <span className="text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] text-rose-700 font-semibold bg-rose-100 px-2 py-0.5 rounded-full">
                     Continuous Scroll
                   </span>
                 </div>
@@ -2404,7 +2404,7 @@ export function InvitationStudioEditor() {
                       setShareCopied(true);
                       setTimeout(() => setShareCopied(false), 2000);
                     }}
-                    className="rounded-xl bg-purple-600 px-3 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors shrink-0"
+                    className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-colors shrink-0"
                   >
                     {shareCopied ? "Copied" : "Copy"}
                   </button>
@@ -2417,11 +2417,11 @@ export function InvitationStudioEditor() {
                     setShareModalOpen(false);
                     setIsSaveModalOpen(true);
                   }}
-                  className="flex flex-col items-center justify-center p-3 rounded-2xl border border-purple-200 bg-purple-50/50 hover:bg-purple-50 hover:border-purple-400 transition-all text-center cursor-pointer"
+                  className="flex flex-col items-center justify-center p-3 rounded-2xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 hover:border-rose-400 transition-all text-center cursor-pointer"
                 >
-                  <Sparkles className="h-5 w-5 text-purple-600 mb-1" />
-                  <span className="text-xs font-bold text-purple-900">Community Marketplace</span>
-                  <span className="text-[10px] text-purple-700">Publish or Save to Library</span>
+                  <Sparkles className="h-5 w-5 text-rose-600 mb-1" />
+                  <span className="text-xs font-bold text-rose-900">Community Marketplace</span>
+                  <span className="text-[10px] text-rose-700">Publish or Save to Library</span>
                 </button>
 
                 <button
@@ -2461,7 +2461,7 @@ export function InvitationStudioEditor() {
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-purple-600" />
+                  <Share2 className="h-4 w-4 text-rose-600" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Save or Share to Community
                   </span>
@@ -2480,7 +2480,7 @@ export function InvitationStudioEditor() {
                   onClick={() => setSaveActionType("library")}
                   className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all cursor-pointer ${
                     saveActionType === "library"
-                      ? "bg-white text-purple-700 shadow-xs"
+                      ? "bg-white text-rose-700 shadow-xs"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -2493,7 +2493,7 @@ export function InvitationStudioEditor() {
                   onClick={() => setSaveActionType("community")}
                   className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all cursor-pointer ${
                     saveActionType === "community"
-                      ? "bg-white text-purple-700 shadow-xs"
+                      ? "bg-white text-rose-700 shadow-xs"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -2519,7 +2519,7 @@ export function InvitationStudioEditor() {
                       type="text"
                       value={customTemplateTitle}
                       onChange={(e) => setCustomTemplateTitle(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2532,7 +2532,7 @@ export function InvitationStudioEditor() {
                       value={targetClientName}
                       onChange={(e) => setTargetClientName(e.target.value)}
                       placeholder="e.g. Aarav & Priya"
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2544,7 +2544,7 @@ export function InvitationStudioEditor() {
 
                   <button
                     onClick={handleSaveToLibrary}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-purple-700 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition-all cursor-pointer"
                   >
                     <Layers className="h-3.5 w-3.5" />
                     <span>Save to My Library</span>
@@ -2562,7 +2562,7 @@ export function InvitationStudioEditor() {
                       type="text"
                       value={customTemplateTitle}
                       onChange={(e) => setCustomTemplateTitle(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2574,7 +2574,7 @@ export function InvitationStudioEditor() {
                       <select
                         value={communityCategory}
                         onChange={(e) => setCommunityCategory(e.target.value as typeof communityCategory)}
-                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2 text-xs text-stone-900 focus:border-purple-500 focus:bg-white focus:outline-none"
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none"
                       >
                         <option value="LUXURY">Luxury Royal</option>
                         <option value="TRADITIONAL">Traditional</option>
@@ -2587,7 +2587,7 @@ export function InvitationStudioEditor() {
                       <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
                         Listing Price (INR)
                       </label>
-                      <div className="flex items-center rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs focus-within:bg-white focus-within:border-purple-500">
+                      <div className="flex items-center rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs focus-within:bg-white focus-within:border-rose-500">
                         <span className="text-stone-500 font-bold mr-1">₹</span>
                         <input
                           type="number"
@@ -2607,18 +2607,18 @@ export function InvitationStudioEditor() {
                       rows={2}
                       value={communityDescription}
                       onChange={(e) => setCommunityDescription(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
-                  <div className="rounded-2xl border border-purple-200 bg-purple-50/60 p-3 text-xs text-purple-900 flex items-center justify-between">
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-3 text-xs text-rose-900 flex items-center justify-between">
                     <span>Creator Royalties:</span>
                     <span className="font-bold">You earn 80% (₹{Math.round(communityPrice * 0.8)} per sale)</span>
                   </div>
 
                   <button
                     onClick={handleShareToCommunity}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-rose-600 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     <span>Publish & Share to Community</span>

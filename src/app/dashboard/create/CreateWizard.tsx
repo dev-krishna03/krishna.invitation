@@ -194,8 +194,8 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
             <li key={s} className="flex items-center gap-2">
               <motion.span
                 animate={{
-                  backgroundColor: done ? "#000" : active ? "#7c3aed" : "#e5e7eb",
-                  color: done || active ? "#fff" : "#6b7280",
+                  backgroundColor: done ? "#1c1917" : active ? "#be123c" : "#e7e5e4",
+                  color: done || active ? "#fff" : "#78716c",
                 }}
                 className="grid h-6 w-6 place-items-center rounded-full text-[11px] font-bold"
               >
@@ -221,19 +221,19 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                       setTemplate(t);
                       setStep(2);
                     }}
-                    whileHover={{ y: -4, boxShadow: "0 12px 28px rgba(0,0,0,0.08)" }}
+                    whileHover={{ y: -4, boxShadow: "0 12px 28px rgba(190,18,60,0.08)" }}
                     whileTap={{ scale: 0.98 }}
-                    className="rounded-2xl border-2 border-stone-200 bg-white p-5 text-left transition-colors hover:border-purple-400 cursor-pointer"
+                    className="rounded-2xl border-2 border-stone-200 bg-white p-5 text-left transition-colors hover:border-amber-400 cursor-pointer group"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="font-serif font-bold text-stone-900">{t.name}</p>
-                      <Sparkles className="h-4 w-4 text-purple-600" />
+                      <p className="font-serif font-bold text-stone-900 group-hover:text-rose-700 transition-colors">{t.name}</p>
+                      <Sparkles className="h-4 w-4 text-amber-600" />
                     </div>
                     <p className="mt-1 text-xs text-stone-500 line-clamp-2">
                       {t.description ?? "Elegant digital invitation with audio & WhatsApp RSVPs."}
                     </p>
                     <div className="mt-4 flex items-center justify-between pt-3 border-t border-stone-100">
-                      <span className="text-xs font-bold text-purple-700">
+                      <span className="text-xs font-bold text-rose-700">
                         From ₹{(t.pricing?.[0]?.price || 1000).toLocaleString()}
                       </span>
                       <span className="text-[10px] text-stone-400 font-semibold">15 to 180 Days</span>
@@ -265,7 +265,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                     whileTap={{ scale: 0.98 }}
                     className={`rounded-2xl border-2 p-4 text-left transition-all cursor-pointer ${
                       selectedPlanDays === tier.days
-                        ? "border-purple-600 bg-purple-50/50 shadow-xs"
+                        ? "border-rose-600 bg-rose-50/40 shadow-xs ring-1 ring-rose-300"
                         : "border-stone-200 bg-white hover:border-stone-300"
                     }`}
                   >
@@ -274,12 +274,12 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                         {tier.plan} ({tier.days} Days)
                       </p>
                       {tier.highlight && (
-                        <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[9px] font-bold text-purple-700 uppercase">
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-800 uppercase">
                           Most Popular
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 font-serif text-2xl font-bold text-purple-900">
+                    <p className="mt-1 font-serif text-2xl font-bold text-rose-900">
                       ₹{tier.price.toLocaleString()}
                     </p>
                     <span className="text-[10px] font-semibold text-stone-500">{tier.mult} Base Price</span>
@@ -314,7 +314,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                       type="checkbox"
                       checked={addOnExtraLinks}
                       onChange={(e) => setAddOnExtraLinks(e.target.checked)}
-                      className="accent-purple-600 rounded"
+                      className="accent-rose-600 rounded"
                     />
                     <div>
                       <span className="font-bold text-stone-800 block">+50 Extra Personalized Links</span>
@@ -330,7 +330,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                       type="checkbox"
                       checked={addOnRemoveBranding}
                       onChange={(e) => setAddOnRemoveBranding(e.target.checked)}
-                      className="accent-purple-600 rounded"
+                      className="accent-rose-600 rounded"
                     />
                     <div>
                       <span className="font-bold text-stone-800 block">White Label (Remove Branding)</span>
@@ -352,7 +352,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   onClick={() => setStep(3)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="rounded-xl bg-purple-600 px-5 py-2 text-xs font-bold text-white hover:bg-purple-700 cursor-pointer"
+                  className="rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:brightness-105 cursor-pointer"
                 >
                   Continue to Details
                 </motion.button>
@@ -378,7 +378,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   placeholder="e.g. Aarav & Priya's Royal Wedding"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500"
+                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
                 />
               </div>
 
@@ -389,7 +389,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                 <select
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500 font-semibold"
+                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600 font-semibold"
                 >
                   {eventTypes.length > 0 ? (
                     eventTypes.map((v) => (
@@ -418,7 +418,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                     placeholder="e.g. Aarav Mehta"
                     value={data.primaryName || ""}
                     onChange={(e) => setData({ ...data, primaryName: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500"
+                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
                   />
                 </div>
 
@@ -430,7 +430,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                     placeholder="e.g. Priya Sharma"
                     value={data.secondaryName || ""}
                     onChange={(e) => setData({ ...data, secondaryName: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500"
+                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
                   />
                 </div>
               </div>
@@ -443,7 +443,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   placeholder="e.g. 12 December 2026"
                   value={data.eventDate || ""}
                   onChange={(e) => setData({ ...data, eventDate: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500"
+                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
                 />
               </div>
 
@@ -455,7 +455,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   placeholder="e.g. The Imperial Palace, Udaipur"
                   value={data.venueName || ""}
                   onChange={(e) => setData({ ...data, venueName: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-purple-500"
+                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
                 />
               </div>
 
@@ -471,7 +471,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   disabled={!title}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="rounded-xl bg-purple-600 px-5 py-2 text-xs font-bold text-white hover:bg-purple-700 disabled:opacity-50 cursor-pointer"
+                  className="rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:brightness-105 disabled:opacity-50 cursor-pointer"
                 >
                   Review Order &amp; Pay
                 </motion.button>
@@ -483,7 +483,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
           {step === 4 && (
             <motion.div key="step4" {...slide} className="max-w-lg space-y-4">
               <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-xs space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
                   Order Breakdown
                 </span>
 
@@ -523,17 +523,17 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
 
                   <div className="flex justify-between items-center pt-3 border-t-2 border-stone-900 font-bold text-sm text-stone-900">
                     <span>Total Host Pays</span>
-                    <span className="font-serif text-lg text-purple-900">₹{totalHostPays.toLocaleString()}</span>
+                    <span className="font-serif text-lg text-rose-950">₹{totalHostPays.toLocaleString()}</span>
                   </div>
                 </div>
 
                 {/* Marketplace Split Transparency */}
-                <div className="mt-4 rounded-xl bg-purple-50/70 border border-purple-200 p-3 text-[11px] text-purple-900 space-y-1">
+                <div className="mt-4 rounded-xl bg-amber-50/80 border border-amber-200 p-3 text-[11px] text-amber-950 space-y-1">
                   <div className="flex justify-between">
                     <span>Creator Royalties (90%):</span>
                     <span className="font-bold">₹{creatorEarns.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-purple-700">
+                  <div className="flex justify-between text-amber-800">
                     <span>Platform Fee (10%):</span>
                     <span>₹{platformFee.toLocaleString()}</span>
                   </div>
@@ -546,7 +546,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   placeholder="Coupon code (e.g. WELCOME10)"
                   value={coupon}
                   onChange={(e) => setCoupon(e.target.value)}
-                  className="flex-1 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs uppercase font-mono"
+                  className="flex-1 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs uppercase font-mono focus:border-rose-600 focus:outline-none"
                 />
                 <button
                   type="button"
@@ -574,7 +574,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   onClick={pay}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-1 rounded-xl bg-purple-600 hover:bg-purple-700 py-2.5 text-xs font-bold text-white shadow-xs cursor-pointer"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-950/10 hover:brightness-105 cursor-pointer"
                 >
                   Pay &amp; Publish Invitation
                 </motion.button>

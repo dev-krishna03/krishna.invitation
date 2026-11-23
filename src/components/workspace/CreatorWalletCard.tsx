@@ -30,11 +30,11 @@ export function CreatorWalletCard({
   }
 
   return (
-    <div className="rounded-3xl border border-purple-200 bg-gradient-to-br from-purple-50/70 via-white to-stone-50 p-6 shadow-xs">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-purple-100 pb-5">
+    <div className="rounded-3xl border border-rose-200 bg-gradient-to-br from-rose-50/70 via-white to-stone-50 p-6 shadow-xs">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-rose-100 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-600 text-white shadow-2xs">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-600 text-white shadow-2xs">
               <Wallet className="h-4 w-4" />
             </span>
             <span className="font-serif text-lg font-bold text-stone-900">
@@ -52,7 +52,7 @@ export function CreatorWalletCard({
         <button
           onClick={() => setIsPayoutModalOpen(true)}
           disabled={availableAmount < 500}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
         >
           <ArrowUpRight className="h-4 w-4" />
           <span>Request Payout</span>
@@ -85,7 +85,7 @@ export function CreatorWalletCard({
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block">
             Lifetime Net Earnings
           </span>
-          <p className="mt-1 font-serif text-2xl font-bold text-purple-900">
+          <p className="mt-1 font-serif text-2xl font-bold text-rose-900">
             ₹{totalEarnedAmount.toLocaleString()}
           </p>
           <span className="text-[11px] text-stone-500">Your 90% share of gross revenue</span>
@@ -120,7 +120,7 @@ export function CreatorWalletCard({
                     required
                     value={payoutAmount}
                     onChange={(e) => setPayoutAmount(Number(e.target.value))}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 font-bold text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 font-bold text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                   <span className="text-[10px] text-stone-500">Available: ₹{availableAmount.toLocaleString()}</span>
                 </div>
@@ -132,7 +132,7 @@ export function CreatorWalletCard({
                       type="button"
                       onClick={() => setPayoutMethod("upi")}
                       className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 font-bold cursor-pointer ${
-                        payoutMethod === "upi" ? "border-purple-600 bg-purple-50 text-purple-700" : "border-stone-200 text-stone-700"
+                        payoutMethod === "upi" ? "border-rose-600 bg-rose-50 text-rose-700" : "border-stone-200 text-stone-700"
                       }`}
                     >
                       <Smartphone className="h-4 w-4" />
@@ -142,7 +142,7 @@ export function CreatorWalletCard({
                       type="button"
                       onClick={() => setPayoutMethod("bank")}
                       className={`flex items-center justify-center gap-1.5 rounded-xl border p-2.5 font-bold cursor-pointer ${
-                        payoutMethod === "bank" ? "border-purple-600 bg-purple-50 text-purple-700" : "border-stone-200 text-stone-700"
+                        payoutMethod === "bank" ? "border-rose-600 bg-rose-50 text-rose-700" : "border-stone-200 text-stone-700"
                       }`}
                     >
                       <Landmark className="h-4 w-4" />
@@ -160,7 +160,7 @@ export function CreatorWalletCard({
                       placeholder="e.g. yourname@okhdfcbank"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
                 ) : (
@@ -173,7 +173,7 @@ export function CreatorWalletCard({
                         placeholder="e.g. 50100234567890"
                         value={bankAcc}
                         onChange={(e) => setBankAcc(e.target.value)}
-                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-purple-500 focus:outline-none"
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 focus:bg-white focus:border-rose-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -184,20 +184,20 @@ export function CreatorWalletCard({
                         placeholder="e.g. HDFC0001234"
                         value={bankIfsc}
                         onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
-                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 font-mono focus:bg-white focus:border-purple-500 focus:outline-none uppercase"
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 font-mono focus:bg-white focus:border-rose-500 focus:outline-none uppercase"
                       />
                     </div>
                   </div>
                 )}
 
-                <div className="rounded-xl bg-purple-50 p-3 text-[11px] text-purple-900 flex items-center justify-between">
+                <div className="rounded-xl bg-rose-50 p-3 text-[11px] text-rose-900 flex items-center justify-between">
                   <span>Platform Fee on Payout:</span>
                   <span className="font-bold">₹0 (Zero Fees)</span>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
+                  className="w-full rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 font-bold text-white transition-colors cursor-pointer shadow-xs"
                 >
                   Confirm &amp; Disburse Payout
                 </button>
