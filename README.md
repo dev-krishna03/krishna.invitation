@@ -8,13 +8,15 @@ their own prices (INR + USD), and sell them in a moderated community marketplace
 
 ## Stack
 
-- Next.js 14 (App Router, TypeScript, Tailwind v4, Turbopack)
-- Supabase Auth + Postgres + Storage
+- Next.js 16 (App Router, TypeScript, Tailwind CSS, Turbopack)
+- Supabase Auth + Postgres + Global CDN Storage
 - Prisma 6 ORM
+- Meta WhatsApp Business Cloud API (Graph API v21.0) & Webhooks
+- Google Maps Platform & Places API
 - Framer Motion + Lucide icons
-- Payment gateway abstraction: Razorpay, Cashfree, PhonePe, Stripe
+- Payment gateway abstraction: Centralized Razorpay, Cashfree, PhonePe, Stripe
 - Brevo for transactional email (configured in Super Admin → Integrations)
-- AES-256-GCM encryption for all third-party credentials
+- AES-256-GCM encryption for all third-party credentials at rest
 
 ## Setup
 
@@ -51,10 +53,16 @@ Hidden entry: **`/krishna`** + code **`123456`** (override with
 | `/krishna/admin/organizations` | All companies, plan, status |
 | `/krishna/admin/plans` | SaaS subscription plans (Individual / Company) |
 | `/krishna/admin/creator-plans` | Creator plan tiers — name, price, platform fee %, limits, features |
+| `/krishna/admin/creator-economy` | Creator economy & payouts hub — Bank & UPI settlements, platform fee cut |
+| `/krishna/admin/payouts` | Centralized Razorpay collection & creator payout disbursements |
+| `/krishna/admin/elements` | Global Canva-style element catalog (SVG, PNG, JPG, MP4, MP3, WAV) |
 | `/krishna/admin/policies` | TOS, Privacy, Refund, Acceptable Use, Creator Agreement |
 | `/krishna/admin/gateways` | Razorpay / Cashfree / PhonePe / Stripe credentials + active gateway |
-| `/krishna/admin/integrations` | Brevo, Google Maps, WhatsApp credentials |
-| `/krishna/admin/coupons` | Discount codes |
+| `/krishna/admin/integrations` | Meta WhatsApp Cloud API, Brevo, Supabase Storage, Google Maps |
+| `/krishna/admin/trust-safety` | Copyright reports, moderation quarantine, creator strikes |
+| `/krishna/admin/operations` | System health, database connection, storage buckets, webhook status |
+| `/krishna/admin/event-bundles` | Event bundles & multi-ceremony package management |
+| `/krishna/admin/coupons` | Discount codes & advanced user/date rules |
 | `/krishna/admin/payments` | All payments, refunds |
 | `/krishna/admin/settings` | Site name, support email, currencies, USD→INR FX rate |
 | `/krishna/admin/audit-log` | Every mutation audit-logged |
@@ -68,12 +76,13 @@ Each user automatically gets a workspace with the Free tier.
 
 | User route | Purpose |
 |------------|---------|
-| `/dashboard/workspace` | Plan badge, stats, quick actions, recent sales |
-| `/dashboard` | Flow overview + My Invitations |
+| `/dashboard/workspace` | Studio identity, avatar photo, wallet, bank/UPI payout profile, coupons |
+| `/dashboard` | Flow overview + My Invitations + Concierge service booking |
+| `/dashboard/custom-requests` | Bespoke client design requests & creator proposals |
 | `/dashboard/create` | Create wizard — pick template → tier → details → pay |
 | `/dashboard/templates` | My templates — inline price editor + marketplace toggle |
 | `/dashboard/templates/new` | New template: blank / import community / from invitation |
-| `/dashboard/templates/[id]/edit` | Metadata + INR+USD pricing + moderation status |
+| `/dashboard/templates/[id]/edit` | Metadata + view image (4:5 preview) + INR+USD pricing + moderation |
 | `/dashboard/library` | Downloaded + Created lists |
 | `/dashboard/plan` | Free Hobbyist · Creator Pro · Studio Elite |
 | `/dashboard/invitations/[id]/share` | Preview → Approval → User cap → Pay → Share Access, or Direct Share |
