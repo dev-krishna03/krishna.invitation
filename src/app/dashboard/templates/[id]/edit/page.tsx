@@ -23,6 +23,8 @@ export default async function TemplateEditPage({ params }: { params: Promise<{ i
           id: template.id,
           name: template.name,
           description: template.description,
+          thumbnail_url: template.thumbnail_url,
+          preview_url: template.preview_url,
           category: template.category,
           event_types: template.event_types,
           is_in_marketplace: template.is_in_marketplace,

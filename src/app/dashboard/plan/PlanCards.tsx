@@ -8,7 +8,7 @@ import { CheckCircle2, Crown, Loader2 } from "lucide-react";
 type PlanVM = {
   id: string;
   slug: string;
-  tier: "FREE" | "PRO" | "STUDIO";
+  tier: string;
   name: string;
   tagline: string | null;
   monthly_price: number;

@@ -301,7 +301,7 @@ async function main() {
   ];
   for (const p of creatorPlans) {
     await prisma.creatorPlan.upsert({
-      where: { tier: p.tier },
+      where: { slug: p.slug },
       update: {
         slug: p.slug,
         name: p.name,
@@ -335,7 +335,7 @@ async function main() {
   }
 
   // Default every existing user to the Free plan if they don't have one.
-  const freePlan = await prisma.creatorPlan.findUnique({ where: { tier: CreatorPlanTier.FREE } });
+  const freePlan = await prisma.creatorPlan.findFirst({ where: { tier: CreatorPlanTier.FREE } });
   if (freePlan) {
     const users = await prisma.user.findMany({ select: { id: true } });
     for (const u of users) {

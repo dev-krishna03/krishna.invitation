@@ -23,6 +23,8 @@ export default async function AdminCreatorPlansPage() {
             yearly_price: p.yearly_price,
             currency: p.currency,
             platform_fee_pct: p.platform_fee_pct,
+            max_templates_free: p.max_templates_free,
+            extra_template_price: p.extra_template_price,
             max_templates_for_sale: p.max_templates_for_sale,
             max_live_invitations: p.max_live_invitations,
             can_sell: p.can_sell,

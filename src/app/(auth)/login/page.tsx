@@ -116,12 +116,12 @@ function LoginForm() {
       title="Welcome Back"
       subtitle="Sign in to your host & creator portal to manage your celebration invitations and real-time RSVPs."
     >
-      {/* 1-Click Demo Credentials Quick-Fill Banner */}
-      <div className="mb-5 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-stone-50 p-3.5 shadow-sm">
+      {/* 1-Click Demo Credentials Quick-Fill Banner - Balcony Style */}
+      <div className="mb-5 rounded-2xl border border-[#E5D9FC] bg-[#F5F1FE]/70 p-3.5 shadow-xs">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-4 w-4 text-amber-600" />
-          <p className="text-xs font-bold text-stone-900">Instant Demo Access</p>
-          <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+          <Sparkles className="h-4 w-4 text-[#6520EE]" />
+          <p className="text-xs font-bold text-[#12042F]">Instant Demo Access</p>
+          <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E5D9FC] text-[#6520EE]">
             Ready to test
           </span>
         </div>
@@ -132,14 +132,14 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => fillAndLogin("demo@krishnaweddings.com", "krishna2026")}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-amber-200 hover:border-amber-400 hover:shadow-sm text-left transition-all cursor-pointer group"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-[#E5D9FC] hover:border-[#6520EE] hover:shadow-sm text-left transition-all cursor-pointer group"
           >
-            <div className="h-7 w-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-[#F5F1FE] text-[#6520EE] flex items-center justify-center shrink-0">
               <UserCheck className="h-3.5 w-3.5" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-bold text-stone-900 group-hover:text-rose-700 truncate">
-                Host & Creator
+              <div className="text-[11px] font-bold text-[#12042F] group-hover:text-[#6520EE] truncate">
+                Host &amp; Creator
               </div>
               <div className="text-[10px] text-stone-500 font-mono truncate">
                 demo@krishnaweddings.com
@@ -150,13 +150,13 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => fillAndLogin("admin@krishnaweddings.com", "admin2026")}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-amber-200 hover:border-amber-400 hover:shadow-sm text-left transition-all cursor-pointer group"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-[#E5D9FC] hover:border-[#6520EE] hover:shadow-sm text-left transition-all cursor-pointer group"
           >
-            <div className="h-7 w-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-[#F5F1FE] text-[#6520EE] flex items-center justify-center shrink-0">
               <ShieldCheck className="h-3.5 w-3.5" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-bold text-stone-900 group-hover:text-amber-700 truncate">
+              <div className="text-[11px] font-bold text-[#12042F] group-hover:text-[#6520EE] truncate">
                 Super Admin
               </div>
               <div className="text-[10px] text-stone-500 font-mono truncate">
@@ -179,7 +179,7 @@ function LoginForm() {
               placeholder="demo@krishnaweddings.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 py-2.5 pl-10 pr-4 text-xs text-stone-900 placeholder-stone-400 focus:border-rose-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-600 transition-all"
+              className="w-full rounded-2xl border border-stone-200 bg-stone-50/50 py-2.5 pl-10 pr-4 text-xs text-[#12042F] placeholder-stone-400 focus:border-[#6520EE] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#6520EE] transition-all"
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ function LoginForm() {
             <label className="block text-xs font-semibold text-stone-700">Password</label>
             <Link
               href="/forgot-password"
-              className="text-[11px] font-semibold text-rose-700 hover:text-rose-800 transition-colors"
+              className="text-[11px] font-semibold text-[#6520EE] hover:underline transition-colors"
             >
               Forgot password?
             </Link>
@@ -203,7 +203,7 @@ function LoginForm() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 py-2.5 pl-10 pr-10 text-xs text-stone-900 placeholder-stone-400 focus:border-rose-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-600 transition-all"
+              className="w-full rounded-2xl border border-stone-200 bg-stone-50/50 py-2.5 pl-10 pr-10 text-xs text-[#12042F] placeholder-stone-400 focus:border-[#6520EE] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#6520EE] transition-all"
             />
             <button
               type="button"
@@ -246,7 +246,7 @@ function LoginForm() {
           whileTap={{ scale: 0.99 }}
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-rose-600 to-amber-600 py-3 text-xs font-bold text-white shadow-md shadow-rose-900/15 hover:brightness-105 transition-all disabled:opacity-60 cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 rounded-full bg-[#6520EE] hover:bg-[#5213D2] py-3 text-xs font-bold text-white shadow-md shadow-[#6520EE]/20 hover:brightness-105 transition-all disabled:opacity-60 cursor-pointer"
         >
           <span>{loading ? "Signing in…" : "Sign In to Dashboard"}</span>
           {!loading && <ArrowRight className="h-3.5 w-3.5" />}
@@ -256,7 +256,7 @@ function LoginForm() {
       {/* Divider */}
       <div className="relative my-6 text-center">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-stone-200" />
+          <div className="w-full border-t border-stone-100" />
         </div>
         <span className="relative bg-white px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider">
           Or continue with
@@ -268,7 +268,7 @@ function LoginForm() {
         <button
           type="button"
           onClick={withGoogle}
-          className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-stone-200/90 bg-white py-2.5 text-xs font-semibold text-stone-700 shadow-sm hover:bg-stone-50 transition-colors cursor-pointer"
+          className="flex w-full items-center justify-center gap-2.5 rounded-full border border-stone-200 bg-white py-2.5 text-xs font-semibold text-stone-700 shadow-xs hover:bg-stone-50 transition-colors cursor-pointer"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24">
             <path
@@ -295,17 +295,17 @@ function LoginForm() {
           type="button"
           onClick={magicLink}
           disabled={magicLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200/90 bg-stone-50/70 py-2.5 text-xs font-semibold text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition-colors cursor-pointer"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-[#E5D9FC] bg-[#F5F1FE]/50 py-2.5 text-xs font-semibold text-[#6520EE] hover:bg-[#F5F1FE] transition-colors cursor-pointer"
         >
-          <Send className="h-3.5 w-3.5 text-amber-600" />
+          <Send className="h-3.5 w-3.5 text-[#6520EE]" />
           <span>{magicLoading ? "Sending Link…" : "Send Passwordless Magic Link"}</span>
         </button>
       </div>
 
       {/* Switch to Register */}
       <div className="mt-6 pt-5 border-t border-stone-100 text-center text-xs text-stone-500">
-        <span>Don't have an account yet? </span>
-        <Link href="/register" className="font-bold text-rose-700 hover:text-rose-800 transition-colors">
+        <span>Don&apos;t have an account yet? </span>
+        <Link href="/register" className="font-bold text-[#6520EE] hover:underline transition-colors">
           Create one now
         </Link>
       </div>

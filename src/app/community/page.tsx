@@ -15,7 +15,7 @@ export default async function CommunityPage() {
       ],
     },
     include: {
-      owner: { select: { name: true, email: true } },
+      owner: { select: { name: true, email: true, avatar_url: true } },
     },
     orderBy: { updated_at: "desc" },
     take: 60,
@@ -47,15 +47,32 @@ export default async function CommunityPage() {
               className="group relative overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 shadow-sm hover:shadow-xl hover:shadow-rose-900/5 transition-all"
             >
               <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500" />
-              <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-amber-100 via-rose-200 to-fuchsia-200" />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gradient-to-br from-amber-100 via-rose-200 to-fuchsia-200">
+                {t.thumbnail_url && (
+                  <img
+                    src={t.thumbnail_url}
+                    alt={t.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
+              </div>
               <div className="mt-3 flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <h3 className="truncate font-serif text-base font-bold text-stone-900 leading-tight">
                     {t.name}
                   </h3>
-                  <p className="text-[11px] text-stone-500 truncate">
-                    By {t.owner?.name ?? t.owner?.email ?? "Platform"} · {t.category.toLowerCase()}
-                  </p>
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-stone-500 truncate">
+                    {t.owner?.avatar_url ? (
+                      <img
+                        src={t.owner.avatar_url}
+                        alt={t.owner.name || "Creator"}
+                        className="h-4 w-4 rounded-full object-cover shrink-0"
+                      />
+                    ) : null}
+                    <span className="truncate">
+                      By {t.owner?.name ?? t.owner?.email ?? "Platform"} · {t.category.toLowerCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between">

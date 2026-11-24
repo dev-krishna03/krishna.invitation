@@ -3,45 +3,45 @@ import { Sparkles, Heart, Shield, Award, CheckCircle2, Phone, Mail } from "lucid
 
 export function Footer() {
   return (
-    <footer className="border-t border-stone-200/80 bg-stone-900 text-stone-300">
+    <footer className="border-t border-[#24075F] bg-[#12042F] text-stone-300">
       {/* Trust bar */}
-      <div className="border-b border-stone-800/80 bg-stone-950/60 py-6">
-        <div className="mx-auto max-w-6xl px-6">
+      <div className="border-b border-[#24075F]/80 bg-[#12042F] py-6">
+        <div className="mx-auto max-w-[1120px] px-6">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6520EE]/20 text-[#BDA0F8]">
                 <Sparkles className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-xs font-semibold text-stone-100">Handcrafted Royalty</p>
-                <p className="text-[11px] text-stone-400">Bespoke animations & audio</p>
+                <p className="text-xs font-semibold text-white">Digital Web Invites</p>
+                <p className="text-[11px] text-stone-400">Interactive music & stories</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6520EE]/20 text-[#BDA0F8]">
                 <CheckCircle2 className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-xs font-semibold text-stone-100">Instant WhatsApp RSVP</p>
-                <p className="text-[11px] text-stone-400">Real-time guest tracking</p>
+                <p className="text-xs font-semibold text-white">WhatsApp Guest Links</p>
+                <p className="text-[11px] text-stone-400">Personalised per guest</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6520EE]/20 text-[#BDA0F8]">
                 <Shield className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-xs font-semibold text-stone-100">Private & Secure</p>
-                <p className="text-[11px] text-stone-400">Optional PIN protection</p>
+                <p className="text-xs font-semibold text-white">Live RSVP Headcount</p>
+                <p className="text-[11px] text-stone-400">Zero guest login needed</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6520EE]/20 text-[#BDA0F8]">
                 <Award className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-xs font-semibold text-stone-100">14+ Indian Languages</p>
-                <p className="text-[11px] text-stone-400">Hindi, Gujarati & more</p>
+                <p className="text-xs font-semibold text-white">Pay by Days Validity</p>
+                <p className="text-[11px] text-stone-400">Extend anytime later</p>
               </div>
             </div>
           </div>
@@ -49,26 +49,25 @@ export function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="mx-auto max-w-6xl px-6 py-14">
+      <div className="mx-auto max-w-[1120px] px-6 py-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
           {/* Brand Column */}
           <div className="md:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 via-rose-600 to-rose-700 text-white shadow-md shadow-rose-950/40">
+            <Link href="/" className="inline-flex items-center gap-2.5 no-underline">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6520EE] text-white shadow-sm shadow-[#6520EE]/40">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <span className="font-serif text-xl font-bold tracking-tight text-white">
-                Krishna<span className="text-rose-500">.</span>invitation
+              <span className="text-lg font-bold tracking-tight text-white">
+                krishna<span className="text-[#6520EE]">.</span>invites
               </span>
             </Link>
-            <p className="mt-4 text-xs leading-relaxed text-stone-400 max-w-sm">
-              Honoring India’s timeless traditions and modern celebrations. Craft interactive,
-              multilingual digital wedding & event invitations with musical ambiance, Google Maps,
-              and seamless WhatsApp RSVPs.
+            <p className="mt-4 text-xs leading-relaxed text-[#948B9E] max-w-sm">
+              Create a beautiful digital web invitation for your wedding and celebrations in minutes.
+              Send personalized WhatsApp links with music, Google Maps directions, and 1-tap RSVPs.
             </p>
-            <div className="mt-6 flex items-center gap-4 text-xs text-stone-400">
+            <div className="mt-6 flex items-center gap-4 text-xs text-[#948B9E]">
               <div className="flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5 text-rose-400" />
+                <Mail className="h-3.5 w-3.5 text-[#E5D9FC]" />
                 <span>support@krishnainvites.com</span>
               </div>
             </div>
@@ -169,6 +168,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/affiliates" className="hover:text-stone-100 transition-colors text-[#BDA0F8]">
+                  Affiliate Partner Program
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard" className="hover:text-stone-100 transition-colors">
                   Host Dashboard
                 </Link>
@@ -178,11 +182,11 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 border-t border-stone-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
-          <p>© {new Date().getFullYear()} Krishna Invitations Studio. All rights reserved.</p>
+        <div className="mt-12 border-t border-[#24075F] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
+          <p>© {new Date().getFullYear()} krishna.invites. Digital website invites.</p>
           <div className="flex items-center gap-1.5 text-stone-400">
             <span>Crafted with</span>
-            <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500 inline" />
+            <Heart className="h-3.5 w-3.5 fill-[#BDA0F8] text-[#BDA0F8] inline" />
             <span>for heartfelt celebrations</span>
           </div>
         </div>

@@ -10,6 +10,8 @@ const Patch = z.object({
   monthly_price: z.number().int().nonnegative().optional(),
   yearly_price: z.number().int().nonnegative().optional(),
   platform_fee_pct: z.number().int().min(0).max(100).optional(),
+  max_templates_free: z.number().int().nullable().optional(),
+  extra_template_price: z.number().int().nonnegative().optional(),
   max_templates_for_sale: z.number().int().nullable().optional(),
   max_live_invitations: z.number().int().nullable().optional(),
   can_sell: z.boolean().optional(),

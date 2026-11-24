@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-guard";
 import { slugify, uniqueSuffix } from "@/lib/slug";
 import { TemplateCategory, TemplateSource, Prisma } from "@prisma/client";
+import { canCreateMoreTemplates } from "@/lib/workspace";
 
 const Body = z.object({
   source: z.enum(["blank", "fromInvitation", "importCommunity"]),
@@ -11,6 +12,8 @@ const Body = z.object({
   category: z.nativeEnum(TemplateCategory).default("MINIMAL"),
   event_types: z.array(z.string()).default([]),
   description: z.string().max(400).optional(),
+  thumbnail_url: z.string().optional(),
+  preview_url: z.string().optional(),
   invitationId: z.string().uuid().optional(),
   communityTemplateId: z.string().uuid().optional(),
 });
@@ -30,6 +33,20 @@ export async function POST(req: Request) {
   if (user instanceof NextResponse) return user;
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  // Enforce creator starting plan limit (e.g. first 5 templates free)
+  const quotaCheck = await canCreateMoreTemplates(user.id);
+  if (!quotaCheck.ok) {
+    return NextResponse.json(
+      {
+        error: quotaCheck.reason,
+        code: "CREATOR_PLAN_LIMIT_REACHED",
+        currentCount: quotaCheck.currentCount,
+        maxFree: quotaCheck.maxFree,
+      },
+      { status: 403 },
+    );
+  }
 
   // Build a unique slug from the chosen name.
   const base = slugify(parsed.data.name);
@@ -80,7 +97,8 @@ export async function POST(req: Request) {
       category,
       event_types,
       description: description ?? undefined,
-      thumbnail_url: thumbnail_url ?? undefined,
+      thumbnail_url: parsed.data.thumbnail_url ?? thumbnail_url ?? undefined,
+      preview_url: parsed.data.preview_url ?? parsed.data.thumbnail_url ?? thumbnail_url ?? undefined,
       owner_user_id: user.id,
       source,
       source_invitation_id,

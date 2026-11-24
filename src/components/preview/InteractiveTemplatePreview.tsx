@@ -234,7 +234,17 @@ export function InteractiveTemplatePreview({
       </div>
 
       {/* MAIN VIEWPORT: Floral Palace Garden Background */}
-      <div className="relative min-h-screen pt-20 pb-24 flex items-center justify-center px-4 overflow-hidden">
+      <div
+        onContextMenu={(e) => e.preventDefault()}
+        className="relative min-h-screen pt-20 pb-24 flex items-center justify-center px-4 overflow-hidden select-none"
+      >
+        {/* Template Protection Watermark */}
+        <div className="pointer-events-none select-none absolute inset-0 z-30 flex items-center justify-center opacity-[0.07] rotate-[-22deg]">
+          <span className="font-mono text-3xl sm:text-5xl font-bold uppercase tracking-widest text-[#12042F] border-4 border-[#12042F] px-8 py-4 rounded-3xl">
+            DEMO PREVIEW • PROTECTED
+          </span>
+        </div>
+
         {/* Lush Palace Garden Visual Background (Columns, floral arches, roses) */}
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#FBF2E8] via-[#F8E9DA] to-[#F2DCC8]">
           {/* Classical Column Motifs Left & Right */}

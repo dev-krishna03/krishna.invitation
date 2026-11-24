@@ -32,6 +32,8 @@ import {
   ShieldCheck,
   MessageCircle,
 } from "lucide-react";
+import { GuestCsvImporter } from "@/components/invite/GuestCsvImporter";
+import { VersionHistoryDrawer } from "@/components/common/VersionHistoryDrawer";
 
 type Guest = {
   id: string;
@@ -264,13 +266,14 @@ export function InvitationCommandCenter({
 
   // Export to CSV
   function exportGuestsToCsv() {
-    const headers = ["Name", "Phone", "Group", "Plus Allowed", "RSVP Status", "Message", "Viewed", "Personal Link"];
+    const headers = ["Name", "Phone", "Group", "Plus Allowed", "RSVP Status", "Meal Preference / Notes", "Message", "Viewed", "Personal Link"];
     const rows = guests.map((g) => [
       `"${g.name.replace(/"/g, '""')}"`,
       `"${g.phone || ""}"`,
       `"${g.group_name || ""}"`,
       g.plus_allowed,
       g.rsvp_status,
+      `"${(g.dietary_notes || "").replace(/"/g, '""')}"`,
       `"${(g.rsvp_message || "").replace(/"/g, '""')}"`,
       g.viewed_at ? "Viewed" : "Unopened",
       `"${baseUrl}/invite/${invitation.slug}/${g.slug}"`,
@@ -298,6 +301,9 @@ export function InvitationCommandCenter({
           title: invTitle,
           data: invData,
           is_published: true,
+          gift_upi_id: invData.giftUpiId || null,
+          gift_notes: invData.giftNotes || null,
+          is_protected: invData.isProtected !== false,
         }),
       });
 
@@ -382,6 +388,8 @@ export function InvitationCommandCenter({
                 : "Extend Validity"}
             </span>
           </button>
+
+          <VersionHistoryDrawer entityType="INVITATION" entityId={invitation.id} />
 
           <Link
             href={`/invite/${invitation.slug}`}
@@ -544,6 +552,65 @@ export function InvitationCommandCenter({
             />
           </div>
 
+          {/* Automatic Reminders & Broadcast Tools */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                  <Clock className="h-4 w-4 text-amber-600" />
+                  <span>RSVP Pending Reminders ({rsvpCounts.PENDING} Guests)</span>
+                </span>
+                <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-semibold">
+                  Awaiting Reply
+                </span>
+              </div>
+              <p className="text-[11px] text-amber-800/80">
+                Send a polite reminder WhatsApp message with their unique personalized link to guests who haven&apos;t responded yet.
+              </p>
+              <div className="pt-1 flex gap-2">
+                <button
+                  onClick={() => {
+                    setFilterRsvp("PENDING");
+                    setWaTemplate(
+                      "Namaste {guest_name}! 🙏 Just a gentle reminder regarding our celebration: {event_title} on {date}. Kindly let us know if you can join us by clicking your personalized invitation: {personalized_url}"
+                    );
+                  }}
+                  className="rounded-full bg-amber-700 text-white px-4 py-1.5 text-xs font-semibold hover:bg-amber-800 transition-colors cursor-pointer"
+                >
+                  Load Reminder Template &amp; Filter Pending
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-emerald-600" />
+                  <span>Day-Before Venue &amp; Map Broadcast</span>
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">
+                  Confirmed Guests ({rsvpCounts.ACCEPTED})
+                </span>
+              </div>
+              <p className="text-[11px] text-emerald-800/80">
+                Send venue address, Google Maps 1-tap navigation pin, and countdown timings to confirmed guests.
+              </p>
+              <div className="pt-1 flex gap-2">
+                <button
+                  onClick={() => {
+                    setFilterRsvp("ACCEPTED");
+                    setWaTemplate(
+                      "Namaste {guest_name}! 🎉 We look forward to welcoming you tomorrow to {event_title} at {venue}! Tap here for one-click Google Maps directions and live schedule: {personalized_url}"
+                    );
+                  }}
+                  className="rounded-full bg-emerald-700 text-white px-4 py-1.5 text-xs font-semibold hover:bg-emerald-800 transition-colors cursor-pointer"
+                >
+                  Load Day-Before Venue Template
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Guests Management Toolbar */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-2">
             <div className="flex items-center gap-2 w-full md:w-auto">
@@ -576,13 +643,10 @@ export function InvitationCommandCenter({
                 <span>Add Guest</span>
               </button>
 
-              <button
-                onClick={() => setIsCsvImportOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs"
-              >
-                <Upload className="h-3.5 w-3.5 text-stone-500" />
-                <span>Import CSV</span>
-              </button>
+              <GuestCsvImporter
+                invitationId={invitation.id}
+                onImportComplete={() => router.refresh()}
+              />
 
               <button
                 onClick={exportGuestsToCsv}
@@ -959,6 +1023,64 @@ export function InvitationCommandCenter({
                     className="accent-rose-600 rounded"
                   />
                   <span className="font-semibold text-stone-800">Event Countdown</span>
+                </label>
+              </div>
+            </div>
+
+            {/* 5. Digital Shagun & Blessings */}
+            <div className="space-y-4 pt-2 border-t border-stone-100">
+              <span className="block text-xs font-bold uppercase tracking-wider text-rose-700">
+                5. Digital Shagun, Cash Gifts &amp; Protection
+              </span>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  UPI ID for Digital Shagun / Blessings (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={invData.giftUpiId || ""}
+                  onChange={(e) => setInvData({ ...invData, giftUpiId: e.target.value })}
+                  placeholder="e.g. aaravpriya@okhdfcbank"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none font-mono"
+                />
+                <span className="text-[10px] text-stone-400 mt-0.5 block">
+                  Enables 1-tap UPI payment with Google Pay, PhonePe, and Paytm on the guest invitation page.
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  Shagun Note / Wording
+                </label>
+                <input
+                  type="text"
+                  value={invData.giftNotes || ""}
+                  onChange={(e) => setInvData({ ...invData, giftNotes: e.target.value })}
+                  placeholder="e.g. Your blessings are our greatest gift. Should you wish to send shagun:"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs pt-1">
+                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={invData.showWishWall !== false}
+                    onChange={(e) => setInvData({ ...invData, showWishWall: e.target.checked })}
+                    className="accent-rose-600 rounded"
+                  />
+                  <span className="font-semibold text-stone-800">Photo &amp; Heartfelt Wish Wall</span>
+                </label>
+
+                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={invData.isProtected !== false}
+                    onChange={(e) => setInvData({ ...invData, isProtected: e.target.checked })}
+                    className="accent-rose-600 rounded"
+                  />
+                  <span className="font-semibold text-stone-800">Anti-Download Protection</span>
                 </label>
               </div>
             </div>

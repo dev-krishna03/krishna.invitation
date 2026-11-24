@@ -104,6 +104,7 @@ export default async function TemplatesPage() {
                   slug: t.slug,
                   category: t.category,
                   source: t.source,
+                  thumbnail_url: t.thumbnail_url,
                   is_in_marketplace: t.is_in_marketplace,
                   price: t.price,
                   currency: t.currency,

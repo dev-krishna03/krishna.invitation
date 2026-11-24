@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: "Invalid" }, { status: 400 });
 
-  const plan = await prisma.creatorPlan.findUnique({ where: { tier: parsed.data.tier } });
+  const plan = await prisma.creatorPlan.findFirst({ where: { tier: parsed.data.tier } });
   if (!plan || !plan.is_active) return NextResponse.json({ error: "Plan not available" }, { status: 404 });
 
   const now = new Date();

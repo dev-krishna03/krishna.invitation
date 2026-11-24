@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { TiltCard } from "@/components/motion/TiltCard";
 import {
   Sparkles,
   Eye,
@@ -11,12 +10,10 @@ import {
   Search,
   Star,
   Filter,
-  Clock,
   Check,
-  ShieldCheck,
-  Heart,
-  Calendar,
-  Layers,
+  Music,
+  Smartphone,
+  Flag,
 } from "lucide-react";
 
 type Item = {
@@ -25,6 +22,7 @@ type Item = {
   name: string;
   category: string;
   description: string | null;
+  thumbnail_url?: string | null;
   fromPrice?: { price: number; days: number } | null;
 };
 
@@ -45,6 +43,47 @@ export function GalleryGrid({ items }: { items: Item[] }) {
   const [selectedStyle, setSelectedStyle] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [activePlanModalItem, setActivePlanModalItem] = useState<Item | null>(null);
+
+  // Copyright Report states
+  const [reportingItem, setReportingItem] = useState<Item | null>(null);
+  const [reporterName, setReporterName] = useState("");
+  const [reporterEmail, setReporterEmail] = useState("");
+  const [proofUrl, setProofUrl] = useState("");
+  const [reportDesc, setReportDesc] = useState("");
+  const [reportMsg, setReportMsg] = useState<string | null>(null);
+  const [submittingReport, setSubmittingReport] = useState(false);
+
+  async function handleSubmitReport(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reportingItem) return;
+    setSubmittingReport(true);
+    setReportMsg(null);
+    try {
+      const res = await fetch("/api/copyright-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          template_id: reportingItem.id,
+          reporter_name: reporterName,
+          reporter_email: reporterEmail,
+          proof_url: proofUrl,
+          description: reportDesc,
+        }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        setReportMsg("Copyright notice submitted. Our trust & safety team has quarantined this claim for super admin review.");
+        setTimeout(() => {
+          setReportingItem(null);
+          setReportMsg(null);
+          setReportDesc("");
+          setProofUrl("");
+        }, 3000);
+      }
+    } finally {
+      setSubmittingReport(false);
+    }
+  }
 
   const filtered = items.filter((t) => {
     const matchesCategory =
@@ -67,16 +106,16 @@ export function GalleryGrid({ items }: { items: Item[] }) {
 
   return (
     <div className="mt-8 space-y-6">
-      {/* Category Pills Slider */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-stone-200">
+      {/* Category Pills Slider - Balcony Pill Design */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#E5D9FC]/60">
         {OCCASION_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+            className={`rounded-full px-5 py-2 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
               selectedCategory === cat.id
-                ? "bg-rose-700 text-white shadow-sm shadow-rose-900/20"
-                : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 hover:text-stone-900"
+                ? "bg-[#6520EE] text-white shadow-md shadow-[#6520EE]/20 font-bold"
+                : "bg-white text-stone-600 border border-[#E5D9FC] hover:bg-[#F5F1FE] hover:text-[#12042F]"
             }`}
           >
             {cat.label}
@@ -94,7 +133,7 @@ export function GalleryGrid({ items }: { items: Item[] }) {
           </span>
           {[
             { id: "ALL", label: "All Styles" },
-            { id: "royal", label: "Royal Heritage" },
+            { id: "royal", label: "Royal Palace" },
             { id: "floral", label: "Floral Pastel" },
             { id: "minimal", label: "Minimalist Modern" },
             { id: "traditional", label: "Traditional Vedic" },
@@ -102,10 +141,10 @@ export function GalleryGrid({ items }: { items: Item[] }) {
             <button
               key={style.id}
               onClick={() => setSelectedStyle(style.id)}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
+              className={`rounded-full px-3.5 py-1 text-[11px] font-semibold transition-colors cursor-pointer ${
                 selectedStyle === style.id
-                  ? "bg-stone-900 text-white"
-                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                  ? "bg-[#12042F] text-white"
+                  : "bg-stone-100 text-stone-600 hover:bg-[#F5F1FE] hover:text-[#6520EE]"
               }`}
             >
               {style.label}
@@ -115,13 +154,13 @@ export function GalleryGrid({ items }: { items: Item[] }) {
 
         {/* Search Input */}
         <div className="relative w-full md:w-64">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             placeholder="Search occasion or theme..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full border border-stone-200 bg-white py-1.5 pl-9 pr-4 text-xs text-stone-800 placeholder-stone-400 shadow-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+            className="w-full rounded-full border border-[#E5D9FC] bg-white py-2 pl-9 pr-4 text-xs text-[#12042F] placeholder-stone-400 shadow-xs focus:border-[#6520EE] focus:outline-none focus:ring-1 focus:ring-[#6520EE]"
           />
         </div>
       </div>
@@ -129,10 +168,10 @@ export function GalleryGrid({ items }: { items: Item[] }) {
       {/* Template Grid */}
       {filtered.length === 0 ? (
         <div className="py-20 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-stone-100 text-stone-400">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F5F1FE] text-[#6520EE]">
             <Filter className="h-6 w-6" />
           </div>
-          <h3 className="mt-4 font-serif text-lg font-semibold text-stone-800">No templates found</h3>
+          <h3 className="mt-4 text-lg font-bold text-[#12042F]">No templates found</h3>
           <p className="mt-1 text-xs text-stone-500">Try adjusting your search or category filter.</p>
         </div>
       ) : (
@@ -151,100 +190,125 @@ export function GalleryGrid({ items }: { items: Item[] }) {
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <TiltCard>
-                    <div className="relative overflow-hidden rounded-xl">
-                      {/* Mockup Card Display */}
-                      <div
-                        className={`aspect-[4/5] flex flex-col justify-between p-6 transition-transform duration-500 hover:scale-105 ${
-                          isRoyal
-                            ? "bg-gradient-to-br from-[#4A0E17] via-[#7B1123] to-[#991B1B] text-amber-100"
-                            : "bg-gradient-to-br from-[#E2E8F0] via-[#F1F5F9] to-[#E2E8F0] text-stone-800"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${
-                              isRoyal
-                                ? "bg-amber-400/20 text-amber-200 border border-amber-300/30"
-                                : "bg-stone-900/10 text-stone-700 border border-stone-300/50"
-                            }`}
-                          >
-                            <Sparkles className="h-2.5 w-2.5" />
-                            {t.category}
-                          </span>
-                          <span
-                            className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                              isRoyal ? "bg-amber-400/20 text-amber-300" : "bg-white/80 text-stone-700"
-                            }`}
-                          >
-                            <Star className="h-3.5 w-3.5 fill-current" />
-                          </span>
-                        </div>
+                  <div className="group overflow-hidden rounded-3xl border border-[#E5D9FC]/80 bg-white p-3.5 shadow-sm hover:border-[#6520EE] hover:shadow-xl hover:shadow-[#6520EE]/10 transition-all">
+                    {/* Mockup / View Image Card Display */}
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-[#F5F1FE] via-[#FAF9FD] to-[#EBE2FD] p-5 flex flex-col justify-between transition-transform duration-300 group-hover:scale-[1.01]">
+                      {t.thumbnail_url && (
+                        <>
+                          <img
+                            src={t.thumbnail_url}
+                            alt={t.name}
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/25" />
+                        </>
+                      )}
 
-                        <div className="text-center my-auto py-4">
-                          <div className="text-[10px] uppercase tracking-[0.25em] opacity-80">
-                            {isRoyal ? "॥ श्री गणेशाय नमः ॥" : "Celebration of Love"}
-                          </div>
-                          <div
-                            className={`mt-2 font-serif text-2xl font-bold tracking-tight ${
-                              isRoyal ? "text-amber-200" : "text-stone-900"
-                            }`}
-                          >
-                            {t.name}
-                          </div>
-                          <p className="mt-2 text-xs opacity-75 line-clamp-2 max-w-[220px] mx-auto">
-                            {t.description ?? "Luxury digital invitation with audio & RSVP tracking."}
-                          </p>
-                        </div>
+                      <div className="relative z-10 flex items-center justify-between">
+                        <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${
+                          t.thumbnail_url
+                            ? "bg-black/60 text-white backdrop-blur-md border border-white/20"
+                            : "bg-white/95 text-[#6520EE]"
+                        }`}>
+                          {t.category}
+                        </span>
+                        <span className="rounded-full bg-[#6520EE] text-white px-2.5 py-0.5 text-[10px] font-bold shadow-sm">
+                          {isRoyal ? "Shahi Patra" : "Modern"}
+                        </span>
+                      </div>
 
-                        <div
-                          className={`rounded-lg p-2 text-center text-xs font-medium backdrop-blur-sm ${
-                            isRoyal
-                              ? "bg-black/30 border border-amber-400/20 text-amber-200"
-                              : "bg-white/70 border border-stone-300/50 text-stone-700"
-                          }`}
-                        >
-                          <span>WhatsApp &amp; Maps Ready</span>
+                      <div className={`text-center my-auto py-4 relative z-10 ${t.thumbnail_url ? "text-white" : ""}`}>
+                        <div className={`text-[10px] uppercase font-bold tracking-[0.2em] ${
+                          t.thumbnail_url ? "text-amber-300" : "text-[#6520EE]/80"
+                        }`}>
+                          {isRoyal ? "॥ Shahi Nimantran ॥" : "Digital Website Invite"}
                         </div>
+                        <div className={`mt-2 text-xl font-bold tracking-tight ${
+                          t.thumbnail_url ? "text-white drop-shadow-md" : "text-[#12042F]"
+                        }`}>
+                          {t.name}
+                        </div>
+                        <p className={`mt-2 text-xs line-clamp-2 max-w-[220px] mx-auto ${
+                          t.thumbnail_url ? "text-stone-200 drop-shadow-xs" : "text-stone-600"
+                        }`}>
+                          {t.description ?? "Elegant digital website invitation with music & RSVP."}
+                        </p>
+                      </div>
+
+                      <div className={`relative z-10 flex items-center justify-between rounded-xl backdrop-blur-md p-2 px-3 text-[11px] font-semibold border ${
+                        t.thumbnail_url
+                          ? "bg-black/50 text-white border-white/20"
+                          : "bg-white/80 text-stone-700 border-white/60"
+                      }`}>
+                        <span className={`flex items-center gap-1 ${t.thumbnail_url ? "text-amber-300" : "text-[#6520EE]"}`}>
+                          <Music className="h-3 w-3" />
+                          <span>Soundtrack</span>
+                        </span>
+                        <span className={`flex items-center gap-1 ${t.thumbnail_url ? "text-stone-300" : "text-stone-500"}`}>
+                          <Smartphone className="h-3 w-3" />
+                          <span>WhatsApp Ready</span>
+                        </span>
                       </div>
                     </div>
 
                     {/* Metadata & Pricing Details */}
-                    <div className="mt-4 flex items-center justify-between">
-                      <div>
-                        <h3 className="font-serif font-bold text-stone-900">{t.name}</h3>
-                        <p className="text-xs font-semibold text-rose-700">
-                          From ₹{basePrice.toLocaleString()}{" "}
-                          <span className="text-stone-500 font-normal">/ 15 days</span>
-                        </p>
+                    <div className="mt-4 px-2 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-500">
+                          <Star className="h-3.5 w-3.5 fill-amber-400" />
+                          <span>4.9</span>
+                          <span className="text-stone-400 font-normal">(42 reviews)</span>
+                        </div>
+                        <span className="text-[10px] text-stone-400 font-medium">by Verified Studio</span>
                       </div>
 
-                      <button
-                        onClick={() => setActivePlanModalItem(t)}
-                        className="rounded-full bg-stone-100 hover:bg-stone-200 px-2.5 py-1 text-[10px] font-bold text-rose-700 transition-colors cursor-pointer"
-                      >
-                        View Plans
-                      </button>
+                      <div className="flex items-center justify-between pt-1">
+                        <div>
+                          <h3 className="text-sm font-bold text-[#12042F] group-hover:text-[#6520EE] transition-colors">
+                            {t.name}
+                          </h3>
+                          <p className="text-xs font-bold text-[#6520EE]">
+                            From ₹{basePrice.toLocaleString()}{" "}
+                            <span className="text-stone-400 font-normal">/ 15 days</span>
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setReportingItem(t)}
+                            title="Report Copyright / DMCA"
+                            className="p-1.5 rounded-full text-stone-300 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          >
+                            <Flag className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => setActivePlanModalItem(t)}
+                            className="rounded-full bg-[#F5F1FE] hover:bg-[#E5D9FC] px-3 py-1 text-[11px] font-bold text-[#6520EE] transition-colors cursor-pointer border border-[#E5D9FC]"
+                          >
+                            Plans
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="mt-4 grid grid-cols-2 gap-2">
+                    <div className="mt-3.5 grid grid-cols-2 gap-2">
                       <Link
                         href={`/try/${t.slug}`}
-                        className="inline-flex items-center justify-center gap-1 rounded-xl border border-stone-200/90 bg-stone-50/80 px-3 py-2 text-xs font-semibold text-stone-700 hover:bg-white hover:border-stone-300 transition-colors"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[#E5D9FC] bg-white px-3 py-2 text-xs font-semibold text-[#12042F] hover:bg-[#F5F1FE] transition-colors no-underline"
                       >
-                        <Eye className="h-3.5 w-3.5" />
+                        <Eye className="h-3.5 w-3.5 text-[#6520EE]" />
                         <span>Live Demo</span>
                       </Link>
                       <Link
                         href={`/dashboard/create?template=${t.slug}`}
-                        className="inline-flex items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-rose-900/15 hover:brightness-105 transition-all"
+                        className="inline-flex items-center justify-center gap-1 rounded-full bg-[#6520EE] hover:bg-[#5213D2] px-3 py-2 text-xs font-bold text-white shadow-sm shadow-[#6520EE]/20 transition-all no-underline"
                       >
-                        <span>Customize</span>
+                        <span>Select</span>
                         <ArrowRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
-                  </TiltCard>
+                  </div>
                 </motion.div>
               );
             })}
@@ -254,20 +318,20 @@ export function GalleryGrid({ items }: { items: Item[] }) {
 
       {/* ================= PAY-BY-DAYS PRICING MODAL ================= */}
       {activePlanModalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl text-stone-900 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl border border-[#E5D9FC] bg-white p-6 shadow-2xl text-[#12042F] space-y-4">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6520EE] bg-[#F5F1FE] px-2.5 py-0.5 rounded-full border border-[#E5D9FC]">
                   Pay-by-Days Pricing
                 </span>
-                <h3 className="font-serif text-lg font-bold text-stone-900">
+                <h3 className="mt-1 text-lg font-bold text-[#12042F]">
                   {activePlanModalItem.name}
                 </h3>
               </div>
               <button
                 onClick={() => setActivePlanModalItem(null)}
-                className="text-stone-400 hover:text-stone-700 font-bold"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
               >
                 ✕
               </button>
@@ -317,24 +381,24 @@ export function GalleryGrid({ items }: { items: Item[] }) {
               ].map((tier) => (
                 <div
                   key={tier.plan}
-                  className={`rounded-2xl border p-4 flex flex-col justify-between ${
+                  className={`rounded-3xl border p-4 flex flex-col justify-between ${
                     tier.highlight
-                      ? "border-rose-400 bg-rose-50/40 ring-1 ring-rose-300 shadow-2xs"
-                      : "border-stone-200 bg-stone-50/50"
+                      ? "border-[#6520EE] bg-[#F5F1FE]/50 ring-1 ring-[#6520EE] shadow-sm"
+                      : "border-[#E5D9FC]/70 bg-stone-50/50"
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-serif font-bold text-stone-900 text-sm">
+                      <span className="font-bold text-[#12042F] text-sm">
                         {tier.plan} ({tier.days} Days)
                       </span>
                       {tier.highlight && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-white bg-[#6520EE] px-2.5 py-0.5 rounded-full">
                           Most Popular
                         </span>
                       )}
                     </div>
-                    <p className="font-serif text-xl font-bold text-stone-900">
+                    <p className="text-xl font-bold text-[#12042F]">
                       ₹{tier.price.toLocaleString()}
                     </p>
                     <span className="text-[10px] text-stone-500 font-semibold">{tier.mult}</span>
@@ -357,10 +421,10 @@ export function GalleryGrid({ items }: { items: Item[] }) {
 
                   <Link
                     href={`/dashboard/create?template=${activePlanModalItem.slug}&days=${tier.days}`}
-                    className={`mt-4 w-full flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all ${
+                    className={`mt-4 w-full flex items-center justify-center gap-1.5 rounded-full py-2.5 text-xs font-bold transition-all no-underline ${
                       tier.highlight
-                        ? "bg-rose-600 text-white hover:bg-rose-700 shadow-xs"
-                        : "bg-stone-900 text-white hover:bg-stone-800"
+                        ? "bg-[#6520EE] text-white hover:bg-[#5213D2] shadow-sm"
+                        : "bg-[#12042F] text-white hover:bg-stone-800"
                     }`}
                   >
                     <span>Choose {tier.plan}</span>
@@ -371,10 +435,93 @@ export function GalleryGrid({ items }: { items: Item[] }) {
             </div>
 
             {/* Platform & Creator Revenue Transparency */}
-            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3 text-[11px] text-stone-600 flex items-center justify-between">
+            <div className="rounded-2xl border border-[#E5D9FC] bg-[#F5F1FE] p-3 text-[11px] text-stone-600 flex items-center justify-between">
               <span>Creator Marketplace Split:</span>
-              <span className="font-bold text-stone-800">90% goes to template creator • 10% platform fee</span>
+              <span className="font-bold text-[#12042F]">90% creator royalties • 10% platform fee</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Copyright / DMCA Report Modal */}
+      {reportingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#12042F]/60 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md rounded-3xl border border-[#E5D9FC] bg-white p-6 shadow-2xl space-y-4">
+            <button
+              onClick={() => setReportingItem(null)}
+              className="absolute right-5 top-5 grid h-8 w-8 place-items-center rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200"
+            >
+              ✕
+            </button>
+
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 block">Trust &amp; Safety</span>
+              <h3 className="text-base font-bold text-[#12042F]">Report Copyright / DMCA Infringement</h3>
+              <p className="text-xs text-stone-500 mt-0.5">Reporting template: <strong>{reportingItem.name}</strong></p>
+            </div>
+
+            {reportMsg ? (
+              <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-800">
+                {reportMsg}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmitReport} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">Your Full Name *</label>
+                  <input
+                    value={reporterName}
+                    onChange={(e) => setReporterName(e.target.value)}
+                    required
+                    placeholder="e.g. Rajesh Sharma"
+                    className="w-full rounded-2xl border border-[#E5D9FC] p-2.5 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">Your Email Address *</label>
+                  <input
+                    type="email"
+                    value={reporterEmail}
+                    onChange={(e) => setReporterEmail(e.target.value)}
+                    required
+                    placeholder="e.g. legal@yourstudio.com"
+                    className="w-full rounded-2xl border border-[#E5D9FC] p-2.5 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">Proof URL / Original Artwork Link *</label>
+                  <input
+                    type="url"
+                    value={proofUrl}
+                    onChange={(e) => setProofUrl(e.target.value)}
+                    required
+                    placeholder="https://..."
+                    className="w-full rounded-2xl border border-[#E5D9FC] p-2.5 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">Infringement Description *</label>
+                  <textarea
+                    value={reportDesc}
+                    onChange={(e) => setReportDesc(e.target.value)}
+                    required
+                    rows={3}
+                    placeholder="Describe how this design infringes your copyrighted artwork, graphics or typography..."
+                    className="w-full rounded-2xl border border-[#E5D9FC] p-2.5 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingReport}
+                  className="w-full rounded-full bg-rose-600 hover:bg-rose-700 py-2.5 text-xs font-semibold text-white transition-colors"
+                >
+                  {submittingReport ? "Submitting..." : "Submit DMCA Notice"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

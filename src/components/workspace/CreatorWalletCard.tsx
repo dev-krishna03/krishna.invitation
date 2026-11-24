@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Wallet, ArrowUpRight, ShieldCheck, CheckCircle2, Clock, Landmark, Smartphone } from "lucide-react";
 
 export function CreatorWalletCard({
@@ -19,6 +19,25 @@ export function CreatorWalletCard({
   const [bankIfsc, setBankIfsc] = useState("");
   const [payoutAmount, setPayoutAmount] = useState(availableAmount > 0 ? availableAmount : 1000);
   const [payoutSuccess, setPayoutSuccess] = useState(false);
+  const [savedProfileLoaded, setSavedProfileLoaded] = useState(false);
+
+  useEffect(() => {
+    if (isPayoutModalOpen && !savedProfileLoaded) {
+      fetch("/api/workspace/payout-profile")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.profile) {
+            if (data.profile.upi_id) setUpiId(data.profile.upi_id);
+            if (data.profile.account_number) setBankAcc(data.profile.account_number);
+            if (data.profile.ifsc_code) setBankIfsc(data.profile.ifsc_code);
+            if (data.profile.payout_preference === "BANK") setPayoutMethod("bank");
+            else setPayoutMethod("upi");
+            setSavedProfileLoaded(true);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isPayoutModalOpen, savedProfileLoaded]);
 
   function handleRequestPayout(e: React.FormEvent) {
     e.preventDefault();

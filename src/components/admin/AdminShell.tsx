@@ -32,6 +32,10 @@ import {
 
 const NAV_ITEMS = [
   { href: "/krishna/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/krishna/admin/operations", label: "Operations & WhatsApp Health", icon: Activity },
+  { href: "/krishna/admin/trust-safety", label: "Trust, Safety & DPDP", icon: ShieldAlert },
+  { href: "/krishna/admin/creator-economy", label: "Creator Economy & Bids", icon: Crown },
+  { href: "/krishna/admin/event-bundles", label: "Event Bundles & Functions", icon: Boxes },
   { href: "/krishna/admin/templates", label: "Templates", icon: Palette },
   { href: "/krishna/admin/moderation", label: "Moderation", icon: ShieldCheck },
   { href: "/krishna/admin/elements", label: "Editor Elements", icon: Layers },

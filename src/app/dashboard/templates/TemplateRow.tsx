@@ -11,6 +11,7 @@ export type TemplateVM = {
   slug: string;
   category: string;
   source: string;
+  thumbnail_url?: string | null;
   is_in_marketplace: boolean;
   price: number | null;
   currency: string;
@@ -81,9 +82,17 @@ export function TemplateRow({
       {/* Template */}
       <div>
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-50 to-rose-50 text-rose-700 font-serif text-sm font-bold">
-            {state.name.slice(0, 1).toUpperCase()}
-          </span>
+          {state.thumbnail_url ? (
+            <img
+              src={state.thumbnail_url}
+              alt={state.name}
+              className="h-10 w-10 shrink-0 rounded-xl object-cover border border-stone-200 shadow-2xs"
+            />
+          ) : (
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-50 to-rose-50 text-rose-700 font-serif text-sm font-bold border border-rose-100">
+              {state.name.slice(0, 1).toUpperCase()}
+            </span>
+          )}
           <div className="min-w-0">
             <p className="truncate font-semibold text-stone-900">{state.name}</p>
             <p className="truncate text-[11px] text-stone-500">

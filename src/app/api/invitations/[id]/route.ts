@@ -10,6 +10,10 @@ const Patch = z.object({
   music_url: z.string().url().nullable().optional(),
   is_published: z.boolean().optional(),
   expires_at: z.coerce.date().nullable().optional(),
+  gift_upi_id: z.string().nullable().optional(),
+  gift_notes: z.string().nullable().optional(),
+  is_protected: z.boolean().optional(),
+  bundle_stage: z.string().optional(),
 });
 
 async function own(id: string, userId: string) {

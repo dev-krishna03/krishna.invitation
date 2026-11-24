@@ -10,6 +10,8 @@ type Template = {
   slug: string;
   name: string;
   description: string | null;
+  thumbnail_url?: string | null;
+  preview_url?: string | null;
   event_types: string[];
   pricing: { duration_days: number; price: number; currency: string }[];
 };
@@ -34,6 +36,8 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
   // Add-ons
   const [addOnExtraLinks, setAddOnExtraLinks] = useState(false); // +50 links for ₹399
   const [addOnRemoveBranding, setAddOnRemoveBranding] = useState(false); // ₹299
+  const [addOnEventBundle, setAddOnEventBundle] = useState(false); // 4-Stage Suite for ₹799
+  const [addOnConcierge, setAddOnConcierge] = useState(false); // Done-for-you concierge ₹999
 
   useEffect(() => {
     fetch("/api/event-types")
@@ -93,7 +97,11 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
 
   // Order Calculation Sequence (from blueprint)
   const templatePrice = selectedTier.price;
-  const addOnsTotal = (addOnExtraLinks ? 399 : 0) + (addOnRemoveBranding ? 299 : 0);
+  const addOnsTotal =
+    (addOnExtraLinks ? 399 : 0) +
+    (addOnRemoveBranding ? 299 : 0) +
+    (addOnEventBundle ? 799 : 0) +
+    (addOnConcierge ? 999 : 0);
   const subtotalBeforeGst = Math.max(0, templatePrice - discount + addOnsTotal);
   const gst = Math.round(subtotalBeforeGst * 0.18);
   const totalHostPays = subtotalBeforeGst + gst;
@@ -129,6 +137,8 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
       planDays: selectedPlanDays,
       addOnExtraLinks,
       addOnRemoveBranding,
+      addOnEventBundle,
+      addOnConcierge,
     };
 
     const create = await fetch("/api/invitations", {
@@ -145,7 +155,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
     if (!create.ok) return setError("Failed to create invitation");
     const { invitation } = (await create.json()) as { invitation: { id: string } };
 
-    // Update expires_at on server according to pay-by-days plan
+    // Update expires_at and bundle flags on server according to pay-by-days plan
     const expiryDate = new Date(Date.now() + selectedPlanDays * 24 * 60 * 60 * 1000);
     await fetch(`/api/invitations/${invitation.id}`, {
       method: "PUT",
@@ -153,8 +163,23 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
       body: JSON.stringify({
         expires_at: expiryDate,
         is_published: true,
+        bundle_enabled: addOnEventBundle,
+        bundle_type: addOnEventBundle ? "FULL_SUITE" : undefined,
       }),
     });
+
+    // If concierge service selected, trigger concierge request creation
+    if (addOnConcierge) {
+      await fetch("/api/concierge", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          invitationId: invitation.id,
+          amount: 999,
+          notes: "Concierge setup requested at checkout.",
+        }),
+      }).catch(() => {});
+    }
 
     const order = await fetch("/api/payments/create-order", {
       method: "POST",
@@ -194,15 +219,15 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
             <li key={s} className="flex items-center gap-2">
               <motion.span
                 animate={{
-                  backgroundColor: done ? "#1c1917" : active ? "#be123c" : "#e7e5e4",
-                  color: done || active ? "#fff" : "#78716c",
+                  backgroundColor: done ? "#12042F" : active ? "#6520EE" : "#EDE8F5",
+                  color: done || active ? "#fff" : "#7A7387",
                 }}
                 className="grid h-6 w-6 place-items-center rounded-full text-[11px] font-bold"
               >
                 {done ? "✓" : idx}
               </motion.span>
-              <span className={active ? "font-bold text-stone-900" : "text-stone-500"}>{s}</span>
-              {i < steps.length - 1 && <span className="mx-1 text-stone-300">—</span>}
+              <span className={active ? "font-semibold text-[#12042F]" : "text-[#7A7387]"}>{s}</span>
+              {i < steps.length - 1 && <span className="mx-1 text-[#E5D9FC]">—</span>}
             </li>
           );
         })}
@@ -221,22 +246,31 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                       setTemplate(t);
                       setStep(2);
                     }}
-                    whileHover={{ y: -4, boxShadow: "0 12px 28px rgba(190,18,60,0.08)" }}
+                    whileHover={{ y: -3, boxShadow: "0 12px 30px -10px rgba(101,32,238,0.12)" }}
                     whileTap={{ scale: 0.98 }}
-                    className="rounded-2xl border-2 border-stone-200 bg-white p-5 text-left transition-colors hover:border-amber-400 cursor-pointer group"
+                    className="rounded-3xl border border-[#E5D9FC] bg-white p-5 text-left transition-all hover:border-[#6520EE] cursor-pointer group"
                   >
+                    {t.thumbnail_url && (
+                      <div className="mb-3 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-stone-100 border border-stone-100">
+                        <img
+                          src={t.thumbnail_url}
+                          alt={t.name}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
-                      <p className="font-serif font-bold text-stone-900 group-hover:text-rose-700 transition-colors">{t.name}</p>
-                      <Sparkles className="h-4 w-4 text-amber-600" />
+                      <p className="font-semibold text-[#12042F] group-hover:text-[#6520EE] transition-colors">{t.name}</p>
+                      <Sparkles className="h-4 w-4 text-[#6520EE]" />
                     </div>
-                    <p className="mt-1 text-xs text-stone-500 line-clamp-2">
+                    <p className="mt-1 text-xs text-[#64748B] line-clamp-2">
                       {t.description ?? "Elegant digital invitation with audio & WhatsApp RSVPs."}
                     </p>
-                    <div className="mt-4 flex items-center justify-between pt-3 border-t border-stone-100">
-                      <span className="text-xs font-bold text-rose-700">
+                    <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#F5F1FE]">
+                      <span className="text-xs font-bold text-[#6520EE]">
                         From ₹{(t.pricing?.[0]?.price || 1000).toLocaleString()}
                       </span>
-                      <span className="text-[10px] text-stone-400 font-semibold">15 to 180 Days</span>
+                      <span className="text-[10px] text-[#7A7387] font-medium">15 to 180 Days</span>
                     </div>
                   </motion.button>
                 ))}
@@ -248,10 +282,10 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
           {step === 2 && template && (
             <motion.div key="step2" {...slide} className="max-w-2xl space-y-6">
               <div>
-                <h3 className="font-serif text-lg font-bold text-stone-900">
+                <h3 className="text-lg font-bold text-[#12042F]">
                   Select Validity Duration for {template.name}
                 </h3>
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-[#64748B] mt-1">
                   How long should your digital card stay online for guests? You can extend anytime later.
                 </p>
               </div>
@@ -263,38 +297,38 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                     onClick={() => setSelectedPlanDays(tier.days)}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`rounded-2xl border-2 p-4 text-left transition-all cursor-pointer ${
+                    className={`rounded-3xl border p-5 text-left transition-all cursor-pointer ${
                       selectedPlanDays === tier.days
-                        ? "border-rose-600 bg-rose-50/40 shadow-xs ring-1 ring-rose-300"
-                        : "border-stone-200 bg-white hover:border-stone-300"
+                        ? "border-[#6520EE] bg-[#F5F1FE]/60 shadow-xs ring-1 ring-[#6520EE]"
+                        : "border-[#E5D9FC] bg-white hover:border-[#6520EE]/50"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <p className="font-serif font-bold text-sm text-stone-900">
+                      <p className="font-semibold text-sm text-[#12042F]">
                         {tier.plan} ({tier.days} Days)
                       </p>
                       {tier.highlight && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-800 uppercase">
-                          Most Popular
+                        <span className="rounded-full bg-[#6520EE] text-white px-2.5 py-0.5 text-[10px] font-semibold tracking-wide">
+                          Popular
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 font-serif text-2xl font-bold text-rose-900">
+                    <p className="mt-2 text-2xl font-bold text-[#12042F]">
                       ₹{tier.price.toLocaleString()}
                     </p>
-                    <span className="text-[10px] font-semibold text-stone-500">{tier.mult} Base Price</span>
+                    <span className="text-[11px] font-medium text-[#7A7387]">{tier.mult} Base Price</span>
 
-                    <ul className="mt-3 space-y-1 text-xs text-stone-600">
+                    <ul className="mt-4 space-y-1.5 text-xs text-[#5B556B]">
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3 w-3 text-emerald-600" />
+                        <Check className="h-3.5 w-3.5 text-[#6520EE]" />
                         <span>{tier.updates}</span>
                       </li>
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3 w-3 text-emerald-600" />
+                        <Check className="h-3.5 w-3.5 text-[#6520EE]" />
                         <span>{tier.links}</span>
                       </li>
                       <li className="flex items-center gap-1.5">
-                        <Check className="h-3 w-3 text-emerald-600" />
+                        <Check className="h-3.5 w-3.5 text-[#6520EE]" />
                         <span>WhatsApp Delivery Ready</span>
                       </li>
                     </ul>
@@ -303,48 +337,80 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
               </div>
 
               {/* Add-ons Checklist */}
-              <div className="rounded-2xl border border-stone-200 bg-white p-4 space-y-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-stone-700 block">
+              <div className="rounded-3xl border border-[#E5D9FC] bg-white p-5 space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#12042F] block">
                   Optional Add-ons
                 </span>
 
-                <label className="flex items-center justify-between p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-xs">
-                  <div className="flex items-center gap-2">
+                <label className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E5D9FC] bg-[#FAF9FD] hover:bg-[#F5F1FE]/50 transition-colors cursor-pointer text-xs">
+                  <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={addOnExtraLinks}
                       onChange={(e) => setAddOnExtraLinks(e.target.checked)}
-                      className="accent-rose-600 rounded"
+                      className="accent-[#6520EE] h-4 w-4 rounded"
                     />
                     <div>
-                      <span className="font-bold text-stone-800 block">+50 Extra Personalized Links</span>
-                      <span className="text-[10px] text-stone-500">Send unique name links to 50 more guests</span>
+                      <span className="font-semibold text-[#12042F] block">+50 Extra Personalized Links</span>
+                      <span className="text-[11px] text-[#64748B]">Send unique name links to 50 more guests</span>
                     </div>
                   </div>
-                  <span className="font-bold text-stone-900 font-serif">+₹399</span>
+                  <span className="font-bold text-[#12042F]">+₹399</span>
                 </label>
 
-                <label className="flex items-center justify-between p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-xs">
-                  <div className="flex items-center gap-2">
+                <label className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E5D9FC] bg-[#FAF9FD] hover:bg-[#F5F1FE]/50 transition-colors cursor-pointer text-xs">
+                  <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={addOnRemoveBranding}
                       onChange={(e) => setAddOnRemoveBranding(e.target.checked)}
-                      className="accent-rose-600 rounded"
+                      className="accent-[#6520EE] h-4 w-4 rounded"
                     />
                     <div>
-                      <span className="font-bold text-stone-800 block">White Label (Remove Branding)</span>
-                      <span className="text-[10px] text-stone-500">Hide &ldquo;Powered by Krishna Invitations&rdquo; footer</span>
+                      <span className="font-semibold text-[#12042F] block">White Label (Remove Branding)</span>
+                      <span className="text-[11px] text-[#64748B]">Hide &ldquo;Powered by Krishna Invitations&rdquo; footer</span>
                     </div>
                   </div>
-                  <span className="font-bold text-stone-900 font-serif">+₹299</span>
+                  <span className="font-bold text-[#12042F]">+₹299</span>
+                </label>
+
+                <label className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E5D9FC] bg-[#FAF9FD] hover:bg-[#F5F1FE]/50 transition-colors cursor-pointer text-xs">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={addOnEventBundle}
+                      onChange={(e) => setAddOnEventBundle(e.target.checked)}
+                      className="accent-[#6520EE] h-4 w-4 rounded"
+                    />
+                    <div>
+                      <span className="font-semibold text-[#12042F] block">4-Stage Occasion Event Bundle</span>
+                      <span className="text-[11px] text-[#64748B]">Includes Save-the-Date, Main Invite, Reminders &amp; Thank-You Card</span>
+                    </div>
+                  </div>
+                  <span className="font-bold text-[#12042F]">+₹799</span>
+                </label>
+
+                <label className="flex items-center justify-between p-3.5 rounded-2xl border border-[#E5D9FC] bg-[#FAF9FD] hover:bg-[#F5F1FE]/50 transition-colors cursor-pointer text-xs">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={addOnConcierge}
+                      onChange={(e) => setAddOnConcierge(e.target.checked)}
+                      className="accent-[#6520EE] h-4 w-4 rounded"
+                    />
+                    <div>
+                      <span className="font-semibold text-[#12042F] block">Done-For-You Concierge Styling</span>
+                      <span className="text-[11px] text-[#64748B]">Our wedding designers format your fonts, details &amp; test WhatsApp delivery</span>
+                    </div>
+                  </div>
+                  <span className="font-bold text-[#12042F]">+₹999</span>
                 </label>
               </div>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep(1)}
-                  className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50"
+                  className="rounded-full border border-[#E5D9FC] bg-white px-5 py-2.5 text-xs font-semibold text-[#12042F] hover:bg-[#F5F1FE]"
                 >
                   Back
                 </button>
@@ -352,7 +418,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   onClick={() => setStep(3)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:brightness-105 cursor-pointer"
+                  className="rounded-full bg-[#6520EE] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#5213D2] cursor-pointer"
                 >
                   Continue to Details
                 </motion.button>
@@ -364,32 +430,32 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
           {step === 3 && (
             <motion.div key="step3" {...slide} className="max-w-lg space-y-4">
               <div>
-                <h3 className="font-serif text-lg font-bold text-stone-900">Invitation Information</h3>
-                <p className="text-xs text-stone-500">
+                <h3 className="text-lg font-bold text-[#12042F]">Invitation Information</h3>
+                <p className="text-xs text-[#64748B]">
                   Fill in your main names and date. You can edit all details anytime after publishing.
                 </p>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                   Invitation Title *
                 </label>
                 <input
                   placeholder="e.g. Aarav & Priya's Royal Wedding"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
+                  className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                   Occasion Type
                 </label>
                 <select
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600 font-semibold"
+                  className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE] font-semibold"
                 >
                   {eventTypes.length > 0 ? (
                     eventTypes.map((v) => (
@@ -411,58 +477,58 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                     Primary Name
                   </label>
                   <input
                     placeholder="e.g. Aarav Mehta"
                     value={data.primaryName || ""}
                     onChange={(e) => setData({ ...data, primaryName: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
+                    className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                     Secondary Name
                   </label>
                   <input
                     placeholder="e.g. Priya Sharma"
                     value={data.secondaryName || ""}
                     onChange={(e) => setData({ ...data, secondaryName: e.target.value })}
-                    className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
+                    className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                   Event Date
                 </label>
                 <input
                   placeholder="e.g. 12 December 2026"
                   value={data.eventDate || ""}
                   onChange={(e) => setData({ ...data, eventDate: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
+                  className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                <label className="block text-[11px] font-semibold text-[#12042F] mb-1">
                   Venue Name &amp; City
                 </label>
                 <input
                   placeholder="e.g. The Imperial Palace, Udaipur"
                   value={data.venueName || ""}
                   onChange={(e) => setData({ ...data, venueName: e.target.value })}
-                  className="w-full rounded-xl border border-stone-200 bg-white p-2.5 text-xs text-stone-900 focus:outline-none focus:border-rose-600 focus:ring-1 focus:ring-rose-600"
+                  className="w-full rounded-2xl border border-[#E5D9FC] bg-white p-3 text-xs text-[#12042F] focus:outline-none focus:border-[#6520EE] focus:ring-1 focus:ring-[#6520EE]"
                 />
               </div>
 
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setStep(2)}
-                  className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50"
+                  className="rounded-full border border-[#E5D9FC] bg-white px-5 py-2.5 text-xs font-semibold text-[#12042F] hover:bg-[#F5F1FE]"
                 >
                   Back
                 </button>
@@ -471,7 +537,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   disabled={!title}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:brightness-105 disabled:opacity-50 cursor-pointer"
+                  className="rounded-full bg-[#6520EE] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#5213D2] disabled:opacity-50 cursor-pointer"
                 >
                   Review Order &amp; Pay
                 </motion.button>
@@ -482,58 +548,72 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
           {/* STEP 4: ORDER CALCULATION & PAYMENT */}
           {step === 4 && (
             <motion.div key="step4" {...slide} className="max-w-lg space-y-4">
-              <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-xs space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
+              <div className="rounded-3xl border border-[#E5D9FC] bg-white p-6 shadow-xs space-y-4">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#6520EE] block">
                   Order Breakdown
                 </span>
 
-                <div className="space-y-2 text-xs divide-y divide-stone-100">
+                <div className="space-y-2 text-xs divide-y divide-[#F5F1FE]">
                   <div className="flex justify-between items-center pt-1">
-                    <span className="text-stone-700">
+                    <span className="text-[#12042F]">
                       {template?.name} ({selectedTier.plan} • {selectedTier.days} Days)
                     </span>
-                    <span className="font-semibold text-stone-900">₹{templatePrice.toLocaleString()}</span>
+                    <span className="font-semibold text-[#12042F]">₹{templatePrice.toLocaleString()}</span>
                   </div>
 
                   {discount > 0 && (
-                    <div className="flex justify-between items-center pt-2 text-emerald-700">
+                    <div className="flex justify-between items-center pt-2 text-emerald-600">
                       <span>Promo Coupon Discount</span>
                       <span className="font-semibold">-₹{discount.toLocaleString()}</span>
                     </div>
                   )}
 
                   {addOnExtraLinks && (
-                    <div className="flex justify-between items-center pt-2 text-stone-700">
+                    <div className="flex justify-between items-center pt-2 text-[#12042F]">
                       <span>+50 Extra Personalized Links</span>
-                      <span className="font-semibold text-stone-900">+₹399</span>
+                      <span className="font-semibold text-[#12042F]">+₹399</span>
                     </div>
                   )}
 
                   {addOnRemoveBranding && (
-                    <div className="flex justify-between items-center pt-2 text-stone-700">
+                    <div className="flex justify-between items-center pt-2 text-[#12042F]">
                       <span>White Label (Remove Branding)</span>
-                      <span className="font-semibold text-stone-900">+₹299</span>
+                      <span className="font-semibold text-[#12042F]">+₹299</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center pt-2 text-stone-500 text-[11px]">
+                  {addOnEventBundle && (
+                    <div className="flex justify-between items-center pt-2 text-[#12042F]">
+                      <span>4-Stage Event Bundle Suite</span>
+                      <span className="font-semibold text-[#12042F]">+₹799</span>
+                    </div>
+                  )}
+
+                  {addOnConcierge && (
+                    <div className="flex justify-between items-center pt-2 text-[#12042F]">
+                      <span>Done-For-You Concierge Styling</span>
+                      <span className="font-semibold text-[#12042F]">+₹999</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center pt-2 text-[#64748B] text-[11px]">
                     <span>GST (18% estimated)</span>
                     <span>₹{gst.toLocaleString()}</span>
                   </div>
 
-                  <div className="flex justify-between items-center pt-3 border-t-2 border-stone-900 font-bold text-sm text-stone-900">
+                  <div className="flex justify-between items-center pt-3 border-t-2 border-[#12042F] font-bold text-sm text-[#12042F]">
                     <span>Total Host Pays</span>
-                    <span className="font-serif text-lg text-rose-950">₹{totalHostPays.toLocaleString()}</span>
+                    <span className="text-xl font-bold text-[#6520EE]">₹{totalHostPays.toLocaleString()}</span>
                   </div>
                 </div>
 
                 {/* Marketplace Split Transparency */}
-                <div className="mt-4 rounded-xl bg-amber-50/80 border border-amber-200 p-3 text-[11px] text-amber-950 space-y-1">
+                <div className="mt-4 rounded-2xl bg-[#F5F1FE] border border-[#E5D9FC] p-3.5 text-[11px] text-[#12042F] space-y-1">
                   <div className="flex justify-between">
                     <span>Creator Royalties (90%):</span>
-                    <span className="font-bold">₹{creatorEarns.toLocaleString()}</span>
+                    <span className="font-bold text-[#6520EE]">₹{creatorEarns.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-amber-800">
+                  <div className="flex justify-between text-[#64748B]">
                     <span>Platform Fee (10%):</span>
                     <span>₹{platformFee.toLocaleString()}</span>
                   </div>
@@ -546,19 +626,19 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   placeholder="Coupon code (e.g. WELCOME10)"
                   value={coupon}
                   onChange={(e) => setCoupon(e.target.value)}
-                  className="flex-1 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs uppercase font-mono focus:border-rose-600 focus:outline-none"
+                  className="flex-1 rounded-full border border-[#E5D9FC] bg-white px-4 py-2.5 text-xs uppercase font-mono focus:border-[#6520EE] focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={applyCoupon}
-                  className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-bold text-stone-700 hover:bg-stone-50 cursor-pointer"
+                  className="rounded-full border border-[#E5D9FC] bg-white px-5 py-2.5 text-xs font-semibold text-[#12042F] hover:bg-[#F5F1FE] cursor-pointer"
                 >
                   Apply
                 </button>
               </div>
 
               {error && (
-                <div className="rounded-xl bg-rose-50 border border-rose-200 p-2.5 text-xs text-rose-700">
+                <div className="rounded-2xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700">
                   {error}
                 </div>
               )}
@@ -566,7 +646,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setStep(3)}
-                  className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50"
+                  className="rounded-full border border-[#E5D9FC] bg-white px-5 py-2.5 text-xs font-semibold text-[#12042F] hover:bg-[#F5F1FE]"
                 >
                   Back
                 </button>
@@ -574,7 +654,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                   onClick={pay}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-950/10 hover:brightness-105 cursor-pointer"
+                  className="flex-1 rounded-full bg-[#6520EE] py-3 text-xs font-semibold text-white shadow-md shadow-[#6520EE]/20 hover:bg-[#5213D2] cursor-pointer"
                 >
                   Pay &amp; Publish Invitation
                 </motion.button>

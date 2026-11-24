@@ -5,6 +5,7 @@ import { getIntegration } from "@/lib/settings";
 import { getTemplate } from "@/templates/registry";
 import { RsvpForm } from "@/components/RsvpForm";
 import { EventEndedView } from "@/components/invite/EventEndedView";
+import { GuestExtrasSuite } from "@/components/invite/GuestExtrasSuite";
 
 type Params = Promise<{ slug: string }>;
 
@@ -22,7 +23,12 @@ export default async function InvitePage({ params }: { params: Params }) {
   const { slug } = await params;
   const invitation = await prisma.invitation.findUnique({
     where: { slug },
-    include: { template: true, events: { orderBy: { sort_order: "asc" } }, photos: { orderBy: { sort_order: "asc" } } },
+    include: {
+      template: true,
+      events: { orderBy: { sort_order: "asc" } },
+      photos: { orderBy: { sort_order: "asc" } },
+      wishes: { where: { is_approved: true }, orderBy: { created_at: "desc" } },
+    },
   });
   if (!invitation || !invitation.is_published) notFound();
 
@@ -60,10 +66,37 @@ export default async function InvitePage({ params }: { params: Params }) {
     photos: invitation.photos,
   };
 
+  const formattedEvents = invitation.events.map((e) => ({
+    id: e.id,
+    name: e.name,
+    venue: e.venue,
+    date: e.date ? e.date.toISOString() : null,
+    start_time: e.start_time,
+    end_time: e.end_time,
+  }));
+
+  const formattedWishes = invitation.wishes.map((w) => ({
+    id: w.id,
+    author_name: w.author_name,
+    message: w.message,
+    photo_url: w.photo_url,
+    created_at: w.created_at.toISOString(),
+  }));
+
   return (
-    <div>
+    <div className={invitation.is_protected ? "select-none" : ""}>
       <Component data={data} mapApiKey={mapApiKey} locale={invitation.locale} />
       <RsvpForm slug={slug} />
+      <GuestExtrasSuite
+        invitationId={invitation.id}
+        slug={slug}
+        title={invitation.title}
+        events={formattedEvents}
+        guest={null}
+        initialWishes={formattedWishes}
+        giftUpiId={invitation.gift_upi_id}
+        giftNotes={invitation.gift_notes}
+      />
     </div>
   );
 }

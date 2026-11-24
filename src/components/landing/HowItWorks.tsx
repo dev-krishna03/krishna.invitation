@@ -2,71 +2,70 @@
 
 import { motion } from "framer-motion";
 import { Stagger, staggerItem } from "@/components/motion/Reveal";
-import { Palette, Edit3, Send, Sparkles, CheckCircle } from "lucide-react";
+import { Palette, Edit3, Send, CheckCircle, Sparkles } from "lucide-react";
 
 const steps = [
   {
     n: 1,
-    title: "Select an Aesthetic",
+    title: "Choose a design",
     icon: Palette,
-    body: "Explore royal Rajasthani palaces, modern minimalist sages, floral pastel, or gold-embossed themes.",
+    body: "Browse through royal palace gardens, elegant floral pastels, or modern minimal web themes.",
     badge: "Step 01",
   },
   {
     n: 2,
-    title: "Personalize with Story & Audio",
+    title: "Fill in event details",
     icon: Edit3,
-    body: "Enter muhurats, multi-day functions, venue pins on Google Maps, couple photos, and background sitar/shehnai music.",
+    body: "Add your names, sacred muhurats, multi-day function schedules, Google Maps pins, and photos.",
     badge: "Step 02",
   },
   {
     n: 3,
-    title: "Share via WhatsApp in 1-Click",
+    title: "Share on WhatsApp",
     icon: Send,
-    body: "Generate individualized links with guest names. Send straight through WhatsApp with customized preview cards.",
+    body: "Send a common link or personalised links where each guest opens to 'Dear Mr. Sharma & Family'.",
     badge: "Step 03",
   },
   {
     n: 4,
-    title: "Track RSVPs & Guest Count",
+    title: "Track live RSVPs",
     icon: CheckCircle,
-    body: "Watch live RSVP responses, headcount, dietary requirements, and heartfelt blessings in your host portal.",
+    body: "Watch guest confirmations, headcount, food choices, and blessings update live on your dashboard.",
     badge: "Step 04",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <Stagger className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" gap={0.12}>
+    <Stagger className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" gap={0.1}>
       {steps.map((s) => {
         const Icon = s.icon;
         return (
           <motion.div
             key={s.n}
             variants={staggerItem}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 280, damping: 20 }}
-            className="group relative flex flex-col justify-between rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm hover:border-amber-300 hover:shadow-xl hover:shadow-rose-950/5 transition-all"
+            whileHover={{ y: -4 }}
+            className="group relative flex flex-col justify-between rounded-3xl border border-[#E5D9FC]/70 bg-white p-6 shadow-sm hover:border-[#6520EE] hover:shadow-xl hover:shadow-[#6520EE]/10 transition-all"
           >
             <div>
               <div className="flex items-center justify-between">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/10 via-rose-500/10 to-transparent text-rose-700 border border-rose-200/50 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                  <Icon className="h-6 w-6" />
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F5F1FE] text-[#6520EE] border border-[#E5D9FC] group-hover:bg-[#6520EE] group-hover:text-white transition-all duration-200">
+                  <Icon className="h-5 w-5" />
                 </span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6520EE] bg-[#F5F1FE] px-2.5 py-1 rounded-full border border-[#E5D9FC]">
                   {s.badge}
                 </span>
               </div>
 
-              <h3 className="mt-5 font-serif text-lg font-bold text-stone-900 group-hover:text-rose-700 transition-colors">
+              <h3 className="mt-5 text-base font-bold text-[#12042F] group-hover:text-[#6520EE] transition-colors">
                 {s.title}
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-stone-600">{s.body}</p>
             </div>
 
-            <div className="mt-6 flex items-center gap-2 pt-4 border-t border-stone-100 text-[11px] font-semibold text-rose-700 opacity-80 group-hover:opacity-100">
+            <div className="mt-6 flex items-center gap-1.5 pt-4 border-t border-stone-100 text-[11px] font-semibold text-[#6520EE]">
               <Sparkles className="h-3 w-3" />
-              <span>Effortless & Instant</span>
+              <span>Takes less than 5 minutes</span>
             </div>
           </motion.div>
         );
