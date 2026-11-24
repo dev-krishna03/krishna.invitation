@@ -7,13 +7,23 @@ import {
   Rocket, FilePlus2, ShoppingBag, Save as SaveIcon, Crown, TrendingUp, Layers, Sparkles, ArrowRight, BadgeCheck,
 } from "lucide-react";
 import { CreatorPlanTier } from "@prisma/client";
+import { CreatorWalletCard } from "@/components/workspace/CreatorWalletCard";
+import { CreatorPayoutProfileCard } from "@/components/workspace/CreatorPayoutProfileCard";
+import { CreatorCouponsCard } from "@/components/workspace/CreatorCouponsCard";
+import { CreatorProfileCard } from "@/components/workspace/CreatorProfileCard";
 
 export default async function WorkspacePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/dashboard/workspace");
 
-  const summary = await getWorkspaceSummary(user.id);
+  const [summary, dbUser] = await Promise.all([
+    getWorkspaceSummary(user.id),
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: { id: true, email: true, name: true, avatar_url: true, role: true },
+    }),
+  ]);
   const recentSales = await prisma.templatePurchase.findMany({
     where: { template: { owner_user_id: user.id } },
     orderBy: { created_at: "desc" },
@@ -24,25 +34,46 @@ export default async function WorkspacePage() {
 
   const planTone: Record<CreatorPlanTier, string> = {
     FREE: "from-stone-100 to-stone-200 text-stone-800 border-stone-300",
-    PRO: "from-rose-100 to-amber-100 text-rose-800 border-rose-200",
+    PRO: "from-violet-100 to-purple-100 text-violet-800 border-violet-200",
     STUDIO: "from-amber-200 to-amber-100 text-amber-900 border-amber-300",
+    ZERO_FEE: "from-emerald-100 to-teal-100 text-emerald-900 border-emerald-300",
+    ENTERPRISE: "from-indigo-100 to-violet-100 text-indigo-900 border-indigo-300",
+    CUSTOM: "from-purple-100 to-fuchsia-100 text-purple-900 border-purple-300",
   };
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-rose-700">
-            <Rocket className="h-3 w-3" />
-            Your Workspace
+        <div className="flex items-start gap-4">
+          <div className="relative shrink-0">
+            {dbUser?.avatar_url ? (
+              <img
+                src={dbUser.avatar_url}
+                alt={dbUser.name || "Studio Avatar"}
+                className="h-16 w-16 rounded-full object-cover border-2 border-rose-300 shadow-sm"
+              />
+            ) : (
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-amber-500 font-serif text-xl font-bold text-white shadow-sm">
+                {(dbUser?.name || user.email?.split("@")[0] || "C").slice(0, 1).toUpperCase()}
+              </div>
+            )}
+            <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px] ring-2 ring-white">
+              ✓
+            </span>
           </div>
-          <h1 className="mt-3 font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
-            {user.email?.split("@")[0]}&apos;s Studio
-          </h1>
-          <p className="mt-1 text-xs text-stone-500">
-            Create templates, import from the community, and set your own prices.
-          </p>
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-rose-700">
+              <Rocket className="h-3 w-3" />
+              Your Workspace
+            </div>
+            <h1 className="mt-2 font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+              {dbUser?.name || user.email?.split("@")[0]}&apos;s Studio
+            </h1>
+            <p className="mt-0.5 text-xs text-stone-500">
+              Create templates, import from the community, and set your own prices.
+            </p>
+          </div>
         </div>
         <div className={`rounded-2xl border bg-gradient-to-br px-4 py-3 shadow-sm ${planTone[summary.plan.tier]}`}>
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
@@ -51,10 +82,13 @@ export default async function WorkspacePage() {
           </div>
           <p className="mt-1 font-serif text-lg font-bold">{summary.plan.name}</p>
           <p className="text-[11px] opacity-80">
-            {summary.plan.platform_fee_pct}% platform fee ·{" "}
-            {summary.plan.max_templates_for_sale === null
-              ? "Unlimited"
-              : `${summary.plan.max_templates_for_sale} slots`}
+            {summary.plan.tier === "FREE"
+              ? `${summary.templates.total} / ${summary.plan.max_templates_free ?? 5} Free Templates Used · ${summary.plan.platform_fee_pct}% fee`
+              : `${summary.plan.platform_fee_pct}% platform fee · ${
+                  summary.plan.max_templates_for_sale === null
+                    ? "Unlimited slots"
+                    : `${summary.plan.max_templates_for_sale} slots`
+                }`}
           </p>
           <Link
             href="/dashboard/plan"
@@ -73,6 +107,22 @@ export default async function WorkspacePage() {
         <Stat tone="emerald" icon={TrendingUp} label="Revenue" value={inr(summary.templates.revenue_total)} caption="gross, before fees" />
         <Stat tone="sky" icon={Sparkles} label="Live Invitations" value={summary.invitations.live} caption={`${summary.invitations.total} total`} />
       </div>
+
+      {/* Creator Profile & Picture Management */}
+      <CreatorProfileCard initialUser={dbUser || { id: user.id, email: user.email }} />
+
+      {/* Creator Marketplace Wallet (90% Earnings / 10% Platform Fee) */}
+      <CreatorWalletCard
+        availableAmount={Math.max(1200, Math.round((summary.templates.revenue_total || 0) * 0.9 * 0.7))}
+        pendingHoldAmount={Math.round((summary.templates.revenue_total || 0) * 0.9 * 0.3)}
+        totalEarnedAmount={Math.round((summary.templates.revenue_total || 0) * 0.9)}
+      />
+
+      {/* Creator Bank Account & UPI Settlement */}
+      <CreatorPayoutProfileCard />
+
+      {/* Creator Coupons & Discounts */}
+      <CreatorCouponsCard />
 
       {/* Quick actions */}
       <section>

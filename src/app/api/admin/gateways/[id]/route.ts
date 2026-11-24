@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Environment, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireSuperAdmin } from "@/lib/auth-guard";
-import { encryptCredentials } from "@/lib/crypto";
+import { encryptCredentials, decryptCredentials } from "@/lib/crypto";
 import { invalidatePaymentCache } from "@/lib/payments";
 import { logAudit } from "@/lib/audit";
 
@@ -25,7 +25,18 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   const update: Prisma.PaymentGatewayUpdateInput = {};
   if (parsed.data.environment) update.environment = parsed.data.environment;
   if (parsed.data.webhook_secret !== undefined) update.webhook_secret = parsed.data.webhook_secret;
-  if (parsed.data.credentials) update.credentials = encryptCredentials(parsed.data.credentials) as Prisma.InputJsonValue;
+  if (parsed.data.credentials) {
+    const existingDecrypted = before ? decryptCredentials(before.credentials as Record<string, unknown>) : {};
+    const merged: Record<string, unknown> = { ...existingDecrypted };
+    for (const [k, v] of Object.entries(parsed.data.credentials)) {
+      if (typeof v === "string" && v.startsWith("••")) {
+        // keep existing value
+      } else if (v !== undefined && v !== "") {
+        merged[k] = v;
+      }
+    }
+    update.credentials = encryptCredentials(merged) as Prisma.InputJsonValue;
+  }
 
   if (parsed.data.is_active === true) {
     await prisma.paymentGateway.updateMany({ where: { NOT: { id } }, data: { is_active: false } });

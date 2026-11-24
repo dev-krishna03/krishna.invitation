@@ -26,6 +26,7 @@ export function NewTemplateWizard({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("MINIMAL");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [invitationId, setInvitationId] = useState<string | null>(null);
   const [communityTemplateId, setCommunityTemplateId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,6 +50,8 @@ export function NewTemplateWizard({
         name,
         description: description || undefined,
         category,
+        thumbnail_url: thumbnailUrl || undefined,
+        preview_url: thumbnailUrl || undefined,
         invitationId: source === "fromInvitation" ? invitationId : undefined,
         communityTemplateId: source === "importCommunity" ? communityTemplateId : undefined,
       }),
@@ -117,6 +120,15 @@ export function NewTemplateWizard({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short pitch for buyers"
               className="h-20 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            />
+          </Field>
+
+          <Field label="Template View Image URL (Optional)">
+            <input
+              value={thumbnailUrl}
+              onChange={(e) => setThumbnailUrl(e.target.value)}
+              placeholder="https://.../cover.png (or upload in editor next)"
+              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-xs font-mono"
             />
           </Field>
 

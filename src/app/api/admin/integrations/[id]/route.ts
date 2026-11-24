@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Prisma, Environment } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireSuperAdmin } from "@/lib/auth-guard";
-import { encryptCredentials } from "@/lib/crypto";
+import { encryptCredentials, decryptCredentials } from "@/lib/crypto";
 import { logAudit } from "@/lib/audit";
 
 const Patch = z.object({
@@ -23,7 +23,16 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   if (parsed.data.is_active !== undefined) update.is_active = parsed.data.is_active;
   if (parsed.data.environment) update.environment = parsed.data.environment;
   if (parsed.data.credentials) {
-    update.credentials = encryptCredentials(parsed.data.credentials) as Prisma.InputJsonValue;
+    const existingDecrypted = before ? decryptCredentials(before.credentials as Record<string, unknown>) : {};
+    const merged: Record<string, unknown> = { ...existingDecrypted };
+    for (const [k, v] of Object.entries(parsed.data.credentials)) {
+      if (typeof v === "string" && v.startsWith("••")) {
+        // keep existing
+      } else if (v !== undefined && v !== "") {
+        merged[k] = v;
+      }
+    }
+    update.credentials = encryptCredentials(merged) as Prisma.InputJsonValue;
     update.is_configured = true;
   }
   update.updated_by = { connect: { id: g.id } };

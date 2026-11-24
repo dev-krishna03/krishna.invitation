@@ -123,6 +123,9 @@ export function RsvpForm({ slug, guestSlug, prefilledName }: Props) {
                   </motion.button>
                 ))}
               </div>
+              <p className="text-[10px] text-stone-500 leading-snug">
+                🔒 In accordance with India&apos;s DPDP Act, your response and contact details are stored securely for event coordination and will be auto-deleted post-event.
+              </p>
               {error && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}

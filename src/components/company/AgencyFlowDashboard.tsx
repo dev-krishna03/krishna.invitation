@@ -414,13 +414,13 @@ export function AgencyFlowDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-6 bg-white -mx-6 -mt-6 p-6 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-rose-600 text-white shadow-xs">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-rose-600 to-rose-600 text-white shadow-xs">
               <Building2 className="h-4 w-4" />
             </span>
             <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900">
               Agency Studio Hub
             </h1>
-            <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-bold text-purple-700 border border-purple-200">
+            <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold text-rose-700 border border-rose-200">
               Workflow Engine
             </span>
           </div>
@@ -434,7 +434,7 @@ export function AgencyFlowDashboard() {
           {/* Branch 1: Create Invitation in detail */}
           <Link
             href="/company/editor"
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all"
           >
             <Plus className="h-4 w-4" />
             <span>Create Invitation (Studio)</span>
@@ -443,24 +443,24 @@ export function AgencyFlowDashboard() {
           {/* Branch 2: Explore Community */}
           <button
             onClick={() => setActiveTab("community")}
-            className="flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-50 hover:border-purple-300 transition-all shadow-xs cursor-pointer"
+            className="flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-50 hover:border-rose-300 transition-all shadow-xs cursor-pointer"
           >
-            <ShoppingBag className="h-4 w-4 text-purple-600" />
+            <ShoppingBag className="h-4 w-4 text-rose-600" />
             <span>Explore Community Templates</span>
           </button>
         </div>
       </div>
 
       {/* ================= INTERACTIVE WORKFLOW ROADMAP BANNER ================= */}
-      <div className="rounded-3xl border border-purple-200/80 bg-gradient-to-br from-purple-50/60 via-stone-50 to-rose-50/40 p-5 shadow-xs">
-        <div className="flex items-center justify-between border-b border-purple-200/50 pb-3 mb-4">
+      <div className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/60 via-stone-50 to-rose-50/40 p-5 shadow-xs">
+        <div className="flex items-center justify-between border-b border-rose-200/50 pb-3 mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-purple-600" />
+            <Sparkles className="h-4 w-4 text-rose-600" />
             <h3 className="font-serif text-sm font-bold text-stone-900">
               Agency Workflow Architecture
             </h3>
           </div>
-          <span className="text-[11px] font-semibold text-purple-700 bg-white px-3 py-1 rounded-full border border-purple-200 shadow-xs">
+          <span className="text-[11px] font-semibold text-rose-700 bg-white px-3 py-1 rounded-full border border-rose-200 shadow-xs">
             Live Interactive Pipeline
           </span>
         </div>
@@ -469,13 +469,13 @@ export function AgencyFlowDashboard() {
           {/* Branch 1 Card */}
           <div
             onClick={() => window.open("/company/editor", "_self")}
-            className="group cursor-pointer rounded-2xl border border-stone-200 bg-white p-3.5 hover:border-purple-400 hover:shadow-sm transition-all"
+            className="group cursor-pointer rounded-2xl border border-stone-200 bg-white p-3.5 hover:border-rose-400 hover:shadow-sm transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md">
                 Branch 1
               </span>
-              <ArrowRight className="h-3.5 w-3.5 text-stone-400 group-hover:text-purple-600 transition-colors" />
+              <ArrowRight className="h-3.5 w-3.5 text-stone-400 group-hover:text-rose-600 transition-colors" />
             </div>
             <h4 className="mt-2 text-xs font-bold text-stone-900">Create Invitation</h4>
             <p className="mt-1 text-[11px] text-stone-500">
@@ -488,8 +488,8 @@ export function AgencyFlowDashboard() {
             onClick={() => setActiveTab("community")}
             className={`cursor-pointer rounded-2xl border p-3.5 transition-all ${
               activeTab === "community"
-                ? "border-purple-500 bg-purple-50/60 shadow-xs"
-                : "border-stone-200 bg-white hover:border-purple-400"
+                ? "border-rose-500 bg-rose-50/60 shadow-xs"
+                : "border-stone-200 bg-white hover:border-rose-400"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -509,8 +509,8 @@ export function AgencyFlowDashboard() {
             onClick={() => setActiveTab("library")}
             className={`cursor-pointer rounded-2xl border p-3.5 transition-all ${
               activeTab === "library"
-                ? "border-purple-500 bg-purple-50/60 shadow-xs"
-                : "border-stone-200 bg-white hover:border-purple-400"
+                ? "border-rose-500 bg-rose-50/60 shadow-xs"
+                : "border-stone-200 bg-white hover:border-rose-400"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -533,7 +533,7 @@ export function AgencyFlowDashboard() {
           onClick={() => setActiveTab("library")}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
             activeTab === "library"
-              ? "bg-purple-600 text-white shadow-xs"
+              ? "bg-rose-600 text-white shadow-xs"
               : "text-stone-600 hover:bg-stone-100"
           }`}
         >
@@ -545,7 +545,7 @@ export function AgencyFlowDashboard() {
           onClick={() => setActiveTab("community")}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
             activeTab === "community"
-              ? "bg-purple-600 text-white shadow-xs"
+              ? "bg-rose-600 text-white shadow-xs"
               : "text-stone-600 hover:bg-stone-100"
           }`}
         >
@@ -626,7 +626,7 @@ export function AgencyFlowDashboard() {
 
                       {/* Song info in banner */}
                       <div className="flex items-center justify-center gap-1 text-[10px] font-medium text-stone-700 bg-white/70 py-0.5 rounded-full z-10 truncate px-2">
-                        <Music className="h-2.5 w-2.5 text-purple-600 shrink-0" />
+                        <Music className="h-2.5 w-2.5 text-rose-600 shrink-0" />
                         <span className="truncate">{template.songName}</span>
                       </div>
                     </div>
@@ -642,7 +642,7 @@ export function AgencyFlowDashboard() {
                         </span>
                       </div>
                       {template.clientName && (
-                        <p className="mt-0.5 text-xs text-purple-700 font-semibold flex items-center gap-1">
+                        <p className="mt-0.5 text-xs text-rose-700 font-semibold flex items-center gap-1">
                           <span>Client: {template.clientName}</span>
                         </p>
                       )}
@@ -653,7 +653,7 @@ export function AgencyFlowDashboard() {
                   <div className="mt-5 space-y-2.5 border-t border-stone-100 pt-4">
                     {/* Sub-path 3A: "Edit" -> "Share Preview for Confirmation" -> "Select how much users" -> "Payment" -> "Share Access" */}
                     <div className="space-y-1.5">
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-purple-800">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-rose-800">
                         Client Booking & Production (Flow 3A)
                       </span>
 
@@ -663,7 +663,7 @@ export function AgencyFlowDashboard() {
                           href="/company/editor"
                           className="flex items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 py-2 text-xs font-semibold text-stone-800 hover:bg-stone-100 transition-colors"
                         >
-                          <Edit3 className="h-3.5 w-3.5 text-purple-600" />
+                          <Edit3 className="h-3.5 w-3.5 text-rose-600" />
                           <span>Edit Studio</span>
                         </Link>
 
@@ -681,7 +681,7 @@ export function AgencyFlowDashboard() {
                       {!isLicensed ? (
                         <button
                           onClick={() => openSelectUsersTier(template)}
-                          className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-purple-700 transition-all cursor-pointer"
+                          className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700 transition-all cursor-pointer"
                         >
                           <Users className="h-3.5 w-3.5" />
                           <span>Select Guest Quota & Pay (Confirm)</span>
@@ -741,7 +741,7 @@ export function AgencyFlowDashboard() {
             </div>
             <Link
               href="/company/editor"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-colors shrink-0"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Publish Your Template to Earn</span>
@@ -788,7 +788,7 @@ export function AgencyFlowDashboard() {
                     <p className="text-[11px] text-stone-500 flex items-center gap-1 mt-0.5">
                       <span>By {comm.creatorName}</span>
                       <span>•</span>
-                      <span className="text-purple-700 font-semibold">{comm.creatorStudio}</span>
+                      <span className="text-rose-700 font-semibold">{comm.creatorStudio}</span>
                     </p>
                     <p className="mt-2 text-xs text-stone-600 line-clamp-2">
                       {comm.description}
@@ -809,7 +809,7 @@ export function AgencyFlowDashboard() {
 
                   <button
                     onClick={() => buyCommunityTemplate(comm)}
-                    className="flex-1 flex items-center justify-center gap-1 rounded-xl bg-purple-600 py-2 text-xs font-bold text-white hover:bg-purple-700 shadow-xs transition-colors cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1 rounded-xl bg-rose-600 py-2 text-xs font-bold text-white hover:bg-rose-700 shadow-xs transition-colors cursor-pointer"
                   >
                     <ShoppingBag className="h-3.5 w-3.5" />
                     <span>{comm.price === 0 ? "Get Free" : `Buy (₹${comm.price})`}</span>
@@ -833,7 +833,7 @@ export function AgencyFlowDashboard() {
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-purple-600" />
+                  <Share2 className="h-4 w-4 text-rose-600" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Share Client Confirmation Preview
                   </span>
@@ -856,7 +856,7 @@ export function AgencyFlowDashboard() {
                     value={previewCustomerName}
                     onChange={(e) => setPreviewCustomerName(e.target.value)}
                     placeholder="e.g. Aarav & Priya Wedding"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none font-semibold"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none font-semibold"
                   />
                   <p className="mt-1 text-[11px] text-stone-500">
                     This personalizes the watermarked draft link and welcome header for the customer.
@@ -867,7 +867,7 @@ export function AgencyFlowDashboard() {
                 <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3.5 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-stone-700">
                     <span>Generated Watermarked Preview Link</span>
-                    <span className="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    <span className="text-[10px] text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
                       Draft Confirmation
                     </span>
                   </div>
@@ -908,7 +908,7 @@ export function AgencyFlowDashboard() {
                     rel="noreferrer"
                     className="flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-50 transition-colors"
                   >
-                    <ExternalLink className="h-3.5 w-3.5 text-purple-600" />
+                    <ExternalLink className="h-3.5 w-3.5 text-rose-600" />
                     <span>Open in New Tab</span>
                   </a>
                 </div>
@@ -924,7 +924,7 @@ export function AgencyFlowDashboard() {
                     setPreviewModalOpen(false);
                     openSelectUsersTier(activePreviewTemplate);
                   }}
-                  className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-all cursor-pointer"
                 >
                   <span>Select Users & License</span>
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -947,7 +947,7 @@ export function AgencyFlowDashboard() {
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-purple-600" />
+                  <Users className="h-4 w-4 text-rose-600" />
                   <div>
                     <h3 className="font-serif font-bold text-sm text-stone-900">
                       Select Guest Quota for {selectedTemplateForTier.name}
@@ -975,12 +975,12 @@ export function AgencyFlowDashboard() {
                       onClick={() => setSelectedTier(tier)}
                       className={`cursor-pointer rounded-2xl border p-4 transition-all relative ${
                         isSelected
-                          ? "border-purple-600 bg-purple-50/50 ring-2 ring-purple-400 shadow-xs"
-                          : "border-stone-200 bg-white hover:border-purple-300"
+                          ? "border-rose-600 bg-rose-50/50 ring-2 ring-rose-400 shadow-xs"
+                          : "border-stone-200 bg-white hover:border-rose-300"
                       }`}
                     >
                       {tier.popular && (
-                        <span className="absolute -top-2.5 right-3 rounded-full bg-gradient-to-r from-purple-600 to-rose-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+                        <span className="absolute -top-2.5 right-3 rounded-full bg-gradient-to-r from-rose-600 to-rose-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
                           Most Popular
                         </span>
                       )}
@@ -993,7 +993,7 @@ export function AgencyFlowDashboard() {
                         </div>
                       </div>
 
-                      <div className="mt-2 text-xs font-semibold text-purple-700 flex items-center gap-1">
+                      <div className="mt-2 text-xs font-semibold text-rose-700 flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         <span>Capacity: {typeof tier.capacity === "number" ? `${tier.capacity} Guests` : tier.capacity}</span>
                       </div>
@@ -1029,7 +1029,7 @@ export function AgencyFlowDashboard() {
                   </button>
                   <button
                     onClick={proceedToTierPayment}
-                    className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-5 py-2 text-xs font-bold text-white hover:bg-purple-700 shadow-sm transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 shadow-sm transition-all cursor-pointer"
                   >
                     <CreditCard className="h-3.5 w-3.5" />
                     <span>Proceed to Payment</span>
@@ -1053,7 +1053,7 @@ export function AgencyFlowDashboard() {
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-purple-600" />
+                  <CreditCard className="h-4 w-4 text-rose-600" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Secure Payment Gateway
                   </span>
@@ -1078,7 +1078,7 @@ export function AgencyFlowDashboard() {
                       <div className="font-serif text-sm font-bold text-stone-900">
                         {paymentDetails.templateName}
                       </div>
-                      <div className="text-[11px] text-purple-700 font-semibold">
+                      <div className="text-[11px] text-rose-700 font-semibold">
                         {paymentDetails.type === "GUEST_TIER"
                           ? "Guest Capacity Quota License"
                           : "Community Template Commercial License"}
@@ -1103,7 +1103,7 @@ export function AgencyFlowDashboard() {
                         key={opt.id}
                         className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
                           idx === 0
-                            ? "border-purple-500 bg-purple-50/50"
+                            ? "border-rose-500 bg-rose-50/50"
                             : "border-stone-200 bg-white hover:bg-stone-50"
                         }`}
                       >
@@ -1111,7 +1111,7 @@ export function AgencyFlowDashboard() {
                           <span>{opt.icon}</span>
                           <span>{opt.label}</span>
                         </span>
-                        <CheckCircle2 className="h-4 w-4 text-purple-600" />
+                        <CheckCircle2 className="h-4 w-4 text-rose-600" />
                       </div>
                     ))}
                   </div>
@@ -1129,7 +1129,7 @@ export function AgencyFlowDashboard() {
                     paymentDetails.amount
                   )
                 }
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-rose-600 py-3 text-xs font-bold text-white shadow-md hover:brightness-105 transition-all cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 py-3 text-xs font-bold text-white shadow-md hover:brightness-105 transition-all cursor-pointer disabled:opacity-50"
               >
                 {isProcessingPayment ? (
                   <span>Verifying Payment...</span>
@@ -1208,7 +1208,7 @@ export function AgencyFlowDashboard() {
                       Customer Management PIN / Access Code
                     </label>
                     <div className="flex items-center gap-2">
-                      <div className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 font-mono text-sm font-bold text-purple-900">
+                      <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 font-mono text-sm font-bold text-rose-900">
                         {customerAccessData.pin}
                       </div>
                       <span className="text-xs text-stone-500">

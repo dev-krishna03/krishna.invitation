@@ -22,6 +22,7 @@ export default async function GalleryPage() {
     name: t.name,
     category: t.category,
     description: t.description,
+    thumbnail_url: t.thumbnail_url,
     fromPrice: t.pricing[0] ? { price: t.pricing[0].price, days: t.pricing[0].duration_days } : null,
   }));
 

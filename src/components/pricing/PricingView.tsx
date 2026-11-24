@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sparkles, HelpCircle, ArrowRight, ShieldCheck, Heart } from "lucide-react";
+import { ConciergeBookingModal } from "@/components/concierge/ConciergeBookingModal";
 
 type TemplateItem = {
   id: string;
@@ -42,7 +43,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What happens when my plan expires?",
-    a: "Guests can view your invitation for the full duration you choose (e.g. 30, 90, or 365 days). You will receive an export of all guest RSVPs, photos, and messages before expiry.",
+    a: "Guests can view your invitation for the full duration you choose (e.g. 15, 30, 90, or 180 days). After expiry, the link remains read-only as a celebration keepsake and can be extended anytime.",
   },
 ];
 
@@ -60,25 +61,25 @@ export function PricingView({
 
   return (
     <div>
-      {/* Tab Switcher */}
+      {/* Tab Switcher - Balcony Style */}
       <div className="flex justify-center mt-6">
-        <div className="inline-flex rounded-full bg-stone-100 p-1.5 border border-stone-200">
+        <div className="inline-flex rounded-full bg-[#F5F1FE] p-1.5 border border-[#E5D9FC]">
           <button
             onClick={() => setBillingTab("individual")}
-            className={`rounded-full px-5 py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`rounded-full px-6 py-2 text-xs font-semibold transition-all cursor-pointer ${
               billingTab === "individual"
-                ? "bg-white text-rose-700 shadow-sm"
-                : "text-stone-600 hover:text-stone-900"
+                ? "bg-[#6520EE] text-white shadow-md shadow-[#6520EE]/20 font-bold"
+                : "text-stone-600 hover:text-[#12042F]"
             }`}
           >
             Individual Celebrations (Pay Once)
           </button>
           <button
             onClick={() => setBillingTab("company")}
-            className={`rounded-full px-5 py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`rounded-full px-6 py-2 text-xs font-semibold transition-all cursor-pointer ${
               billingTab === "company"
-                ? "bg-white text-rose-700 shadow-sm"
-                : "text-stone-600 hover:text-stone-900"
+                ? "bg-[#6520EE] text-white shadow-md shadow-[#6520EE]/20 font-bold"
+                : "text-stone-600 hover:text-[#12042F]"
             }`}
           >
             Event Planners & Agencies
@@ -90,54 +91,54 @@ export function PricingView({
       {billingTab === "individual" && (
         <div className="mt-12">
           <div className="text-center mb-8">
-            <h2 className="font-serif text-2xl font-bold text-stone-900">
+            <h2 className="text-2xl font-bold text-[#12042F]">
               One-Time Payment Per Celebration
             </h2>
-            <p className="mt-1 text-xs text-stone-500">
-              No recurring fees. Pay once and keep your invitation active as long as you need.
+            <p className="mt-1.5 text-xs text-stone-500">
+              No subscription or recurring charges. Pay once and keep your digital website invite active as long as you need.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
+          <div className="grid gap-6 sm:grid-cols-2 max-w-4xl mx-auto">
             {templates.map((t, idx) => (
               <motion.div
                 key={t.id}
                 whileHover={{ y: -4 }}
-                className={`relative flex flex-col justify-between rounded-2xl border p-6 shadow-sm transition-all ${
+                className={`relative flex flex-col justify-between rounded-3xl border p-7 shadow-sm transition-all ${
                   idx === 0
-                    ? "border-amber-300/80 bg-gradient-to-b from-white to-amber-50/30 shadow-md ring-1 ring-amber-400/30"
-                    : "border-stone-200/80 bg-white"
+                    ? "border-[#6520EE] bg-white ring-1 ring-[#6520EE] shadow-lg shadow-[#6520EE]/10"
+                    : "border-[#E5D9FC]/80 bg-white"
                 }`}
               >
                 {idx === 0 && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#6520EE] px-4 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
                     Most Popular
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between">
-                    <h3 className="font-serif text-xl font-bold text-stone-900">{t.name}</h3>
-                    <Sparkles className="h-5 w-5 text-amber-500" />
+                    <h3 className="text-xl font-bold text-[#12042F]">{t.name}</h3>
+                    <Sparkles className="h-5 w-5 text-[#6520EE]" />
                   </div>
-                  <p className="mt-1 text-xs text-stone-500">
-                    Includes WhatsApp delivery, musical ambiance, Google Maps, and RSVP portal.
+                  <p className="mt-1.5 text-xs text-stone-500 leading-relaxed">
+                    Includes WhatsApp personalised guest links, background music, Google Maps, and live RSVP tracking.
                   </p>
 
                   <div className="mt-6 border-t border-stone-100 pt-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-400">
-                      Duration Tiers
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#6520EE]">
+                      Validity Tiers
                     </h4>
                     <div className="mt-3 space-y-2.5">
                       {t.pricing.map((p) => (
                         <div
                           key={p.duration_days}
-                          className="flex items-center justify-between rounded-xl bg-stone-50/80 px-3.5 py-2.5 text-xs border border-stone-200/60"
+                          className="flex items-center justify-between rounded-2xl bg-[#F5F1FE] px-4 py-3 text-xs border border-[#E5D9FC]/70"
                         >
-                          <span className="font-medium text-stone-700">
+                          <span className="font-semibold text-stone-700">
                             {p.duration_days} Days Active Hosting
                           </span>
-                          <span className="font-serif font-bold text-base text-rose-700">
+                          <span className="font-bold text-base text-[#6520EE]">
                             ₹{p.price.toLocaleString()}
                           </span>
                         </div>
@@ -148,7 +149,7 @@ export function PricingView({
                   <ul className="mt-6 space-y-2 text-xs text-stone-600 border-t border-stone-100 pt-4">
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-emerald-600 shrink-0" />
-                      <span>Unlimited WhatsApp Invites</span>
+                      <span>WhatsApp Personalised Guest Links</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-emerald-600 shrink-0" />
@@ -156,11 +157,11 @@ export function PricingView({
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-emerald-600 shrink-0" />
-                      <span>Google Maps Venue Directions</span>
+                      <span>Google Maps Directions & Calendar Save</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-emerald-600 shrink-0" />
-                      <span>Multi-language (14+ Languages)</span>
+                      <span>Zero guest sign-up needed</span>
                     </li>
                   </ul>
                 </div>
@@ -168,7 +169,7 @@ export function PricingView({
                 <div className="mt-8">
                   <Link
                     href={`/dashboard/create?template=${t.slug}`}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 py-3 text-xs font-bold text-white shadow-md shadow-rose-900/15 hover:brightness-105 transition-all"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#6520EE] hover:bg-[#5213D2] py-3 text-xs font-bold text-white shadow-md shadow-[#6520EE]/20 hover:brightness-105 transition-all no-underline"
                   >
                     <span>Create with {t.name}</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -184,11 +185,11 @@ export function PricingView({
       {billingTab === "company" && (
         <div className="mt-12">
           <div className="text-center mb-8">
-            <h2 className="font-serif text-2xl font-bold text-stone-900">
-              For Wedding Planners, Decorators & Studios
+            <h2 className="text-2xl font-bold text-[#12042F]">
+              For Wedding Planners, Studios & Agencies
             </h2>
-            <p className="mt-1 text-xs text-stone-500">
-              Manage multi-client invitations under your brand with custom domains and analytics.
+            <p className="mt-1.5 text-xs text-stone-500">
+              Manage unlimited client invitations with custom branding and client confirmation links.
             </p>
           </div>
 
@@ -197,44 +198,37 @@ export function PricingView({
               <motion.div
                 key={p.id}
                 whileHover={{ y: -4 }}
-                className="flex flex-col justify-between rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm hover:border-amber-300 transition-all"
+                className="flex flex-col justify-between rounded-3xl border border-[#E5D9FC]/80 bg-white p-7 shadow-sm hover:border-[#6520EE] hover:shadow-xl transition-all"
               >
                 <div>
-                  <h3 className="font-serif text-xl font-bold text-stone-900">{p.name}</h3>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="font-serif text-3xl font-bold text-stone-900">
-                      ₹{p.price.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-stone-500">
-                      / {p.billing_period.toLowerCase()}
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-[#12042F]">{p.name}</h3>
+                    <span className="rounded-full bg-[#F5F1FE] text-[#6520EE] px-3 py-1 text-[10px] font-bold uppercase tracking-wider border border-[#E5D9FC]">
+                      {p.billing_period}
                     </span>
                   </div>
 
-                  <div className="mt-6 space-y-2 text-xs text-stone-600 border-t border-stone-100 pt-4">
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-600" />
-                      <span>Team Members: {p.max_members ?? "Unlimited"}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-600" />
-                      <span>Client Invitations: {p.max_invitations ?? "Unlimited"}</span>
-                    </div>
-                    {Array.isArray(p.features) &&
-                      p.features.map((f, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-emerald-600" />
-                          <span>{f}</span>
-                        </div>
-                      ))}
-                  </div>
+                  <p className="mt-4 text-3xl font-bold text-[#12042F]">
+                    ₹{p.price.toLocaleString()}
+                    <span className="text-xs font-normal text-stone-400">/{p.billing_period.toLowerCase()}</span>
+                  </p>
+
+                  <ul className="mt-6 space-y-2 text-xs text-stone-600 border-t border-stone-100 pt-4">
+                    {p.features.map((f, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-emerald-600 shrink-0" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="mt-8">
                   <Link
-                    href="/company"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-900 py-3 text-xs font-bold text-white hover:bg-stone-800 transition-colors"
+                    href="/register"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#6520EE] hover:bg-[#5213D2] py-3 text-xs font-bold text-white shadow-md shadow-[#6520EE]/20 transition-all no-underline"
                   >
-                    <span>Subscribe as Planner</span>
+                    <span>Get Started</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
@@ -244,44 +238,46 @@ export function PricingView({
         </div>
       )}
 
-      {/* FAQ Accordion */}
-      <section className="mt-20 max-w-3xl mx-auto">
-        <div className="text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-rose-700">Have Questions?</p>
-          <h2 className="mt-2 font-serif text-3xl font-bold text-stone-900">Frequently Asked Questions</h2>
+      {/* Done-For-You VIP Concierge Section */}
+      <div className="mt-14 max-w-4xl mx-auto">
+        <ConciergeBookingModal variant="card" />
+      </div>
+
+      {/* FAQs Section */}
+      <div id="faqs" className="mt-20 max-w-3xl mx-auto border-t border-[#E5D9FC]/60 pt-16">
+        <div className="text-center mb-8">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#6520EE] bg-[#F5F1FE] px-3 py-1 rounded-full border border-[#E5D9FC]">
+            Help & FAQs
+          </span>
+          <h2 className="mt-3 text-2xl font-bold text-[#12042F]">Frequently Asked Questions</h2>
         </div>
 
-        <div className="mt-8 space-y-3">
-          {FAQ_ITEMS.map((item, idx) => {
+        <div className="space-y-3">
+          {FAQ_ITEMS.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
               <div
                 key={idx}
-                className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm transition-all"
+                className="overflow-hidden rounded-2xl border border-[#E5D9FC]/70 bg-white shadow-xs transition-colors"
               >
                 <button
+                  type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="flex w-full items-center justify-between p-4 text-left text-xs sm:text-sm font-semibold text-stone-900 hover:bg-stone-50 transition-colors"
+                  className="flex w-full items-center justify-between p-4.5 text-left text-xs font-bold text-[#12042F] hover:text-[#6520EE] cursor-pointer"
                 >
-                  <span>{item.q}</span>
-                  <span
-                    className={`ml-4 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-transform ${
-                      isOpen ? "rotate-180 bg-rose-100 text-rose-700" : ""
-                    }`}
-                  >
-                    ▾
-                  </span>
+                  <span>{faq.q}</span>
+                  <span className="text-base text-stone-400">{isOpen ? "−" : "+"}</span>
                 </button>
                 <AnimatePresence>
                   {isOpen && (
                     <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="border-t border-stone-100 px-4 pb-4 pt-2 text-xs leading-relaxed text-stone-600"
+                      className="px-4.5 pb-4.5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3"
                     >
-                      {item.a}
+                      {faq.a}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -289,7 +285,7 @@ export function PricingView({
             );
           })}
         </div>
-      </section>
+      </div>
     </div>
   );
 }

@@ -49,5 +49,9 @@ next-env.d.ts
 # Prisma
 /prisma/*.db
 
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 # Tools
 .code-review-graph/

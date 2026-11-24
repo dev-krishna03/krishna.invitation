@@ -141,14 +141,14 @@ export function InteractiveTemplatePreview({
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 rounded-full border border-purple-200 bg-white/90 px-3.5 py-1 text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 rounded-full border border-rose-200 bg-white/90 px-3.5 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors shadow-xs"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back</span>
           </button>
 
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700 border border-purple-200/60 shadow-xs">
-            <Eye className="h-3.5 w-3.5 text-purple-600" />
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 border border-rose-200/60 shadow-xs">
+            <Eye className="h-3.5 w-3.5 text-rose-600" />
             <span>This is what your guests will see</span>
           </div>
         </div>
@@ -157,7 +157,7 @@ export function InteractiveTemplatePreview({
         <div className="flex items-center gap-2">
           <Link
             href={`/dashboard/create?template=${slug}`}
-            className="flex items-center gap-1.5 rounded-full border border-purple-300 bg-white/90 px-4 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-all shadow-xs"
+            className="flex items-center gap-1.5 rounded-full border border-rose-300 bg-white/90 px-4 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-all shadow-xs"
           >
             <Edit3 className="h-3.5 w-3.5" />
             <span>Try editing</span>
@@ -225,7 +225,7 @@ export function InteractiveTemplatePreview({
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link
             href={`/dashboard/create?template=${slug}`}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-xl shadow-purple-900/30 hover:brightness-105 transition-all"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-700 via-rose-600 to-amber-600 px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-xl shadow-rose-950/30 hover:brightness-105 transition-all"
           >
             <ShoppingBag className="h-4 w-4" />
             <span>Buy this template</span>
@@ -234,7 +234,17 @@ export function InteractiveTemplatePreview({
       </div>
 
       {/* MAIN VIEWPORT: Floral Palace Garden Background */}
-      <div className="relative min-h-screen pt-20 pb-24 flex items-center justify-center px-4 overflow-hidden">
+      <div
+        onContextMenu={(e) => e.preventDefault()}
+        className="relative min-h-screen pt-20 pb-24 flex items-center justify-center px-4 overflow-hidden select-none"
+      >
+        {/* Template Protection Watermark */}
+        <div className="pointer-events-none select-none absolute inset-0 z-30 flex items-center justify-center opacity-[0.07] rotate-[-22deg]">
+          <span className="font-mono text-3xl sm:text-5xl font-bold uppercase tracking-widest text-[#12042F] border-4 border-[#12042F] px-8 py-4 rounded-3xl">
+            DEMO PREVIEW • PROTECTED
+          </span>
+        </div>
+
         {/* Lush Palace Garden Visual Background (Columns, floral arches, roses) */}
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#FBF2E8] via-[#F8E9DA] to-[#F2DCC8]">
           {/* Classical Column Motifs Left & Right */}
@@ -391,7 +401,7 @@ export function InteractiveTemplatePreview({
                         date: "December 16, 2026",
                         time: "06:30 PM Muhurat",
                         venue: "The Grand Royal Ballroom, The Leela Palace",
-                        color: "from-purple-50 to-purple-100 text-purple-900 border-purple-200",
+                        color: "from-rose-50 to-rose-100 text-rose-950 border-rose-200",
                       },
                     ].map((ceremony, idx) => (
                       <div

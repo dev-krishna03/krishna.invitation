@@ -9,46 +9,40 @@ import {
   Globe2,
   Users,
   ShieldCheck,
-  CalendarCheck,
   Smartphone,
+  CalendarCheck,
 } from "lucide-react";
 
 const features = [
   {
     icon: MessageSquare,
-    title: "1-Click WhatsApp Delivery",
-    desc: "Send personalized invitation cards directly to guests on WhatsApp with custom preview graphics and names.",
-    color: "from-emerald-500/10 to-emerald-500/5 text-emerald-700",
+    title: "WhatsApp Personalised Links",
+    desc: "Each guest receives an invitation tailored with their exact family name at the top of the webpage.",
   },
   {
     icon: Users,
-    title: "Real-Time RSVP Tracker",
-    desc: "Track headcount, plus-ones, meal preferences, and heartfelt wishes in a live host dashboard.",
-    color: "from-rose-500/10 to-rose-500/5 text-rose-700",
+    title: "Live RSVP & Guest Tracking",
+    desc: "Guests RSVP in 1 tap without any login. Monitor confirmed guests, declines, and headcount live.",
   },
   {
     icon: Music,
-    title: "Celebratory Audio Ambiance",
-    desc: "Embed shehnai, sitar, flute, or your favorite romantic melody to play seamlessly as guests open the card.",
-    color: "from-amber-500/10 to-amber-500/5 text-amber-700",
+    title: "Background Music & Ambiance",
+    desc: "Add shehnai, royal flute, romantic sitar, or your custom song that plays smoothly on guest open.",
   },
   {
     icon: MapPin,
-    title: "Google Maps Venue Guidance",
-    desc: "Help guests reach venues on time with integrated 1-tap navigation for every sub-event venue.",
-    color: "from-rose-500/10 to-rose-500/5 text-rose-700",
+    title: "1-Tap Google Maps Navigation",
+    desc: "Guests can tap directions for Haldi, Sangeet, Wedding, or Reception venues without getting lost.",
   },
   {
-    icon: Globe2,
-    title: "14+ Indian & Global Languages",
-    desc: "English, Hindi, Gujarati, Marathi, Tamil, Telugu, Bengali, Punjabi, and international translations.",
-    color: "from-blue-500/10 to-blue-500/5 text-blue-700",
+    icon: CalendarCheck,
+    title: "Add to Calendar & Countdown",
+    desc: "Real-time countdown timer to the celebration with 1-click Google / Apple Calendar event reminders.",
   },
   {
     icon: ShieldCheck,
-    title: "Private & Passcode Protected",
-    desc: "Keep your celebration confidential. Require a passcode or direct personalized link to access.",
-    color: "from-amber-500/10 to-amber-500/5 text-amber-700",
+    title: "Private & Edit Anytime",
+    desc: "Make live updates anytime after publishing. Keep invitations private with optional passcode protection.",
   },
 ];
 
@@ -63,14 +57,12 @@ export function FeaturesSection() {
               key={i}
               variants={staggerItem}
               whileHover={{ y: -4 }}
-              className="group rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm hover:border-amber-300 hover:shadow-xl hover:shadow-rose-950/5 transition-all"
+              className="group rounded-3xl border border-[#E5D9FC]/70 bg-white p-6 shadow-sm hover:border-[#6520EE] hover:shadow-xl hover:shadow-[#6520EE]/10 transition-all"
             >
-              <span
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${f.color} border border-stone-100 group-hover:scale-105 transition-transform`}
-              >
-                <Icon className="h-6 w-6" />
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F5F1FE] text-[#6520EE] border border-[#E5D9FC] group-hover:bg-[#6520EE] group-hover:text-white transition-all duration-200">
+                <Icon className="h-5 w-5" />
               </span>
-              <h3 className="mt-4 font-serif text-lg font-bold text-stone-900 group-hover:text-rose-700 transition-colors">
+              <h3 className="mt-4 text-base font-bold text-[#12042F] group-hover:text-[#6520EE] transition-colors">
                 {f.title}
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-stone-600">{f.desc}</p>

@@ -28,7 +28,7 @@ export async function ensureCreatorSubscription(userId: string): Promise<{
   });
   if (existing) return { plan: existing.plan, subscription: existing };
 
-  const free = await prisma.creatorPlan.findUniqueOrThrow({ where: { tier: CreatorPlanTier.FREE } });
+  const free = await prisma.creatorPlan.findFirstOrThrow({ where: { tier: CreatorPlanTier.FREE } });
   const subscription = await prisma.userCreatorSubscription.create({
     data: { user_id: userId, plan_id: free.id },
   });
@@ -68,7 +68,27 @@ export async function getWorkspaceSummary(userId: string): Promise<WorkspaceSumm
   };
 }
 
-export type SellCheck = { ok: true } | { ok: false; reason: string };
+export type SellCheck = { ok: true; currentCount?: number; maxFree?: number | null } | { ok: false; reason: string; currentCount?: number; maxFree?: number | null };
+
+export async function canCreateMoreTemplates(userId: string): Promise<SellCheck> {
+  const { plan } = await ensureCreatorSubscription(userId);
+  const currentCount = await prisma.template.count({
+    where: { owner_user_id: userId },
+  });
+
+  const maxFree = plan.max_templates_free ?? 5;
+  // If user is on a free starting plan and has reached or exceeded max_templates_free:
+  if (plan.monthly_price === 0 && maxFree !== null && currentCount >= maxFree) {
+    return {
+      ok: false,
+      reason: `You have created ${currentCount} templates, reaching the Starting Plan limit of ${maxFree} free templates. Upgrade to Creator Pro or add more slots to continue designing.`,
+      currentCount,
+      maxFree,
+    };
+  }
+
+  return { ok: true, currentCount, maxFree };
+}
 
 export async function canSellMoreTemplates(userId: string): Promise<SellCheck> {
   const { plan } = await ensureCreatorSubscription(userId);

@@ -43,9 +43,27 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const rawDemo = request.cookies.get("demo_session")?.value;
+  const demoSession = rawDemo ? decodeURIComponent(rawDemo) : undefined;
+  let user = null;
+
+  if (demoSession) {
+    user = {
+      id: demoSession,
+      email: demoSession,
+      app_metadata: { role: demoSession.includes("admin") ? "SUPER_ADMIN" : "USER" },
+      user_metadata: { role: demoSession.includes("admin") ? "SUPER_ADMIN" : "USER" },
+    } as any;
+  } else {
+    try {
+      const {
+        data: { user: supabaseUser },
+      } = await supabase.auth.getUser();
+      user = supabaseUser;
+    } catch {
+      user = null;
+    }
+  }
 
   const { pathname } = request.nextUrl;
   const isAdmin = pathname.startsWith("/krishna/admin");

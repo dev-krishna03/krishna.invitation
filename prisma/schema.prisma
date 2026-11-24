@@ -53,6 +53,9 @@ enum CreatorPlanTier {
   FREE
   PRO
   STUDIO
+  ZERO_FEE
+  ENTERPRISE
+  CUSTOM
 }
 
 enum TemplateSource {
@@ -150,6 +153,18 @@ model User {
   templates_reviewed   Template[]   @relation("TemplateReviewer")
   preferred_currency   Currency    @default(INR)
 
+  custom_requests   CustomDesignRequest[] @relation("HostDesignRequests")
+  design_bids       DesignBid[]           @relation("CreatorDesignBids")
+  template_reviews  TemplateReview[]
+  affiliate_partner AffiliatePartner?
+  creator_strikes   CreatorStrike[]       @relation("CreatorStrikes")
+  concierge_orders  ConciergeServiceOrder[]
+  payout_profile    CreatorPayoutProfile? @relation("UserPayoutProfile")
+  created_coupons   Coupon[]              @relation("CreatorCoupons")
+  activity_history  ActivityHistory[]     @relation("UserActivityHistory")
+  payout_requests   CreatorPayoutRequest[] @relation("CreatorPayoutRequests")
+  uploaded_elements TemplateElement[]     @relation("CreatorElements")
+
   @@index([referred_by_id])
   @@map("users")
 }
@@ -235,6 +250,9 @@ model Template {
   pricing              TemplatePricing[]
   invitations          Invitation[]
   purchases            TemplatePurchase[]
+  reviews              TemplateReview[]
+  copyright_reports    CopyrightReport[]
+  coupons              Coupon[]            @relation("TemplateCoupons")
 
   @@index([owner_user_id])
   @@index([is_in_marketplace])
@@ -283,6 +301,19 @@ model Invitation {
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
+  // Bundle & Host Extras
+  bundle_enabled     Boolean   @default(false)
+  bundle_type        String?   // "FULL_SUITE" (Save the Date, Invitation, Reminder, Thank You)
+  bundle_stage       String    @default("MAIN") // "SAVE_THE_DATE" | "MAIN" | "REMINDER" | "THANK_YOU"
+  gift_upi_id        String?
+  gift_qr_url        String?
+  gift_notes         String?
+  wish_wall_enabled  Boolean   @default(true)
+  photo_wall_enabled Boolean   @default(true)
+  is_protected       Boolean   @default(true)
+  supported_locales  String[]  @default(["en", "gu", "hi"])
+  font_family        String    @default("inter")
+
   user     User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   org      Organization?     @relation(fields: [org_id], references: [id], onDelete: SetNull)
   template Template          @relation(fields: [template_id], references: [id])
@@ -292,6 +323,8 @@ model Invitation {
   views    InvitationView[]
   payments Payment[]
   saved_as_templates Template[] @relation("TemplateFromInvitation")
+  wishes   GuestWish[]
+  concierge_orders ConciergeServiceOrder[]
 
   @@index([user_id])
   @@index([org_id])
@@ -343,8 +376,20 @@ model Guest {
   dietary_notes  String?
   viewed_at      DateTime?
 
+  // Host Extras & Function scoping
+  invited_events      String[]   @default([])
+  meal_preference     String?
+  travel_details      Json?
+  is_family           Boolean    @default(false)
+  family_members      String[]   @default([])
+  plus_count          Int        @default(0)
+  dpdp_consent        Boolean    @default(true)
+  whatsapp_sent_count Int        @default(0)
+  last_reminded_at    DateTime?
+
   invitation Invitation       @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
   views      InvitationView[]
+  wishes     GuestWish[]
 
   @@unique([invitation_id, slug])
   @@map("guests")
@@ -521,12 +566,14 @@ model CreatorPlan {
   id                 String           @id @default(uuid()) @db.Uuid
   slug               String           @unique
   name               String
-  tier               CreatorPlanTier  @unique
+  tier               CreatorPlanTier  @default(PRO)
   tagline            String?
   monthly_price      Int              @default(0)
   yearly_price       Int              @default(0)
   currency           String           @default("INR")
   // Marketplace limits
+  max_templates_free     Int?             @default(5) // First 5 templates create/add free
+  extra_template_price   Int              @default(99) // Price in INR per additional template slot
   max_templates_for_sale Int?         // null = unlimited
   max_live_invitations   Int?         // null = unlimited
   platform_fee_pct       Int          @default(20)
@@ -611,11 +658,23 @@ model TemplateElement {
   is_pro_only   Boolean     @default(false)
   is_active     Boolean     @default(true)
   sort_order    Int         @default(0)
+
+  // Creator Ownership & Multi-format File Asset
+  owner_user_id String?     @db.Uuid
+  file_url      String?
+  file_format   String?     // "SVG" | "PNG" | "JPG" | "JPEG" | "GIF" | "MP4" | "MOV" | "WEBM" | "MP3" | "M4A" | "WAV"
+  file_size     Int?        // File size in bytes
+  media_type    String?     // "IMAGE" | "VECTOR" | "VIDEO" | "AUDIO"
+
+  owner         User?       @relation("CreatorElements", fields: [owner_user_id], references: [id], onDelete: Cascade)
+
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
 
   @@index([is_active])
   @@index([category])
+  @@index([owner_user_id])
+  @@index([file_format])
   @@map("template_elements")
 }
 
@@ -638,19 +697,296 @@ model Policy {
 }
 
 model Coupon {
-  id          String     @id @default(uuid()) @db.Uuid
-  code        String     @unique
-  type        CouponType
-  value       Int
-  max_uses    Int?
-  used_count  Int        @default(0)
-  min_amount  Int?
-  valid_from  DateTime?
-  valid_until DateTime?
-  is_active   Boolean    @default(true)
-  created_at  DateTime   @default(now())
+  id                  String     @id @default(uuid()) @db.Uuid
+  code                String     @unique
+  name                String?
+  type                CouponType
+  value               Int
+  max_uses            Int?
+  used_count          Int        @default(0)
+  max_uses_per_user   Int?       @default(1)
+  min_amount          Int?
+  max_discount_amount Int?
+  first_time_only     Boolean    @default(false)
+  allowed_user_emails String[]   @default([])
+  allowed_days_of_week Int[]     @default([])
+  time_start          String?
+  time_end            String?
+  scope               String     @default("ALL") // "ALL", "ADMIN_TEMPLATES", "CREATOR_TEMPLATES", "SPECIFIC_TEMPLATE", "CATEGORY"
+  category_filter     String?
+  valid_from          DateTime?
+  valid_until         DateTime?
+  is_active           Boolean    @default(true)
+  created_at          DateTime   @default(now())
 
+  creator_user_id String?    @db.Uuid
+  template_id     String?    @db.Uuid
+
+  creator  User?     @relation("CreatorCoupons", fields: [creator_user_id], references: [id], onDelete: SetNull)
+  template Template? @relation("TemplateCoupons", fields: [template_id], references: [id], onDelete: SetNull)
   payments Payment[]
 
+  @@index([creator_user_id])
+  @@index([template_id])
+  @@index([scope])
   @@map("coupons")
+}
+
+model CreatorPayoutProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  user_id             String   @unique @db.Uuid
+  account_holder_name String
+  bank_name           String
+  account_number      String
+  ifsc_code           String
+  upi_id              String?
+  pan_number          String?
+  payout_preference   String   @default("BANK") // "BANK" or "UPI"
+  is_verified         Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  user User @relation("UserPayoutProfile", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("creator_payout_profiles")
+}
+
+// ============ Photo & Wish Wall ============
+model GuestWish {
+  id            String   @id @default(uuid()) @db.Uuid
+  invitation_id String   @db.Uuid
+  guest_id      String?  @db.Uuid
+  author_name   String
+  message       String
+  photo_url     String?
+  is_approved   Boolean  @default(true)
+  is_flagged    Boolean  @default(false)
+  flag_reason   String?
+  created_at    DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitation_id], references: [id], onDelete: Cascade)
+  guest      Guest?     @relation(fields: [guest_id], references: [id], onDelete: SetNull)
+
+  @@index([invitation_id])
+  @@map("guest_wishes")
+}
+
+// ============ Custom Commission Hub ============
+model CustomDesignRequest {
+  id           String    @id @default(uuid()) @db.Uuid
+  host_user_id String    @db.Uuid
+  title        String
+  event_type   String
+  description  String
+  budget       Int
+  currency     String    @default("INR")
+  deadline     DateTime?
+  status          String    @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
+  accepted_bid_id String?   @db.Uuid
+  created_at      DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  host User        @relation("HostDesignRequests", fields: [host_user_id], references: [id], onDelete: Cascade)
+  bids DesignBid[]
+
+  @@index([host_user_id])
+  @@index([status])
+  @@map("custom_design_requests")
+}
+
+model DesignBid {
+  id              String   @id @default(uuid()) @db.Uuid
+  request_id      String   @db.Uuid
+  creator_user_id String   @db.Uuid
+  amount          Int
+  proposal        String
+  sample_url      String?
+  delivery_days   Int      @default(3)
+  status          String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  created_at      DateTime @default(now())
+
+  request CustomDesignRequest @relation(fields: [request_id], references: [id], onDelete: Cascade)
+  creator User                @relation("CreatorDesignBids", fields: [creator_user_id], references: [id], onDelete: Cascade)
+
+  @@index([request_id])
+  @@index([creator_user_id])
+  @@map("design_bids")
+}
+
+// ============ Reviews & Ratings ============
+model TemplateReview {
+  id             String   @id @default(uuid()) @db.Uuid
+  template_id    String   @db.Uuid
+  user_id        String   @db.Uuid
+  rating         Int // 1 to 5
+  review         String?
+  verified_buyer Boolean  @default(true)
+  is_featured    Boolean  @default(false)
+  created_at     DateTime @default(now())
+
+  template Template @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([template_id])
+  @@map("template_reviews")
+}
+
+// ============ Done-for-You Concierge Service ============
+model ConciergeServiceOrder {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String   @db.Uuid
+  invitation_id String?  @db.Uuid
+  status        String   @default("NEW") // NEW, ASSIGNED, IN_PROGRESS, REVIEW, DELIVERED
+  assigned_to   String?
+  notes         String?
+  amount        Int      @default(999)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  invitation Invitation? @relation(fields: [invitation_id], references: [id], onDelete: SetNull)
+
+  @@map("concierge_orders")
+}
+
+// ============ Affiliate Program ============
+model AffiliatePartner {
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @unique @db.Uuid
+  code           String   @unique
+  company_name   String?
+  category       String   @default("PHOTOGRAPHER") // PLANNER, PHOTOGRAPHER, DECORATOR, VENUE, OTHER
+  commission_pct Int      @default(10)
+  total_earned   Int      @default(0)
+  total_paid     Int      @default(0)
+  status         String   @default("ACTIVE")
+  created_at     DateTime @default(now())
+
+  user      User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  referrals AffiliateReferral[]
+
+  @@map("affiliate_partners")
+}
+
+model AffiliateReferral {
+  id                String   @id @default(uuid()) @db.Uuid
+  affiliate_id      String   @db.Uuid
+  referred_user_id  String   @db.Uuid
+  order_amount      Int
+  commission_amount Int
+  status            String   @default("PENDING") // PENDING, APPROVED, PAID
+  created_at        DateTime @default(now())
+
+  affiliate AffiliatePartner @relation(fields: [affiliate_id], references: [id], onDelete: Cascade)
+
+  @@index([affiliate_id])
+  @@map("affiliate_referrals")
+}
+
+// ============ Trust & Safety: Copyright & Strikes ============
+model CopyrightReport {
+  id             String   @id @default(uuid()) @db.Uuid
+  template_id    String?  @db.Uuid
+  reporter_name  String
+  reporter_email String
+  proof_url      String
+  description    String
+  status         String   @default("PENDING") // PENDING, UPHELD, DISMISSED
+  action_taken   String?
+  created_at     DateTime @default(now())
+
+  template Template? @relation(fields: [template_id], references: [id], onDelete: SetNull)
+
+  @@map("copyright_reports")
+}
+
+model CreatorStrike {
+  id              String   @id @default(uuid()) @db.Uuid
+  creator_user_id String   @db.Uuid
+  reason          String
+  strike_number   Int      @default(1)
+  issued_by_id    String?  @db.Uuid
+  created_at      DateTime @default(now())
+
+  creator User @relation("CreatorStrikes", fields: [creator_user_id], references: [id], onDelete: Cascade)
+
+  @@index([creator_user_id])
+  @@map("creator_strikes")
+}
+
+// ============ Operations & WhatsApp Health ============
+model WhatsAppContext {
+  id                   String   @id @default(uuid()) @db.Uuid
+  phone_number_id      String   @unique
+  display_phone_number String
+  quality_rating       String   @default("GREEN") // GREEN, YELLOW, RED
+  status               String   @default("CONNECTED")
+  daily_limit          Int      @default(1000)
+  sent_today           Int      @default(0)
+  block_rate           Float    @default(0.0)
+  is_primary           Boolean  @default(true)
+  last_health_check    DateTime @default(now())
+
+  @@map("whatsapp_contexts")
+}
+
+model DailyReconciliation {
+  id               String   @id @default(uuid()) @db.Uuid
+  date             DateTime @unique
+  total_orders     Int      @default(0)
+  gross_sales      Int      @default(0)
+  gateway_settled  Int      @default(0)
+  creator_payouts  Int      @default(0)
+  platform_fee_net Int      @default(0)
+  discrepancy      Int      @default(0)
+  status           String   @default("MATCHED") // MATCHED, REVIEW_NEEDED
+  notes            String?
+
+  @@map("daily_reconciliations")
+}
+
+// ============ Version History & Activity Log ============
+model ActivityHistory {
+  id          String   @id @default(uuid()) @db.Uuid
+  entity_type String   // "TEMPLATE" | "INVITATION"
+  entity_id   String   @db.Uuid
+  user_id     String?  @db.Uuid
+  action      String   // "EDIT_CONTENT" | "UPDATE_PALETTE" | "UPDATE_PRICE" | "PUBLISH" | "IMPORT_CSV_GUESTS" | "RESTORE_VERSION"
+  title       String
+  description String?
+  snapshot    Json?
+  version_num Int      @default(1)
+  created_at  DateTime @default(now())
+
+  user User? @relation("UserActivityHistory", fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([entity_type, entity_id])
+  @@index([user_id])
+  @@map("activity_history")
+}
+
+// ============ Creator Payout Settlements ============
+model CreatorPayoutRequest {
+  id                    String    @id @default(uuid()) @db.Uuid
+  user_id               String    @db.Uuid
+  amount                Int
+  whatsapp_fee_deducted Int       @default(0)
+  net_payout_amount     Int
+  currency              Currency  @default(INR)
+  method                String    // "BANK" | "UPI"
+  account_number        String?
+  ifsc_code             String?
+  bank_name             String?
+  upi_id                String?
+  status                String    @default("PENDING") // "PENDING" | "PROCESSING" | "COMPLETED" | "REJECTED"
+  utr_reference         String?
+  processed_at          DateTime?
+  admin_notes           String?
+  created_at            DateTime  @default(now())
+
+  user User @relation("CreatorPayoutRequests", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([status])
+  @@map("creator_payout_requests")
 }

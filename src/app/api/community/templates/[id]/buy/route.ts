@@ -4,11 +4,15 @@ import { requireUser } from "@/lib/auth-guard";
 import { ensureCreatorSubscription } from "@/lib/workspace";
 import { slugify, uniqueSuffix } from "@/lib/slug";
 import { Gateway, PaymentStatus, TemplateSource, Prisma } from "@prisma/client";
+import { getPlatformFeeConfig, computeTemplateSplit } from "@/lib/pricing-calculator";
 
-export async function POST(_: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
   if (user instanceof NextResponse) return user;
   const { id } = await ctx.params;
+
+  const body = (await req.json().catch(() => ({}))) as { coupon_code?: string };
+  const couponCode = body?.coupon_code ? body.coupon_code.toUpperCase().trim() : undefined;
 
   const source = await prisma.template.findUnique({ where: { id } });
   if (!source || !source.is_in_marketplace) {
@@ -18,15 +22,56 @@ export async function POST(_: Request, ctx: { params: Promise<{ id: string }> })
     return NextResponse.json({ error: "You already own this template." }, { status: 400 });
   }
 
-  // Lock in the SELLER's fee rate from their plan at sale time.
-  let feePct = 20;
+  // Get Super Admin platform fee config
+  const feeConfig = await getPlatformFeeConfig();
+  let feePct = feeConfig.fee_percentage;
+
+  // If creator has a specific tier plan, check their tier discount if lower
   if (source.owner_user_id) {
     const { plan } = await ensureCreatorSubscription(source.owner_user_id);
-    feePct = plan.platform_fee_pct;
+    if (plan.platform_fee_pct !== undefined && plan.platform_fee_pct < feePct) {
+      feePct = plan.platform_fee_pct;
+    }
   }
-  const gross = source.price ?? 0;
-  const platformFee = Math.round((gross * feePct) / 100);
-  const sellerAmount = gross - platformFee;
+
+  const basePrice = source.price ?? 0;
+  let discountAmount = 0;
+  let appliedCouponId: string | null = null;
+
+  // Process Coupon if provided
+  if (couponCode) {
+    const coupon = await prisma.coupon.findUnique({
+      where: { code: couponCode },
+    });
+    if (coupon && coupon.is_active) {
+      const now = new Date();
+      const isValidDate = (!coupon.valid_from || coupon.valid_from <= now) && (!coupon.valid_until || coupon.valid_until >= now);
+      const hasUses = !coupon.max_uses || coupon.used_count < coupon.max_uses;
+      const meetsMin = !coupon.min_amount || basePrice >= coupon.min_amount;
+      const matchesTemplate = !coupon.template_id || coupon.template_id === source.id;
+      const matchesCreator = !coupon.creator_user_id || coupon.creator_user_id === source.owner_user_id;
+
+      if (isValidDate && hasUses && meetsMin && matchesTemplate && matchesCreator) {
+        discountAmount =
+          coupon.type === "PERCENTAGE"
+            ? Math.round((basePrice * coupon.value) / 100)
+            : Math.min(basePrice, coupon.value);
+        appliedCouponId = coupon.id;
+      }
+    }
+  }
+
+  // Compute financial split enforcing base price rule (e.g. 500 base, 25% off = 125, host pays 375, admin keeps 10% of 500 = 50, creator receives 325)
+  const split = computeTemplateSplit({
+    basePrice,
+    discountAmount,
+    feePercentage: feePct,
+    calculateOnBasePrice: feeConfig.calculate_on_base_price,
+  });
+
+  const gross = split.hostPayAmount;
+  const platformFee = split.platformFee;
+  const sellerAmount = split.creatorReceives;
 
   // Clone the template into the buyer's workspace.
   const base = slugify(source.name);
@@ -77,6 +122,13 @@ export async function POST(_: Request, ctx: { params: Promise<{ id: string }> })
       },
     });
 
+    if (appliedCouponId) {
+      await tx.coupon.update({
+        where: { id: appliedCouponId },
+        data: { used_count: { increment: 1 } },
+      });
+    }
+
     await tx.payment.create({
       data: {
         user_id: user.id,
@@ -84,12 +136,18 @@ export async function POST(_: Request, ctx: { params: Promise<{ id: string }> })
         amount: gross,
         currency: source.currency,
         status: PaymentStatus.SUCCESS,
+        coupon_id: appliedCouponId,
+        discount_amount: discountAmount,
         metadata: {
           purpose: "community_template_buy",
           template_id: source.id,
           copy_template_id: created.id,
+          base_price: basePrice,
+          discount_amount: discountAmount,
           platform_fee: platformFee,
           seller_amount: sellerAmount,
+          fee_pct: feePct,
+          calculation_rule: feeConfig.calculate_on_base_price ? "BASE_PRICE" : "NET_PRICE",
         },
       },
     });
@@ -99,7 +157,14 @@ export async function POST(_: Request, ctx: { params: Promise<{ id: string }> })
 
   return NextResponse.json({
     ok: true,
-    templateId: copy.id,
-    receipt: { gross, platformFee, sellerAmount, feePct },
+    copyTemplateId: copy.id,
+    copySlug: copy.slug,
+    purchaseBreakdown: {
+      basePrice,
+      discount: discountAmount,
+      paid: gross,
+      platformFee,
+      creatorEarned: sellerAmount,
+    },
   });
 }

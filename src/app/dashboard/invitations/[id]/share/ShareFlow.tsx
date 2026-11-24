@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Link2, CheckCircle2, Users, CreditCard, Clipboard, ExternalLink, ArrowLeft, Sparkles, UserCheck, Rocket } from "lucide-react";
+import { GuestCsvImporter } from "@/components/invite/GuestCsvImporter";
 
 type Invitation = {
   id: string;
@@ -268,6 +269,16 @@ export function ShareFlow({ invitation }: { invitation: Invitation }) {
                     Here&apos;s the customer-ready link. Share it anywhere.
                   </p>
                   <CopyRow label="Public invitation link" value={publicUrl} />
+
+          <div className="mt-5 rounded-2xl border border-stone-100 bg-stone-50/70 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs text-stone-700">
+              <span className="font-bold block">Need personalized links per guest?</span>
+              <p className="text-[11px] text-stone-500 mt-0.5">
+                Bulk import 100+ guests from a CSV to generate personalized &quot;Dear Family&quot; WhatsApp invite links.
+              </p>
+            </div>
+            <GuestCsvImporter invitationId={invitation.id} />
+          </div>
                   <p className="mt-3 text-[11px] text-stone-500">
                     Cap: {tier?.count === null ? "Unlimited viewers" : `${tier?.count ?? 0} viewers`}. Current views counted against the cap.
                   </p>
@@ -286,6 +297,16 @@ export function ShareFlow({ invitation }: { invitation: Invitation }) {
             Send this straight to your guests. No confirmation step, no per-user cap unless you set one.
           </p>
           <CopyRow label="Public invitation link" value={publicUrl} />
+
+          <div className="mt-5 rounded-2xl border border-stone-100 bg-stone-50/70 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs text-stone-700">
+              <span className="font-bold block">Need personalized links per guest?</span>
+              <p className="text-[11px] text-stone-500 mt-0.5">
+                Bulk import 100+ guests from a CSV to generate personalized &quot;Dear Family&quot; WhatsApp invite links.
+              </p>
+            </div>
+            <GuestCsvImporter invitationId={invitation.id} />
+          </div>
           <div className="mt-6 flex justify-between">
             <button onClick={() => setBranch("pick")} className="text-xs text-stone-500">← Change branch</button>
             <a

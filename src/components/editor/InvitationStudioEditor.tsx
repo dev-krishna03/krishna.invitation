@@ -55,14 +55,51 @@ import {
   ArrowUp,
   ArrowDown,
   Scroll,
+  Frame,
+  Crop,
+  Camera,
+  Video as VideoIcon,
+  FileCode,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
 } from "lucide-react";
+import { VersionHistoryDrawer } from "@/components/common/VersionHistoryDrawer";
+
+export type ImageFrameShape =
+  | "arch"
+  | "circle"
+  | "heart"
+  | "polaroid"
+  | "jharokha"
+  | "oval"
+  | "stamp"
+  | "diamond"
+  | "squircle"
+  | "hexagon"
+  | "double-arch"
+  | "wavy";
 
 export type StudioElement = {
   id: string;
-  type: "heading" | "names" | "ganesha" | "divider" | "message" | "button" | "details" | "motif" | "image" | "qrcode" | "badge";
+  type: "heading" | "names" | "ganesha" | "divider" | "message" | "button" | "details" | "motif" | "image" | "qrcode" | "badge" | "video";
   content: string;
   imageUrl?: string;
+  videoUrl?: string;
+  fileFormat?: string;
   qrValue?: string;
+  // Frame Properties (Canva-style)
+  frameShape?: ImageFrameShape;
+  frameWidth?: number;
+  frameHeight?: number;
+  frameBorderWidth?: number;
+  frameBorderColor?: string;
+  frameBorderStyle?: "solid" | "double" | "dashed" | "gold-foil";
+  frameShadow?: "none" | "soft" | "deep" | "gold-glow" | "lift";
+  imageZoom?: number;
+  imageFilter?: "none" | "warm" | "bw" | "vintage" | "golden";
+  imageObjectPosition?: "center" | "top" | "bottom";
+  frameCaption?: string;
   x: number;
   y: number;
   fontFamily: string;
@@ -150,6 +187,12 @@ const FONT_OPTIONS = [
 
 const WEDDING_COLOR_PALETTES = [
   {
+    id: "balcony-dusk-violet",
+    name: "Balcony Dusk Violet",
+    tag: "Signature Balcony",
+    colors: ["#6520EE", "#8A4DFF", "#BFA3FF", "#F5F1FE", "#12042F", "#E5D9FC"],
+  },
+  {
     id: "royal-velvet-gold",
     name: "Royal Velvet & Gold",
     tag: "Luxury",
@@ -193,19 +236,344 @@ const SAMPLE_UPLOADED_PHOTOS = [
   {
     id: "photo-1",
     name: "Royal Couple Portrait",
-    url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=400&q=80",
+    url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "photo-2",
     name: "Pre-Wedding Mehndi",
-    url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80",
+    url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "photo-3",
     name: "Gold Ring Ceremony",
-    url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80",
+    url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "photo-4",
+    name: "Varmala Garland",
+    url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "photo-5",
+    name: "Sangeet Dance",
+    url: "https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "photo-6",
+    name: "Mandap Pheras",
+    url: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=600&q=80",
   },
 ];
+
+export type FrameShapeDefinition = {
+  id: ImageFrameShape;
+  name: string;
+  category: "royal" | "classic" | "vintage" | "modern";
+  defaultWidth: number;
+  defaultHeight: number;
+  description: string;
+  badge?: string;
+};
+
+export const FRAME_SHAPES: FrameShapeDefinition[] = [
+  { id: "arch", name: "Royal Arch", category: "royal", defaultWidth: 170, defaultHeight: 220, description: "Classic wedding archway with curved dome", badge: "Popular" },
+  { id: "circle", name: "Circle Mask", category: "classic", defaultWidth: 170, defaultHeight: 170, description: "Minimalist circular portrait cutout" },
+  { id: "heart", name: "Romantic Heart", category: "vintage", defaultWidth: 180, defaultHeight: 170, description: "Romantic heart-shaped couple frame" },
+  { id: "polaroid", name: "Polaroid Film", category: "vintage", defaultWidth: 180, defaultHeight: 220, description: "Retro instant film card with caption", badge: "Trending" },
+  { id: "jharokha", name: "Rajasthani Jharokha", category: "royal", defaultWidth: 180, defaultHeight: 230, description: "Ornate palace window with cusped arch", badge: "Indian Royal" },
+  { id: "oval", name: "Cameo Oval", category: "classic", defaultWidth: 160, defaultHeight: 210, description: "Victorian royal cameo oval frame" },
+  { id: "stamp", name: "Postage Stamp", category: "vintage", defaultWidth: 170, defaultHeight: 210, description: "Perforated vintage stamp cutout" },
+  { id: "diamond", name: "Diamond Rhombus", category: "modern", defaultWidth: 180, defaultHeight: 180, description: "Geometric 45-degree angled diamond" },
+  { id: "squircle", name: "Modern Squircle", category: "modern", defaultWidth: 170, defaultHeight: 200, description: "Soft smooth rounded squircle" },
+  { id: "hexagon", name: "Polygon Hexagon", category: "modern", defaultWidth: 180, defaultHeight: 190, description: "Geometric 6-sided honeycomb polygon" },
+  { id: "double-arch", name: "Twin Cathedral Arch", category: "royal", defaultWidth: 170, defaultHeight: 220, description: "Concentric twin wedding arch" },
+  { id: "wavy", name: "Organic Wavy Blob", category: "modern", defaultWidth: 180, defaultHeight: 190, description: "Fluid contemporary aesthetic blob" },
+];
+
+function getImageFilterCss(filter?: string) {
+  switch (filter) {
+    case "warm":
+      return "sepia(0.25) saturate(1.25) contrast(1.05)";
+    case "bw":
+      return "grayscale(1) contrast(1.15) brightness(1.02)";
+    case "vintage":
+      return "sepia(0.55) contrast(1.1) brightness(0.95)";
+    case "golden":
+      return "saturate(1.4) hue-rotate(-8deg) brightness(1.06)";
+    default:
+      return "none";
+  }
+}
+
+function getFrameContainerStyle(shape: ImageFrameShape, el: StudioElement): React.CSSProperties {
+  const width = el.frameWidth || 180;
+  const height = el.frameHeight || (shape === "circle" || shape === "diamond" ? width : 220);
+
+  let borderRadius = "0px";
+  let clipPath: string | undefined = undefined;
+
+  switch (shape) {
+    case "arch":
+      borderRadius = `${Math.min(width, height) / 2}px ${Math.min(width, height) / 2}px 16px 16px`;
+      break;
+    case "circle":
+      borderRadius = "9999px";
+      break;
+    case "oval":
+      borderRadius = "50%";
+      break;
+    case "squircle":
+      borderRadius = "32px";
+      break;
+    case "double-arch":
+      borderRadius = `${Math.min(width, height) / 2}px ${Math.min(width, height) / 2}px 20px 20px`;
+      break;
+    case "wavy":
+      borderRadius = "60% 40% 30% 70% / 60% 30% 70% 40%";
+      break;
+    case "heart":
+      clipPath = "url(#frame-heart)";
+      break;
+    case "stamp":
+      clipPath = "url(#frame-stamp)";
+      break;
+    case "diamond":
+      clipPath = "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)";
+      break;
+    case "hexagon":
+      clipPath = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
+      break;
+    case "jharokha":
+      borderRadius = "50% 50% 12px 12px / 45% 45% 12px 12px";
+      break;
+    case "polaroid":
+      borderRadius = "4px";
+      break;
+  }
+
+  let boxShadow = "none";
+  switch (el.frameShadow) {
+    case "soft":
+      boxShadow = "0 8px 24px -4px rgba(0,0,0,0.15)";
+      break;
+    case "deep":
+      boxShadow = "0 16px 36px -6px rgba(0,0,0,0.3)";
+      break;
+    case "gold-glow":
+      boxShadow = "0 0 20px rgba(217, 119, 6, 0.45), 0 0 6px rgba(251, 191, 36, 0.8)";
+      break;
+    case "lift":
+      boxShadow = "0 20px 30px -10px rgba(0,0,0,0.22), 0 10px 10px -5px rgba(0,0,0,0.06)";
+      break;
+  }
+
+  return {
+    width: `${width}px`,
+    height: shape === "circle" || shape === "diamond" ? `${width}px` : `${height}px`,
+    borderRadius,
+    clipPath,
+    boxShadow,
+  };
+}
+
+function CanvaEmptyFramePlaceholder() {
+  return (
+    <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#87CEEB] via-[#B0E0E6] to-[#90EE90] overflow-hidden flex flex-col items-center justify-center select-none pointer-events-none">
+      {/* Sun */}
+      <div className="absolute top-2.5 right-3.5 h-5 w-5 rounded-full bg-amber-300 shadow-md ring-2 ring-amber-100/60" />
+      {/* Cloud */}
+      <div className="absolute top-4 left-3 flex items-center opacity-85">
+        <div className="h-3 w-6 rounded-full bg-white shadow-xs" />
+        <div className="-ml-2.5 h-5 w-5 rounded-full bg-white shadow-xs" />
+        <div className="-ml-1.5 h-3 w-4 rounded-full bg-white shadow-xs" />
+      </div>
+      {/* Rolling Green Hills */}
+      <svg viewBox="0 0 200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-2/3">
+        <path d="M 0,120 L 0,60 Q 60,20 120,60 T 200,50 L 200,120 Z" fill="#66BB6A" />
+        <path d="M 0,120 L 0,80 Q 90,40 160,85 T 200,75 L 200,120 Z" fill="#43A047" opacity="0.9" />
+      </svg>
+      {/* Center Icon Badge */}
+      <div className="relative z-10 flex flex-col items-center p-2 rounded-xl bg-white/85 backdrop-blur-xs border border-white/60 shadow-xs">
+        <ImageIcon className="h-4 w-4 text-stone-700" />
+        <span className="mt-0.5 text-[8px] font-bold text-stone-800">Drop Photo</span>
+      </div>
+    </div>
+  );
+}
+
+function CanvaImageFrame({
+  element,
+  isSelected,
+  onReplaceImage,
+  onOpenCrop,
+  onOpenShape,
+}: {
+  element: StudioElement;
+  isSelected: boolean;
+  onReplaceImage?: () => void;
+  onOpenCrop?: () => void;
+  onOpenShape?: () => void;
+}) {
+  const shape = element.frameShape || "arch";
+  const width = element.frameWidth || 180;
+  const height =
+    element.frameHeight || (shape === "circle" || shape === "diamond" ? width : 220);
+  const borderWidth = element.frameBorderWidth ?? 2;
+  const borderColor = element.frameBorderColor || "#d97706";
+  const borderStyle = element.frameBorderStyle || "solid";
+
+  if (shape === "polaroid") {
+    return (
+      <div className="relative group/frame flex flex-col items-center">
+        {/* Floating Quick Action Pill when Selected */}
+        {isSelected && (
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-stone-900/90 backdrop-blur-xs text-white rounded-full px-2.5 py-1 text-[10px] font-bold shadow-lg z-30 pointer-events-auto">
+            <button
+              type="button"
+              onClick={onReplaceImage}
+              className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+            >
+              <Camera className="h-3 w-3" />
+              <span>Replace</span>
+            </button>
+            <span className="text-stone-500">|</span>
+            <button
+              type="button"
+              onClick={onOpenCrop}
+              className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+            >
+              <Crop className="h-3 w-3" />
+              <span>Zoom</span>
+            </button>
+            <span className="text-stone-500">|</span>
+            <button
+              type="button"
+              onClick={onOpenShape}
+              className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+            >
+              <Frame className="h-3 w-3" />
+              <span>Shape</span>
+            </button>
+          </div>
+        )}
+
+        <div
+          style={{
+            width: `${width}px`,
+            boxShadow:
+              element.frameShadow === "none"
+                ? "none"
+                : element.frameShadow === "gold-glow"
+                ? "0 0 24px rgba(217, 119, 6, 0.4), 0 10px 25px rgba(0,0,0,0.15)"
+                : "0 12px 28px -4px rgba(0,0,0,0.22), 0 0 1px rgba(0,0,0,0.15)",
+          }}
+          className="bg-white p-2.5 pb-6 rounded-sm border border-stone-200/90 transition-all select-none"
+        >
+          <div className="relative w-full aspect-square overflow-hidden bg-stone-100 rounded-2xs">
+            {element.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={element.imageUrl}
+                alt={element.content}
+                style={{
+                  transform: `scale(${(element.imageZoom || 100) / 100})`,
+                  objectPosition: element.imageObjectPosition || "center",
+                  filter: getImageFilterCss(element.imageFilter),
+                }}
+                className="w-full h-full object-cover transition-transform duration-200"
+              />
+            ) : (
+              <CanvaEmptyFramePlaceholder />
+            )}
+          </div>
+          <div className="mt-2 text-center font-serif text-[11px] font-semibold text-stone-700 tracking-wide truncate px-1">
+            {element.frameCaption || element.content || "Aarav & Priya"}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Shaped Frames
+  const containerStyle = getFrameContainerStyle(shape, element);
+  const isClipped = ["heart", "stamp", "diamond", "hexagon"].includes(shape);
+
+  return (
+    <div className="relative group/frame flex flex-col items-center">
+      {/* Floating Quick Action Pill when Selected */}
+      {isSelected && (
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-stone-900/90 backdrop-blur-xs text-white rounded-full px-2.5 py-1 text-[10px] font-bold shadow-lg z-30 pointer-events-auto">
+          <button
+            type="button"
+            onClick={onReplaceImage}
+            className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+          >
+            <Camera className="h-3 w-3" />
+            <span>Replace</span>
+          </button>
+          <span className="text-stone-500">|</span>
+          <button
+            type="button"
+            onClick={onOpenCrop}
+            className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+          >
+            <Crop className="h-3 w-3" />
+            <span>Zoom</span>
+          </button>
+          <span className="text-stone-500">|</span>
+          <button
+            type="button"
+            onClick={onOpenShape}
+            className="hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+          >
+            <Frame className="h-3 w-3" />
+            <span>Shape</span>
+          </button>
+        </div>
+      )}
+
+      {/* Frame Container */}
+      <div
+        style={{
+          ...containerStyle,
+          border:
+            !isClipped && borderWidth > 0
+              ? `${borderWidth}px ${borderStyle === "gold-foil" ? "solid" : borderStyle} ${borderColor}`
+              : undefined,
+          outline:
+            shape === "double-arch" && borderWidth > 0
+              ? `2px dashed ${borderColor}`
+              : undefined,
+          outlineOffset: shape === "double-arch" ? "-8px" : undefined,
+        }}
+        className={`relative overflow-hidden bg-stone-100 transition-all ${
+          borderStyle === "gold-foil" && !isClipped ? "ring-2 ring-amber-300/80 ring-offset-1" : ""
+        }`}
+      >
+        {element.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={element.imageUrl}
+            alt={element.content}
+            style={{
+              transform: `scale(${(element.imageZoom || 100) / 100})`,
+              objectPosition: element.imageObjectPosition || "center",
+              filter: getImageFilterCss(element.imageFilter),
+            }}
+            className="w-full h-full object-cover transition-transform duration-200"
+          />
+        ) : (
+          <CanvaEmptyFramePlaceholder />
+        )}
+      </div>
+      {element.content && !["polaroid"].includes(shape) && (
+        <span className="mt-1 text-[10px] text-stone-600 font-semibold truncate max-w-[180px]">
+          {element.content}
+        </span>
+      )}
+    </div>
+  );
+}
 
 const INITIAL_PAGES: InvitationPage[] = [
   {
@@ -272,6 +640,37 @@ const INITIAL_PAGES: InvitationPage[] = [
         animation: "pulse",
         isLocked: false,
         zIndex: 3,
+      },
+      {
+        id: "frame-couple-1",
+        type: "image",
+        content: "Aarav & Priya",
+        imageUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80",
+        frameShape: "arch",
+        frameWidth: 170,
+        frameHeight: 220,
+        frameBorderWidth: 3,
+        frameBorderColor: "#d97706",
+        frameBorderStyle: "gold-foil",
+        frameShadow: "gold-glow",
+        imageZoom: 105,
+        imageFilter: "warm",
+        imageObjectPosition: "center",
+        x: 0,
+        y: 0,
+        fontFamily: "Playfair Display",
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#92400e",
+        textAlign: "center",
+        letterSpacing: 1,
+        lineHeight: 1.4,
+        opacity: 100,
+        rotation: 0,
+        effect: "none",
+        animation: "shimmer",
+        isLocked: false,
+        zIndex: 4,
       },
       {
         id: "message-1",
@@ -515,8 +914,11 @@ const INITIAL_PAGES: InvitationPage[] = [
 export function InvitationStudioEditor() {
   // Left Rail & Drawer
   const [activeTab, setActiveTab] = useState<
-    "templates" | "elements" | "text" | "uploads" | "tools" | "music" | "background" | "layers" | null
-  >("text");
+    "templates" | "elements" | "frames" | "text" | "uploads" | "tools" | "music" | "background" | "layers" | null
+  >("frames");
+  const [frameCategoryFilter, setFrameCategoryFilter] = useState<
+    "all" | "royal" | "classic" | "vintage" | "modern"
+  >("all");
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const [assetSearchQuery, setAssetSearchQuery] = useState("");
 
@@ -534,9 +936,37 @@ export function InvitationStudioEditor() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  // Uploads State
+  // Uploads State (Support for SVG, PNG, JPG/JPEG, GIF, MP4, MOV, WebM, MP3, M4A, WAV)
+  type CreatorUploadedItem = {
+    id: string;
+    slug?: string;
+    name: string;
+    file_url?: string | null;
+    file_format?: string | null;
+    media_type?: string | null;
+    file_size?: number | null;
+    category?: string | null;
+    owner_user_id?: string | null;
+  };
+  const [creatorElements, setCreatorElements] = useState<CreatorUploadedItem[]>([]);
+  const [isUploadingElement, setIsUploadingElement] = useState(false);
+  const [uploadFeedback, setUploadFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [uploadedPhotos, setUploadedPhotos] = useState(SAMPLE_UPLOADED_PHOTOS);
-  const [uploadActiveSubTab, setUploadActiveSubTab] = useState<"images" | "audio">("images");
+  const [uploadActiveSubTab, setUploadActiveSubTab] = useState<"all" | "images" | "videos" | "audio">("all");
+
+  useEffect(() => {
+    fetch("/api/elements")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.elements) {
+          const custom = data.elements.filter((e: any) => e.owner_user_id || e.file_url);
+          if (custom.length > 0) {
+            setCreatorElements(custom);
+          }
+        }
+      })
+      .catch((err) => console.error("Could not fetch elements:", err));
+  }, []);
 
   // Tools State
   const [qrDestination, setQrDestination] = useState("https://krishnaweddings.com/rsvp/aarav-priya");
@@ -550,7 +980,21 @@ export function InvitationStudioEditor() {
 
   // Top Contextual Ribbon Popovers
   const [activePopover, setActivePopover] = useState<
-    "font" | "color" | "spacing" | "effects" | "animate" | "position" | "transparency" | null
+    | "font"
+    | "color"
+    | "spacing"
+    | "effects"
+    | "animate"
+    | "position"
+    | "transparency"
+    | "frameShape"
+    | "frameImage"
+    | "frameBorder"
+    | "frameZoom"
+    | "frameFilter"
+    | "frameShadow"
+    | "frameSize"
+    | null
   >(null);
 
   // Save or Share to Community Modal
@@ -568,7 +1012,7 @@ export function InvitationStudioEditor() {
   // Right Element Inspector & Palette State
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const inspectorColorPickerId = useId();
-  const [selectedPaletteId, setSelectedPaletteId] = useState("royal-velvet-gold");
+  const [selectedPaletteId, setSelectedPaletteId] = useState("balcony-dusk-violet");
 
   // MULTI-PAGE WEB CONTINUOUS STREAM MODEL
   const [pages, setPages] = useState<InvitationPage[]>(INITIAL_PAGES);
@@ -850,29 +1294,116 @@ export function InvitationStudioEditor() {
     setActivePageIndex(Math.max(0, index - 1));
   }
 
-  // File Upload Handler
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  // File Upload Handler (Supports SVG, PNG, JPG/JPEG, GIF, MP4, MOV, WebM, MP3, M4A, WAV)
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const file = files[0];
 
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const url = event.target?.result as string;
-        const newPhoto = { id: `upload-${Date.now()}`, name: file.name, url };
-        setUploadedPhotos([newPhoto, ...uploadedPhotos]);
-        addElement("image", file.name, { imageUrl: url });
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith("audio/")) {
-      const audioUrl = URL.createObjectURL(file);
-      const newSong = { name: file.name.replace(/\.[^/.]+$/, ""), url: audioUrl };
-      setSelectedSong(newSong);
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.play().then(() => setIsPlayingAudio(true)).catch(() => {});
+    const ext = file.name.split(".").pop()?.toUpperCase() || "";
+    const validFormats = ["SVG", "PNG", "JPG", "JPEG", "GIF", "MP4", "MOV", "WEBM", "MP3", "M4A", "WAV"];
+    if (!validFormats.includes(ext)) {
+      setUploadFeedback({
+        type: "error",
+        message: `.${ext} format not supported. Please upload SVG, PNG, JPG, GIF, MP4, MOV, WebM, MP3, M4A, or WAV.`,
+      });
+      return;
+    }
+
+    setIsUploadingElement(true);
+    setUploadFeedback(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+      formData.append("category", "creator-uploads");
+
+      const res = await fetch("/api/elements/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to upload element");
       }
+
+      const newEl = data.element;
+      setCreatorElements((prev) => [newEl, ...prev]);
+
+      // If user uploaded an image or vector (SVG, PNG, JPG, JPEG, GIF)
+      if (
+        newEl.media_type === "IMAGE" ||
+        newEl.media_type === "VECTOR" ||
+        ["SVG", "PNG", "JPG", "JPEG", "GIF"].includes(newEl.file_format)
+      ) {
+        const photoObj = { id: newEl.id, name: newEl.name, url: newEl.file_url || "" };
+        setUploadedPhotos((prev) => [photoObj, ...prev]);
+
+        // If a frame is currently selected, replace its image
+        if (selectedElement && selectedElement.type === "image") {
+          updateSelected("imageUrl", newEl.file_url);
+        } else {
+          // Otherwise add as new image frame element on canvas
+          addElement("image", newEl.name, {
+            imageUrl: newEl.file_url,
+            fileFormat: newEl.file_format,
+            frameShape: "arch",
+            frameWidth: 200,
+            frameHeight: 250,
+            frameBorderWidth: 2,
+            frameBorderColor: "#d97706",
+          });
+        }
+      } else if (newEl.media_type === "VIDEO" || ["MP4", "MOV", "WEBM"].includes(newEl.file_format)) {
+        // Add as playable video element to canvas
+        addElement("video", newEl.name, {
+          videoUrl: newEl.file_url,
+          fileFormat: newEl.file_format,
+        });
+      } else if (newEl.media_type === "AUDIO" || ["MP3", "M4A", "WAV"].includes(newEl.file_format)) {
+        // Set as active celebration soundtrack
+        const newSong = { name: newEl.name, url: newEl.file_url || "" };
+        setSelectedSong(newSong);
+        if (audioRef.current && newEl.file_url) {
+          audioRef.current.src = newEl.file_url;
+          audioRef.current.play().then(() => setIsPlayingAudio(true)).catch(() => {});
+        }
+      }
+
+      setUploadFeedback({
+        type: "success",
+        message: `Uploaded ${newEl.name} (${newEl.file_format}) successfully! Added to your creator library.`,
+      });
+      setTimeout(() => setUploadFeedback(null), 4500);
+    } catch (err: any) {
+      console.warn("Upload endpoint warning, falling back to local memory:", err);
+      if (file.type.startsWith("image/") || ext === "SVG") {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const url = event.target?.result as string;
+          const fallbackItem: CreatorUploadedItem = {
+            id: `local-${Date.now()}`,
+            name: file.name,
+            file_url: url,
+            file_format: ext,
+            media_type: ext === "SVG" ? "VECTOR" : "IMAGE",
+            file_size: file.size,
+          };
+          setCreatorElements((prev) => [fallbackItem, ...prev]);
+          setUploadedPhotos((prev) => [{ id: fallbackItem.id, name: file.name, url }, ...prev]);
+          addElement("image", file.name, { imageUrl: url, fileFormat: ext });
+        };
+        reader.readAsDataURL(file);
+      }
+      setUploadFeedback({
+        type: "error",
+        message: err.message || "Upload failed. Please try again.",
+      });
+    } finally {
+      setIsUploadingElement(false);
+      if (e.target) e.target.value = "";
     }
   }
 
@@ -910,7 +1441,7 @@ export function InvitationStudioEditor() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-white text-stone-900 font-sans selection:bg-purple-100 selection:text-purple-900">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-white text-stone-900 font-sans selection:bg-rose-100 selection:text-violet-950">
       {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
@@ -920,17 +1451,17 @@ export function InvitationStudioEditor() {
         onPause={() => setIsPlayingAudio(false)}
       />
 
-      {/* Hidden File Picker Input */}
+      {/* Hidden File Picker Input (Supports SVG, PNG, JPG/JPEG, GIF, MP4, MOV, WebM, MP3, M4A, WAV) */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,audio/*"
+        accept=".svg,.png,.jpg,.jpeg,.gif,.mp4,.mov,.webm,.mp3,.m4a,.wav,image/svg+xml,image/png,image/jpeg,image/gif,video/mp4,video/quicktime,video/webm,audio/mpeg,audio/mp4,audio/wav,audio/x-m4a"
         onChange={handleFileUpload}
         className="sr-only"
       />
 
-      {/* ================= 1. STUDIO SIGNATURE PURPLE TOP HEADER BAR ================= */}
-      <header className="flex h-14 shrink-0 items-center justify-between bg-gradient-to-r from-[#7D2AE8] via-[#6B21A8] to-[#581C87] px-4 shadow-md z-40 text-white">
+      {/* ================= 1. STUDIO SIGNATURE BALCONY DUSK VIOLET TOP HEADER BAR ================= */}
+      <header className="flex h-14 shrink-0 items-center justify-between bg-gradient-to-r from-[#12042F] via-[#21094E] to-[#6520EE] px-4 shadow-md z-40 text-white">
         <div className="flex items-center gap-3">
           <Link
             href="/company"
@@ -954,6 +1485,7 @@ export function InvitationStudioEditor() {
               <Check className="h-3 w-3" />
               <span>Autosaved</span>
             </span>
+            <VersionHistoryDrawer entityType="TEMPLATE" entityId="00000000-0000-0000-0000-000000000001" />
           </div>
         </div>
 
@@ -973,7 +1505,7 @@ export function InvitationStudioEditor() {
               onClick={() => setViewMode("mobile")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
                 viewMode === "mobile"
-                  ? "bg-white text-purple-900 shadow-xs font-bold"
+                  ? "bg-white text-violet-950 shadow-xs font-bold"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -984,7 +1516,7 @@ export function InvitationStudioEditor() {
               onClick={() => setViewMode("desktop")}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
                 viewMode === "desktop"
-                  ? "bg-white text-purple-900 shadow-xs font-bold"
+                  ? "bg-white text-violet-950 shadow-xs font-bold"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -1000,7 +1532,7 @@ export function InvitationStudioEditor() {
             onClick={toggleAudio}
             className={`flex h-8.5 w-8.5 items-center justify-center rounded-xl transition-colors ${
               isPlayingAudio
-                ? "bg-rose-500 text-white animate-pulse shadow-xs"
+                ? "bg-violet-500 text-white animate-pulse shadow-xs"
                 : "bg-white/15 text-white hover:bg-white/25"
             }`}
             title={isPlayingAudio ? "Mute Background Music" : "Play Background Music"}
@@ -1033,7 +1565,7 @@ export function InvitationStudioEditor() {
                     setIsLivePreviewOpen(true);
                     setPresentMenuOpen(false);
                   }}
-                  className="w-full text-left rounded-xl p-2.5 hover:bg-purple-50 transition-colors"
+                  className="w-full text-left rounded-xl p-2.5 hover:bg-violet-50 transition-colors"
                 >
                   <div className="text-xs font-bold text-stone-900">Standard Continuous Web Scroll</div>
                   <div className="text-[10px] text-stone-500">Unfolds live with celebratory audio & petals</div>
@@ -1043,7 +1575,7 @@ export function InvitationStudioEditor() {
                     alert("Presenter view with RSVP counter & timeline queue activated!");
                     setPresentMenuOpen(false);
                   }}
-                  className="w-full text-left rounded-xl p-2.5 hover:bg-purple-50 transition-colors"
+                  className="w-full text-left rounded-xl p-2.5 hover:bg-violet-50 transition-colors"
                 >
                   <div className="text-xs font-bold text-stone-900">Presenter View with Notes</div>
                   <div className="text-[10px] text-stone-500">Display RSVP count and stage cues</div>
@@ -1056,7 +1588,7 @@ export function InvitationStudioEditor() {
             onClick={() => setShareModalOpen(true)}
             className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-1.5 text-xs font-bold text-stone-900 shadow-md hover:bg-stone-50 active:scale-95 transition-all cursor-pointer"
           >
-            <Share2 className="h-3.5 w-3.5 text-purple-700" />
+            <Share2 className="h-3.5 w-3.5 text-violet-800" />
             <span>Share</span>
           </button>
         </div>
@@ -1065,12 +1597,415 @@ export function InvitationStudioEditor() {
       {/* ================= 2. STUDIO CONTEXTUAL HORIZONTAL ACTION RIBBON (TOP TOOLBAR) ================= */}
       <div className="relative z-30 flex h-11 shrink-0 items-center justify-between border-b border-stone-200 bg-white px-4 shadow-2xs text-xs">
         {selectedElement ? (
-          /* ELEMENT SELECTED CONTEXTUAL CONTROLS */
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="relative">
+          selectedElement.type === "image" ? (
+            /* CANVA IMAGE & FRAME CONTEXTUAL ACTION RIBBON */
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* 1. FRAME SHAPE SELECTOR */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameShape" ? null : "frameShape")}
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Frame Shape"
+                >
+                  <Frame className="h-3.5 w-3.5 text-violet-700" />
+                  <span className="capitalize">{FRAME_SHAPES.find((s) => s.id === (selectedElement?.frameShape || "arch"))?.name || "Frame Shape"}</span>
+                  <span className="text-[10px] text-stone-400">▼</span>
+                </button>
+
+                {activePopover === "frameShape" && (
+                  <div className="absolute top-9 left-0 w-80 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-xl z-50 space-y-2.5">
+                    <div className="flex items-center justify-between pb-1 border-b border-stone-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                        Choose Frame Shape
+                      </span>
+                      <span className="text-[10px] text-violet-700 font-semibold">12 Canva Masks</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                      {FRAME_SHAPES.map((shape) => (
+                        <button
+                          key={shape.id}
+                          onClick={() => {
+                            updateSelected("frameShape", shape.id);
+                            if (!selectedElement?.frameWidth) {
+                              updateSelected("frameWidth", shape.defaultWidth);
+                              updateSelected("frameHeight", shape.defaultHeight);
+                            }
+                            setActivePopover(null);
+                          }}
+                          className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                            (selectedElement?.frameShape || "arch") === shape.id
+                              ? "border-violet-600 bg-violet-50 text-violet-900 font-bold ring-1 ring-violet-300"
+                              : "border-stone-200 hover:border-stone-400 hover:bg-stone-50 text-stone-700"
+                          }`}
+                        >
+                          <div className="h-9 w-9 flex items-center justify-center bg-stone-100 rounded-md mb-1 border border-stone-200">
+                            <span className="text-xs font-serif">✦</span>
+                          </div>
+                          <span className="text-[10px] truncate max-w-full">{shape.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-4 w-px bg-stone-200 mx-0.5" />
+
+              {/* 2. REPLACE PHOTO BUTTON */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameImage" ? null : "frameImage")}
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Replace Photo"
+                >
+                  <Camera className="h-3.5 w-3.5 text-violet-700" />
+                  <span>Replace Photo</span>
+                  <span className="text-[10px] text-stone-400">▼</span>
+                </button>
+
+                {activePopover === "frameImage" && (
+                  <div className="absolute top-9 left-0 w-80 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-xl z-50 space-y-3">
+                    <div className="flex items-center justify-between pb-1 border-b border-stone-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                        Replace Photo in Frame
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-[10px] font-bold text-violet-700 hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Upload className="h-3 w-3" />
+                        Upload New
+                      </button>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <span className="text-[11px] font-semibold text-stone-700 block">Wedding Gallery Stock</span>
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedPhotos.map((photo) => (
+                          <button
+                            key={photo.id}
+                            onClick={() => {
+                              updateSelected("imageUrl", photo.url);
+                              updateSelected("content", photo.name);
+                              setActivePopover(null);
+                            }}
+                            className="relative group rounded-lg overflow-hidden border border-stone-200 aspect-square hover:ring-2 hover:ring-violet-600 transition-all cursor-pointer"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={photo.url} alt={photo.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-stone-100">
+                      <span className="text-[10px] font-bold uppercase text-stone-400 block mb-1">Or Image URL</span>
+                      <input
+                        type="text"
+                        placeholder="https://..."
+                        defaultValue={selectedElement.imageUrl || ""}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            updateSelected("imageUrl", (e.target as HTMLInputElement).value);
+                            setActivePopover(null);
+                          }
+                        }}
+                        className="w-full rounded-lg border border-stone-200 px-2.5 py-1 text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-4 w-px bg-stone-200 mx-0.5" />
+
+              {/* 3. BORDER CONTROLS */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameBorder" ? null : "frameBorder")}
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Frame Border"
+                >
+                  <div
+                    style={{ backgroundColor: selectedElement.frameBorderColor || "#d97706" }}
+                    className="h-3.5 w-3.5 rounded-full border border-stone-300"
+                  />
+                  <span>Border: {selectedElement.frameBorderWidth ?? 2}px</span>
+                  <span className="text-[10px] text-stone-400">▼</span>
+                </button>
+
+                {activePopover === "frameBorder" && (
+                  <div className="absolute top-9 left-0 w-64 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-xl z-50 space-y-3">
+                    <div>
+                      <div className="flex justify-between text-[11px] font-semibold text-stone-700 mb-1">
+                        <span>Border Width</span>
+                        <span className="font-mono">{selectedElement.frameBorderWidth ?? 2}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={16}
+                        value={selectedElement.frameBorderWidth ?? 2}
+                        onChange={(e) => updateSelected("frameBorderWidth", Number(e.target.value))}
+                        className="w-full accent-violet-700 cursor-pointer"
+                      />
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-semibold text-stone-700 block mb-1.5">Border Style</span>
+                      <div className="grid grid-cols-4 gap-1 text-[10px] font-semibold">
+                        {[
+                          { id: "solid", label: "Solid" },
+                          { id: "double", label: "Double" },
+                          { id: "dashed", label: "Dashed" },
+                          { id: "gold-foil", label: "Gold Foil" },
+                        ].map((st) => (
+                          <button
+                            key={st.id}
+                            onClick={() => updateSelected("frameBorderStyle", st.id)}
+                            className={`py-1 rounded-md border text-center transition-all ${
+                              (selectedElement.frameBorderStyle || "solid") === st.id
+                                ? "bg-violet-50 border-violet-600 text-violet-800 font-bold"
+                                : "border-stone-200 hover:bg-stone-50 text-stone-600"
+                            }`}
+                          >
+                            {st.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-semibold text-stone-700 block mb-1.5">Border Color</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { hex: "#d97706", name: "Imperial Gold" },
+                          { hex: "#881337", name: "Royal Rose" },
+                          { hex: "#6520EE", name: "Dusk Violet" },
+                          { hex: "#ffffff", name: "Ivory White" },
+                          { hex: "#047857", name: "Vedic Emerald" },
+                          { hex: "#1c1917", name: "Rich Charcoal" },
+                        ].map((c) => (
+                          <button
+                            key={c.hex}
+                            onClick={() => updateSelected("frameBorderColor", c.hex)}
+                            style={{ backgroundColor: c.hex }}
+                            className={`h-6 w-6 rounded-full border transition-transform ${
+                              (selectedElement.frameBorderColor || "#d97706") === c.hex
+                                ? "scale-115 ring-2 ring-violet-600 border-white shadow-xs"
+                                : "border-stone-300 hover:scale-105"
+                            }`}
+                            title={c.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-4 w-px bg-stone-200 mx-0.5" />
+
+              {/* 4. CROP & ZOOM */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameZoom" ? null : "frameZoom")}
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Zoom & Crop"
+                >
+                  <Crop className="h-3.5 w-3.5 text-violet-700" />
+                  <span>Zoom: {selectedElement.imageZoom || 100}%</span>
+                </button>
+
+                {activePopover === "frameZoom" && (
+                  <div className="absolute top-9 left-0 w-60 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-xl z-50 space-y-3">
+                    <div>
+                      <div className="flex justify-between text-[11px] font-semibold text-stone-700 mb-1">
+                        <span>Photo Zoom inside Frame</span>
+                        <span className="font-mono">{selectedElement.imageZoom || 100}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={100}
+                        max={200}
+                        step={5}
+                        value={selectedElement.imageZoom || 100}
+                        onChange={(e) => updateSelected("imageZoom", Number(e.target.value))}
+                        className="w-full accent-violet-700 cursor-pointer"
+                      />
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-semibold text-stone-700 block mb-1">Crop Alignment</span>
+                      <div className="grid grid-cols-3 gap-1 text-[10px] font-semibold">
+                        {[
+                          { id: "top", label: "Top" },
+                          { id: "center", label: "Center" },
+                          { id: "bottom", label: "Bottom" },
+                        ].map((pos) => (
+                          <button
+                            key={pos.id}
+                            onClick={() => updateSelected("imageObjectPosition", pos.id)}
+                            className={`py-1 rounded-md border text-center transition-all ${
+                              (selectedElement.imageObjectPosition || "center") === pos.id
+                                ? "bg-violet-50 border-violet-600 text-violet-800 font-bold"
+                                : "border-stone-200 hover:bg-stone-50 text-stone-600"
+                            }`}
+                          >
+                            {pos.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 5. PHOTO FILTERS */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameFilter" ? null : "frameFilter")}
+                  className="flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Photo Filter"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+                  <span>Filter</span>
+                </button>
+
+                {activePopover === "frameFilter" && (
+                  <div className="absolute top-9 left-0 w-56 rounded-2xl border border-stone-200 bg-white p-3 shadow-xl z-50 space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 px-1 block">
+                      Color Grading Presets
+                    </span>
+                    {[
+                      { id: "none", label: "Original Clean" },
+                      { id: "warm", label: "☀️ Warm Sunlight" },
+                      { id: "bw", label: "🖤 Noir Black & White" },
+                      { id: "vintage", label: "📜 Royal Vintage Sepia" },
+                      { id: "golden", label: "✨ Golden Hour Glow" },
+                    ].map((fil) => (
+                      <button
+                        key={fil.id}
+                        onClick={() => {
+                          updateSelected("imageFilter", fil.id);
+                          setActivePopover(null);
+                        }}
+                        className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all ${
+                          (selectedElement.imageFilter || "none") === fil.id
+                            ? "bg-violet-50 text-violet-800 font-bold"
+                            : "text-stone-700 hover:bg-stone-50"
+                        }`}
+                      >
+                        {fil.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 6. SHADOW & GLOW */}
+              <div className="relative">
+                <button
+                  onClick={() => setActivePopover(activePopover === "frameShadow" ? null : "frameShadow")}
+                  className="flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
+                  title="Frame Shadow"
+                >
+                  <span>Shadow</span>
+                </button>
+
+                {activePopover === "frameShadow" && (
+                  <div className="absolute top-9 left-0 w-52 rounded-2xl border border-stone-200 bg-white p-3 shadow-xl z-50 space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 px-1 block">
+                      Frame Elevation
+                    </span>
+                    {[
+                      { id: "none", label: "None (Flat)" },
+                      { id: "soft", label: "Soft Shadow" },
+                      { id: "deep", label: "Deep 3D Shadow" },
+                      { id: "gold-glow", label: "✨ Golden Halo" },
+                      { id: "lift", label: "💫 Floating Lift" },
+                    ].map((sh) => (
+                      <button
+                        key={sh.id}
+                        onClick={() => {
+                          updateSelected("frameShadow", sh.id);
+                          setActivePopover(null);
+                        }}
+                        className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all ${
+                          (selectedElement.frameShadow || "none") === sh.id
+                            ? "bg-violet-50 text-violet-800 font-bold"
+                            : "text-stone-700 hover:bg-stone-50"
+                        }`}
+                      >
+                        {sh.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 7. POLAROID CAPTION INPUT (if polaroid) */}
+              {(selectedElement.frameShape === "polaroid") && (
+                <input
+                  value={selectedElement.frameCaption || ""}
+                  onChange={(e) => updateSelected("frameCaption", e.target.value)}
+                  placeholder="Caption: e.g. Aarav & Priya"
+                  className="rounded-lg border border-stone-200 px-2 py-1 text-xs font-serif font-bold text-stone-800 max-w-[140px]"
+                  title="Edit Polaroid Caption"
+                />
+              )}
+
+              {/* 8. DETACH / RESET PHOTO */}
+              {selectedElement.imageUrl && (
+                <button
+                  onClick={() => updateSelected("imageUrl", "")}
+                  className="h-8 px-2 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-1 hover:bg-rose-50 hover:text-rose-700 text-stone-600 text-xs"
+                  title="Detach photo from frame"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  <span className="hidden sm:inline">Detach</span>
+                </button>
+              )}
+
+              <div className="h-4 w-px bg-stone-200 mx-0.5" />
+
+              {/* DUPLICATE, LOCK, DELETE */}
+              <button
+                onClick={() => duplicateElement(selectedElement.id)}
+                className="h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 flex items-center justify-center hover:bg-white text-stone-700"
+                title="Duplicate"
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </button>
+
+              <button
+                onClick={() => updateSelected("isLocked", !selectedElement.isLocked)}
+                className={`h-8 w-8 rounded-lg border flex items-center justify-center ${
+                  selectedElement.isLocked
+                    ? "bg-amber-50 border-amber-300 text-amber-700"
+                    : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
+                }`}
+                title={selectedElement.isLocked ? "Unlock" : "Lock"}
+              >
+                {selectedElement.isLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
+              </button>
+
+              <button
+                onClick={() => deleteElement(selectedElement.id)}
+                className="h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 flex items-center justify-center hover:bg-rose-50 hover:text-rose-700 text-stone-700"
+                title="Delete"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            /* TEXT & OTHER ELEMENTS CONTEXTUAL ACTION RIBBON */
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="relative">
               <button
                 onClick={() => setActivePopover(activePopover === "font" ? null : "font")}
-                className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-purple-300"
+                className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-800 hover:bg-white hover:border-violet-300"
               >
                 <span className="truncate max-w-[110px]">{selectedElement.fontFamily}</span>
                 <span className="text-[10px] text-stone-400">▼</span>
@@ -1089,8 +2024,8 @@ export function InvitationStudioEditor() {
                         setActivePopover(null);
                       }}
                       style={{ fontFamily: f.name }}
-                      className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold hover:bg-purple-50 transition-colors ${
-                        selectedElement.fontFamily === f.name ? "bg-purple-50 text-purple-800 font-bold" : "text-stone-800"
+                      className={`w-full text-left rounded-xl px-2.5 py-1.5 text-xs font-semibold hover:bg-violet-50 transition-colors ${
+                        selectedElement.fontFamily === f.name ? "bg-violet-50 text-rose-800 font-bold" : "text-stone-800"
                       }`}
                     >
                       {f.label}
@@ -1114,7 +2049,7 @@ export function InvitationStudioEditor() {
                 type="number"
                 value={selectedElement.fontSize}
                 onChange={(e) => updateSelected("fontSize", Number(e.target.value))}
-                className="w-8 text-center font-mono text-xs font-bold bg-transparent outline-none text-purple-800"
+                className="w-8 text-center font-mono text-xs font-bold bg-transparent outline-none text-rose-800"
               />
               <button
                 onClick={() => updateSelected("fontSize", Math.min(72, selectedElement.fontSize + 1))}
@@ -1128,7 +2063,7 @@ export function InvitationStudioEditor() {
             <div className="relative">
               <button
                 onClick={() => setActivePopover(activePopover === "color" ? null : "color")}
-                className="flex flex-col items-center justify-center h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 hover:bg-white hover:border-purple-300"
+                className="flex flex-col items-center justify-center h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 hover:bg-white hover:border-violet-300"
                 title="Text Color"
               >
                 <span className="font-serif font-bold text-xs leading-none">A</span>
@@ -1152,7 +2087,7 @@ export function InvitationStudioEditor() {
                       htmlFor={colorPickerInputId}
                       className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:bg-stone-100 cursor-pointer"
                     >
-                      <Pipette className="h-3 w-3 text-purple-600" />
+                      <Pipette className="h-3 w-3 text-violet-700" />
                       <span>Custom Picker</span>
                       <input
                         id={colorPickerInputId}
@@ -1187,7 +2122,7 @@ export function InvitationStudioEditor() {
                           style={{ backgroundColor: c }}
                           className={`h-5 w-5 rounded-full border transition-transform ${
                             selectedElement.color.toLowerCase() === c.toLowerCase()
-                              ? "scale-120 border-purple-600 ring-2 ring-purple-200"
+                              ? "scale-120 border-rose-600 ring-2 ring-rose-200"
                               : "border-stone-300 hover:scale-110"
                           }`}
                         />
@@ -1204,7 +2139,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isBold", !selectedElement.isBold)}
                 className={`h-7 w-7 rounded flex items-center justify-center font-bold ${
-                  selectedElement.isBold ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isBold ? "bg-violet-700 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Bold"
               >
@@ -1213,7 +2148,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isItalic", !selectedElement.isItalic)}
                 className={`h-7 w-7 rounded flex items-center justify-center ${
-                  selectedElement.isItalic ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isItalic ? "bg-violet-700 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Italic"
               >
@@ -1222,7 +2157,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isUnderline", !selectedElement.isUnderline)}
                 className={`h-7 w-7 rounded flex items-center justify-center ${
-                  selectedElement.isUnderline ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isUnderline ? "bg-violet-700 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Underline"
               >
@@ -1231,7 +2166,7 @@ export function InvitationStudioEditor() {
               <button
                 onClick={() => updateSelected("isUppercase", !selectedElement.isUppercase)}
                 className={`h-7 w-7 rounded flex items-center justify-center font-bold text-[10px] ${
-                  selectedElement.isUppercase ? "bg-purple-600 text-white" : "text-stone-700 hover:bg-white"
+                  selectedElement.isUppercase ? "bg-violet-700 text-white" : "text-stone-700 hover:bg-white"
                 }`}
                 title="Uppercase toggle"
               >
@@ -1263,7 +2198,7 @@ export function InvitationStudioEditor() {
                       step={0.5}
                       value={selectedElement.letterSpacing}
                       onChange={(e) => updateSelected("letterSpacing", Number(e.target.value))}
-                      className="w-full accent-purple-600 cursor-pointer"
+                      className="w-full accent-rose-600 cursor-pointer"
                     />
                   </div>
 
@@ -1279,7 +2214,7 @@ export function InvitationStudioEditor() {
                       step={0.1}
                       value={selectedElement.lineHeight}
                       onChange={(e) => updateSelected("lineHeight", Number(e.target.value))}
-                      className="w-full accent-purple-600 cursor-pointer"
+                      className="w-full accent-rose-600 cursor-pointer"
                     />
                   </div>
                 </div>
@@ -1292,7 +2227,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePopover(activePopover === "effects" ? null : "effects")}
                 className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-semibold transition-colors ${
                   selectedElement.effect !== "none"
-                    ? "bg-purple-50 text-purple-700 border-purple-300 font-bold"
+                    ? "bg-violet-50 text-violet-800 border-violet-300 font-bold"
                     : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
                 }`}
               >
@@ -1320,7 +2255,7 @@ export function InvitationStudioEditor() {
                       }}
                       className={`w-full text-left rounded-xl p-2 text-xs font-semibold border transition-all ${
                         selectedElement.effect === eff.id
-                          ? "bg-purple-50 border-purple-400 text-purple-900"
+                          ? "bg-violet-50 border-rose-400 text-violet-950"
                           : "border-stone-200 hover:bg-stone-50 text-stone-700"
                       }`}
                     >
@@ -1337,7 +2272,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePopover(activePopover === "animate" ? null : "animate")}
                 className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-semibold transition-colors ${
                   selectedElement.animation !== "none"
-                    ? "bg-purple-50 text-purple-700 border-purple-300 font-bold"
+                    ? "bg-violet-50 text-violet-800 border-violet-300 font-bold"
                     : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
                 }`}
               >
@@ -1365,7 +2300,7 @@ export function InvitationStudioEditor() {
                       }}
                       className={`w-full text-left rounded-xl p-2 text-xs font-semibold border transition-all ${
                         selectedElement.animation === anim.id
-                          ? "bg-purple-50 border-purple-400 text-purple-900"
+                          ? "bg-violet-50 border-rose-400 text-violet-950"
                           : "border-stone-200 hover:bg-stone-50 text-stone-700"
                       }`}
                     >
@@ -1400,13 +2335,14 @@ export function InvitationStudioEditor() {
 
             <button
               onClick={() => deleteElement(selectedElement.id)}
-              className="h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 text-stone-700"
+              className="h-8 w-8 rounded-lg border border-stone-200 bg-stone-50 flex items-center justify-center hover:bg-violet-50 hover:text-violet-700 text-stone-700"
               title="Delete"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
-        ) : (
+        )
+      ) : (
           /* CANVAS BACKGROUND / WEB FLOW PROPERTIES */
           <div className="flex items-center gap-3 text-xs text-stone-600">
             <span className="font-semibold text-stone-500">Continuous Web Invitation:</span>
@@ -1421,7 +2357,7 @@ export function InvitationStudioEditor() {
                     onClick={() => setCurrentTemplate(t)}
                     className={`h-6 w-9 rounded-md bg-gradient-to-r ${t.bg} border transition-all ${
                       currentTemplate.id === t.id
-                        ? "border-purple-600 scale-110 shadow-xs ring-1 ring-purple-300"
+                        ? "border-rose-600 scale-110 shadow-xs ring-1 ring-rose-300"
                         : "border-stone-300 hover:scale-105"
                     }`}
                     title={t.name}
@@ -1446,7 +2382,7 @@ export function InvitationStudioEditor() {
             <div className="h-4 w-px bg-stone-200" />
 
             {/* Section Count Pill */}
-            <div className="flex items-center gap-1 bg-purple-50 text-purple-800 px-2.5 py-0.5 rounded-full border border-purple-200 font-semibold text-[11px]">
+            <div className="flex items-center gap-1 bg-violet-50 text-rose-800 px-2.5 py-0.5 rounded-full border border-violet-200 font-semibold text-[11px]">
               <Scroll className="h-3 w-3" />
               <span>{pages.length} Continuous Web Sections</span>
             </div>
@@ -1460,6 +2396,7 @@ export function InvitationStudioEditor() {
         <aside className="w-18 shrink-0 border-r border-stone-200 bg-white flex flex-col items-center py-3 gap-1.5 z-20 shadow-xs">
           {[
             { id: "templates", label: "Design", icon: Palette },
+            { id: "frames", label: "Frames", icon: Frame },
             { id: "elements", label: "Elements", icon: Sparkles },
             { id: "text", label: "Text", icon: Type },
             { id: "uploads", label: "Uploads", icon: Upload },
@@ -1483,11 +2420,11 @@ export function InvitationStudioEditor() {
                 }}
                 className={`group flex flex-col items-center justify-center w-14 h-13 rounded-xl transition-all cursor-pointer ${
                   isActive
-                    ? "bg-purple-50 text-purple-700 font-bold border border-purple-200 shadow-xs"
+                    ? "bg-violet-50 text-violet-800 font-bold border border-violet-200 shadow-xs"
                     : "text-stone-500 hover:bg-stone-50 hover:text-stone-900 font-medium"
                 }`}
               >
-                <Icon className={`h-4.5 w-4.5 transition-transform group-hover:scale-110 ${isActive ? "text-purple-700" : "text-stone-500"}`} />
+                <Icon className={`h-4.5 w-4.5 transition-transform group-hover:scale-110 ${isActive ? "text-violet-800" : "text-stone-500"}`} />
                 <span className="mt-1 text-[9px] tracking-tight">{tab.label}</span>
               </button>
             );
@@ -1508,15 +2445,16 @@ export function InvitationStudioEditor() {
               <div className="p-3.5 border-b border-stone-200 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif text-sm font-bold text-stone-900 capitalize flex items-center gap-1.5">
-                    {activeTab === "uploads" && <Upload className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "tools" && <Wrench className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "templates" && <Palette className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "elements" && <Sparkles className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "text" && <Type className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "music" && <Music className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "background" && <ImageIcon className="h-4 w-4 text-purple-600" />}
-                    {activeTab === "layers" && <Layers className="h-4 w-4 text-purple-600" />}
-                    <span>{activeTab === "background" ? "Background & Theme" : activeTab}</span>
+                    {activeTab === "uploads" && <Upload className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "tools" && <Wrench className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "templates" && <Palette className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "frames" && <Frame className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "elements" && <Sparkles className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "text" && <Type className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "music" && <Music className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "background" && <ImageIcon className="h-4 w-4 text-violet-700" />}
+                    {activeTab === "layers" && <Layers className="h-4 w-4 text-violet-700" />}
+                    <span>{activeTab === "background" ? "Background & Theme" : activeTab === "frames" ? "Photo Frames & Masks" : activeTab}</span>
                   </h3>
                   <button
                     onClick={() => setIsDrawerOpen(false)}
@@ -1541,51 +2479,190 @@ export function InvitationStudioEditor() {
 
               {/* Drawer Content */}
               <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
-                {/* 1. UPLOADS */}
+                {/* 1. UPLOADS (Supports SVG, PNG, JPG/JPEG, GIF, MP4, MOV, WebM, MP3, M4A, WAV) */}
                 {activeTab === "uploads" && (
                   <div className="space-y-4">
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
-                    >
-                      <Upload className="h-4 w-4" />
-                      <span>Upload Wedding Media</span>
-                    </button>
-
-                    <div className="flex items-center rounded-xl bg-stone-100 p-1 border border-stone-200">
+                    {/* Upload CTA Button */}
+                    <div className="space-y-2">
                       <button
-                        onClick={() => setUploadActiveSubTab("images")}
-                        className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-all ${
-                          uploadActiveSubTab === "images"
-                            ? "bg-white text-purple-800 font-bold shadow-xs"
-                            : "text-stone-600"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingElement}
+                        className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#6520EE] via-[#7C3AED] to-[#DB2777] py-3 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer disabled:opacity-75"
+                      >
+                        {isUploadingElement ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin text-white" />
+                            <span>Uploading Element...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 text-white" />
+                            <span>Upload Media Element</span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* Supported Formats Pills */}
+                      <div className="flex flex-wrap items-center justify-center gap-1 text-[9px] text-stone-500 font-medium">
+                        <span className="text-stone-400">Supported:</span>
+                        {["SVG", "PNG", "JPG", "GIF", "MP4", "MOV", "WebM", "MP3", "M4A", "WAV"].map((fmt) => (
+                          <span
+                            key={fmt}
+                            className="rounded bg-stone-100 px-1 py-0.5 text-stone-600 font-mono font-semibold"
+                          >
+                            .{fmt.toLowerCase()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Status Feedback Toast */}
+                    {uploadFeedback && (
+                      <div
+                        className={`flex items-start gap-2 p-2.5 rounded-xl text-xs font-medium border ${
+                          uploadFeedback.type === "success"
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : "bg-rose-50 text-rose-800 border-rose-200"
                         }`}
                       >
-                        Images ({uploadedPhotos.length})
+                        {uploadFeedback.type === "success" ? (
+                          <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                        )}
+                        <span className="flex-1 text-[11px] leading-tight">{uploadFeedback.message}</span>
+                      </div>
+                    )}
+
+                    {/* Category Filter Sub-Tabs */}
+                    <div className="grid grid-cols-4 gap-1 rounded-xl bg-stone-100 p-1 border border-stone-200 text-[11px]">
+                      <button
+                        onClick={() => setUploadActiveSubTab("all")}
+                        className={`py-1 rounded-lg font-semibold transition-all ${
+                          uploadActiveSubTab === "all"
+                            ? "bg-white text-violet-900 shadow-xs font-bold"
+                            : "text-stone-600 hover:text-stone-900"
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => setUploadActiveSubTab("images")}
+                        className={`py-1 rounded-lg font-semibold transition-all ${
+                          uploadActiveSubTab === "images"
+                            ? "bg-white text-violet-900 shadow-xs font-bold"
+                            : "text-stone-600 hover:text-stone-900"
+                        }`}
+                      >
+                        Images
+                      </button>
+                      <button
+                        onClick={() => setUploadActiveSubTab("videos")}
+                        className={`py-1 rounded-lg font-semibold transition-all ${
+                          uploadActiveSubTab === "videos"
+                            ? "bg-white text-violet-900 shadow-xs font-bold"
+                            : "text-stone-600 hover:text-stone-900"
+                        }`}
+                      >
+                        Videos
                       </button>
                       <button
                         onClick={() => setUploadActiveSubTab("audio")}
-                        className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-all ${
+                        className={`py-1 rounded-lg font-semibold transition-all ${
                           uploadActiveSubTab === "audio"
-                            ? "bg-white text-purple-800 font-bold shadow-xs"
-                            : "text-stone-600"
+                            ? "bg-white text-violet-900 shadow-xs font-bold"
+                            : "text-stone-600 hover:text-stone-900"
                         }`}
                       >
-                        Audio Tracks
+                        Audio
                       </button>
                     </div>
 
-                    {uploadActiveSubTab === "images" ? (
-                      <div className="space-y-3">
-                        <span className="block text-[11px] font-bold uppercase text-stone-400">
-                          Couple Photos & Graphics
-                        </span>
+                    {/* SUB-TAB 1 & 2: IMAGES & VECTORS (SVG, PNG, JPG, GIF) */}
+                    {(uploadActiveSubTab === "all" || uploadActiveSubTab === "images") && (
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                            Images & Vectors (SVG, PNG, JPG, GIF)
+                          </span>
+                          <span className="text-[10px] text-stone-400">
+                            {
+                              creatorElements.filter((e) =>
+                                ["SVG", "PNG", "JPG", "JPEG", "GIF"].includes(e.file_format || "")
+                              ).length + uploadedPhotos.length
+                            }{" "}
+                            items
+                          </span>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-2">
+                          {/* Creator Elements (Images/Vectors) */}
+                          {creatorElements
+                            .filter(
+                              (e) =>
+                                e.file_url &&
+                                (e.media_type === "IMAGE" ||
+                                  e.media_type === "VECTOR" ||
+                                  ["SVG", "PNG", "JPG", "JPEG", "GIF"].includes(e.file_format || ""))
+                            )
+                            .map((item) => (
+                              <div
+                                key={item.id}
+                                onClick={() => {
+                                  if (selectedElement && selectedElement.type === "image") {
+                                    updateSelected("imageUrl", item.file_url);
+                                  } else {
+                                    addElement("image", item.name, {
+                                      imageUrl: item.file_url || "",
+                                      fileFormat: item.file_format || "IMAGE",
+                                      frameShape: "arch",
+                                      frameWidth: 180,
+                                      frameHeight: 230,
+                                      frameBorderWidth: 2,
+                                      frameBorderColor: "#d97706",
+                                    });
+                                  }
+                                }}
+                                className="group relative cursor-pointer rounded-xl border border-stone-200 bg-stone-50 overflow-hidden hover:border-violet-500 hover:shadow-xs transition-all"
+                              >
+                                <div className="h-24 w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:8px_8px] flex items-center justify-center p-1 overflow-hidden">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={item.file_url || ""}
+                                    alt={item.name}
+                                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                </div>
+                                <div className="p-1.5 bg-white border-t border-stone-100 flex items-center justify-between gap-1">
+                                  <span className="text-[10px] font-semibold text-stone-800 truncate block">
+                                    {item.name}
+                                  </span>
+                                  <span className="shrink-0 text-[8px] font-bold uppercase px-1 py-0.5 rounded bg-violet-100 text-violet-700">
+                                    {item.file_format || "IMG"}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+
+                          {/* Fallback Sample Stock Photos */}
                           {uploadedPhotos.map((photo) => (
                             <div
                               key={photo.id}
-                              onClick={() => addElement("image", photo.name, { imageUrl: photo.url })}
-                              className="group relative cursor-pointer rounded-xl border border-stone-200 bg-stone-50 overflow-hidden hover:border-purple-400 hover:shadow-xs transition-all"
+                              onClick={() => {
+                                if (selectedElement && selectedElement.type === "image") {
+                                  updateSelected("imageUrl", photo.url);
+                                } else {
+                                  addElement("image", photo.name, {
+                                    imageUrl: photo.url,
+                                    frameShape: "arch",
+                                    frameWidth: 180,
+                                    frameHeight: 230,
+                                    frameBorderWidth: 2,
+                                    frameBorderColor: "#d97706",
+                                  });
+                                }
+                              }}
+                              className="group relative cursor-pointer rounded-xl border border-stone-200 bg-stone-50 overflow-hidden hover:border-rose-400 hover:shadow-xs transition-all"
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
@@ -1593,7 +2670,7 @@ export function InvitationStudioEditor() {
                                 alt={photo.name}
                                 className="h-24 w-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
-                              <div className="p-1.5 text-center">
+                              <div className="p-1.5 text-center bg-white border-t border-stone-100">
                                 <span className="text-[10px] font-semibold text-stone-800 truncate block">
                                   {photo.name}
                                 </span>
@@ -1602,21 +2679,195 @@ export function InvitationStudioEditor() {
                           ))}
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <span className="block text-[11px] font-bold uppercase text-stone-400">
-                          Custom Celebration Tracks
-                        </span>
-                        <div className="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-4 text-center">
-                          <Music className="h-6 w-6 text-purple-600 mx-auto" />
-                          <p className="mt-1 text-xs font-semibold text-stone-700">Upload Your Own Song</p>
-                          <p className="text-[10px] text-stone-500">Supports MP3, WAV, AAC up to 15MB</p>
+                    )}
+
+                    {/* SUB-TAB 3: VIDEO CLIPS (MP4, MOV, WebM) */}
+                    {(uploadActiveSubTab === "all" || uploadActiveSubTab === "videos") && (
+                      <div className="space-y-2.5 pt-2 border-t border-stone-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                            Video Highlights (MP4, MOV, WebM)
+                          </span>
+                          <span className="text-[10px] text-stone-400">
+                            {
+                              creatorElements.filter((e) =>
+                                ["MP4", "MOV", "WEBM"].includes(e.file_format || "")
+                              ).length
+                            }{" "}
+                            videos
+                          </span>
+                        </div>
+
+                        {creatorElements.filter((e) =>
+                          ["MP4", "MOV", "WEBM"].includes(e.file_format || "")
+                        ).length === 0 ? (
+                          <div className="rounded-xl border border-dashed border-stone-200 bg-stone-50 p-4 text-center space-y-1.5">
+                            <VideoIcon className="h-6 w-6 text-stone-400 mx-auto" />
+                            <p className="text-xs font-semibold text-stone-700">No Videos Uploaded Yet</p>
+                            <p className="text-[10px] text-stone-500">Upload MP4, MOV, or WebM clips up to 50MB</p>
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="mt-1 inline-flex items-center gap-1 rounded-lg bg-white border border-stone-200 px-2.5 py-1 text-[10px] font-bold text-violet-700 hover:bg-stone-100"
+                            >
+                              <Upload className="h-3 w-3" />
+                              <span>Upload Video</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {creatorElements
+                              .filter((e) => ["MP4", "MOV", "WEBM"].includes(e.file_format || ""))
+                              .map((video) => (
+                                <div
+                                  key={video.id}
+                                  onClick={() => {
+                                    addElement("video", video.name, {
+                                      videoUrl: video.file_url || "",
+                                      fileFormat: video.file_format || "MP4",
+                                    });
+                                  }}
+                                  className="group relative cursor-pointer rounded-xl border border-stone-200 bg-black overflow-hidden hover:border-violet-500 hover:shadow-md transition-all p-2 flex items-center gap-3 text-white"
+                                >
+                                  <div className="h-12 w-16 bg-stone-900 rounded-lg flex items-center justify-center shrink-0 border border-stone-700 relative overflow-hidden">
+                                    <VideoIcon className="h-5 w-5 text-violet-400" />
+                                    <span className="absolute bottom-0.5 right-0.5 text-[7px] font-bold bg-black/80 px-1 rounded text-amber-300">
+                                      {video.file_format}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h5 className="text-xs font-semibold text-white truncate">{video.name}</h5>
+                                    <span className="text-[10px] text-stone-400 block">
+                                      {video.file_size
+                                        ? `${(video.file_size / (1024 * 1024)).toFixed(1)} MB`
+                                        : "Optimized"} • Click to Insert
+                                    </span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    className="h-7 w-7 rounded-full bg-violet-600/80 group-hover:bg-violet-600 flex items-center justify-center text-white shrink-0 shadow-xs"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 4: AUDIO TRACKS (MP3, M4A, WAV) */}
+                    {(uploadActiveSubTab === "all" || uploadActiveSubTab === "audio") && (
+                      <div className="space-y-2.5 pt-2 border-t border-stone-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                            Soundtracks (MP3, M4A, WAV)
+                          </span>
+                          <span className="text-[10px] text-stone-400">
+                            {
+                              creatorElements.filter((e) =>
+                                ["MP3", "M4A", "WAV"].includes(e.file_format || "")
+                              ).length
+                            }{" "}
+                            tracks
+                          </span>
+                        </div>
+
+                        {/* Creator Uploaded Audio */}
+                        {creatorElements
+                          .filter((e) => ["MP3", "M4A", "WAV"].includes(e.file_format || ""))
+                          .map((audio) => {
+                            const isCurrent = selectedSong.url === audio.file_url;
+                            return (
+                              <div
+                                key={audio.id}
+                                className={`rounded-xl border p-2.5 flex items-center justify-between gap-2 transition-all ${
+                                  isCurrent
+                                    ? "border-violet-600 bg-violet-50/60 shadow-2xs"
+                                    : "border-stone-200 bg-stone-50 hover:border-stone-300"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <button
+                                    onClick={() => {
+                                      if (isCurrent && isPlayingAudio) {
+                                        audioRef.current?.pause();
+                                        setIsPlayingAudio(false);
+                                      } else {
+                                        setSelectedSong({
+                                          name: audio.name,
+                                          url: audio.file_url || "",
+                                        });
+                                        if (audioRef.current && audio.file_url) {
+                                          audioRef.current.src = audio.file_url;
+                                          audioRef.current
+                                            .play()
+                                            .then(() => setIsPlayingAudio(true))
+                                            .catch(() => {});
+                                        }
+                                      }
+                                    }}
+                                    className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 shadow-xs transition-colors ${
+                                      isCurrent && isPlayingAudio
+                                        ? "bg-violet-700 text-white"
+                                        : "bg-white text-stone-800 border border-stone-200 hover:bg-stone-100"
+                                    }`}
+                                  >
+                                    {isCurrent && isPlayingAudio ? (
+                                      <Pause className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <Play className="h-3.5 w-3.5 ml-0.5" />
+                                    )}
+                                  </button>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                      <h6 className="text-xs font-semibold text-stone-900 truncate">
+                                        {audio.name}
+                                      </h6>
+                                      <span className="shrink-0 text-[8px] font-bold uppercase px-1 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                        {audio.file_format}
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] text-stone-500">
+                                      {isCurrent ? "Active Background Song" : "Click Play or Set Song"}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {!isCurrent && (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSong({
+                                        name: audio.name,
+                                        url: audio.file_url || "",
+                                      });
+                                      if (audioRef.current && audio.file_url) {
+                                        audioRef.current.src = audio.file_url;
+                                        audioRef.current
+                                          .play()
+                                          .then(() => setIsPlayingAudio(true))
+                                          .catch(() => {});
+                                      }
+                                    }}
+                                    className="shrink-0 rounded-lg bg-white border border-stone-200 px-2.5 py-1 text-[10px] font-bold text-violet-700 hover:bg-violet-50"
+                                  >
+                                    Use Track
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+
+                        {/* Upload Audio Direct Box */}
+                        <div className="rounded-xl border border-dashed border-stone-300 bg-stone-50/70 p-3 text-center space-y-1">
+                          <Music className="h-5 w-5 text-violet-700 mx-auto" />
+                          <p className="text-xs font-semibold text-stone-800">Add Custom Audio Track</p>
+                          <p className="text-[10px] text-stone-500">Supports MP3, M4A, WAV up to 25MB</p>
                           <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-white border border-stone-200 px-3 py-1 text-[11px] font-bold text-stone-800 hover:bg-stone-100"
+                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-lg bg-white border border-stone-200 px-3 py-1 text-[11px] font-bold text-stone-800 hover:bg-stone-100 cursor-pointer shadow-2xs"
                           >
                             <Upload className="h-3 w-3" />
-                            <span>Browse Audio</span>
+                            <span>Browse Audio File</span>
                           </button>
                         </div>
                       </div>
@@ -1629,7 +2880,7 @@ export function InvitationStudioEditor() {
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-3.5 space-y-2.5">
                       <div className="flex items-center gap-1.5 font-bold text-xs text-stone-900">
-                        <QrCode className="h-4 w-4 text-purple-600" />
+                        <QrCode className="h-4 w-4 text-violet-700" />
                         <span>Wedding RSVP QR Code</span>
                       </div>
                       <p className="text-[11px] text-stone-500">
@@ -1649,7 +2900,7 @@ export function InvitationStudioEditor() {
                             fontSize: 12,
                           })
                         }
-                        className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors cursor-pointer"
+                        className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-violet-700 py-2 text-xs font-bold text-white hover:bg-violet-800 transition-colors cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         <span>Add QR Code to Card</span>
@@ -1670,7 +2921,7 @@ export function InvitationStudioEditor() {
                           <button
                             key={idx}
                             onClick={() => addElement(tool.type, tool.label)}
-                            className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-2.5 hover:border-purple-400 hover:bg-purple-50/30 transition-all cursor-pointer"
+                            className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-2.5 hover:border-rose-400 hover:bg-violet-50/30 transition-all cursor-pointer"
                           >
                             <span className="text-2xl">{tool.icon}</span>
                             <span className="mt-1 text-[11px] font-semibold text-stone-800">{tool.label}</span>
@@ -1693,13 +2944,13 @@ export function InvitationStudioEditor() {
                         onClick={() => setCurrentTemplate(tmpl)}
                         className={`cursor-pointer rounded-2xl border p-3 transition-all ${
                           currentTemplate.id === tmpl.id
-                            ? "border-purple-500 bg-purple-50/50 ring-2 ring-purple-300 shadow-xs"
-                            : "border-stone-200 bg-stone-50 hover:border-purple-300 hover:bg-white"
+                            ? "border-rose-500 bg-violet-50/50 ring-2 ring-rose-300 shadow-xs"
+                            : "border-stone-200 bg-stone-50 hover:border-violet-300 hover:bg-white"
                         }`}
                       >
                         <div className="flex justify-between items-center mb-2">
                           <span className="font-serif text-xs font-bold text-stone-900">{tmpl.name}</span>
-                          <span className="text-[9px] font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                          <span className="text-[9px] font-semibold text-violet-800 bg-rose-100 px-2 py-0.5 rounded-full">
                             {tmpl.tag}
                           </span>
                         </div>
@@ -1714,9 +2965,206 @@ export function InvitationStudioEditor() {
                   </div>
                 )}
 
-                {/* 4. SACRED ELEMENTS */}
+                {/* 3C. PHOTO FRAMES & MASKS (CANVA STYLE) */}
+                {activeTab === "frames" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="block text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                        Photo Frames &amp; Shapes
+                      </span>
+                      <span className="text-[10px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
+                        12 Canva Masks
+                      </span>
+                    </div>
+
+                    {/* Category Filter Pills */}
+                    <div className="flex flex-wrap gap-1">
+                      {[
+                        { id: "all", label: "All" },
+                        { id: "royal", label: "Royal Arch" },
+                        { id: "vintage", label: "Polaroid & Retro" },
+                        { id: "classic", label: "Classic" },
+                        { id: "modern", label: "Modern" },
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setFrameCategoryFilter(cat.id as any)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all cursor-pointer ${
+                            frameCategoryFilter === cat.id
+                              ? "bg-violet-700 text-white font-bold shadow-xs"
+                              : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Grid of 12 Frames */}
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {FRAME_SHAPES.filter(
+                        (f) => frameCategoryFilter === "all" || f.category === frameCategoryFilter
+                      ).map((frame) => (
+                        <button
+                          key={frame.id}
+                          onClick={() => {
+                            if (selectedElement && selectedElement.type === "image") {
+                              updateSelected("frameShape", frame.id);
+                            } else {
+                              addElement("image", frame.name, {
+                                frameShape: frame.id,
+                                imageUrl: SAMPLE_UPLOADED_PHOTOS[0].url,
+                                frameWidth: frame.defaultWidth,
+                                frameHeight: frame.defaultHeight,
+                                frameBorderWidth: 2,
+                                frameBorderColor: "#d97706",
+                                frameBorderStyle: "solid",
+                                frameShadow: "soft",
+                                imageZoom: 100,
+                                imageFilter: "warm",
+                              });
+                            }
+                          }}
+                          className="group relative flex flex-col items-center justify-between rounded-2xl border border-stone-200 bg-stone-50 p-3 hover:border-violet-500 hover:bg-violet-50/40 hover:shadow-xs transition-all cursor-pointer text-center"
+                        >
+                          {/* Miniature Silhouette Preview */}
+                          <div className="h-20 w-20 flex items-center justify-center relative my-1">
+                            <div
+                              style={{
+                                ...getFrameContainerStyle(frame.id, {
+                                  frameWidth: 64,
+                                  frameHeight: frame.id === "circle" || frame.id === "diamond" ? 64 : 76,
+                                  frameBorderWidth: 1.5,
+                                  frameBorderColor: "#d97706",
+                                  frameBorderStyle: "solid",
+                                  frameShadow: "none",
+                                } as any),
+                              }}
+                              className="relative overflow-hidden bg-gradient-to-b from-[#87CEEB] to-[#90EE90] border border-amber-500/70 shadow-xs"
+                            >
+                              {/* Canva Hills Mini Preview */}
+                              <div className="absolute top-1 right-2 h-2.5 w-2.5 rounded-full bg-amber-300" />
+                              <svg viewBox="0 0 100 60" preserveAspectRatio="none" className="absolute bottom-0 w-full h-1/2">
+                                <path d="M 0,60 L 0,25 Q 30,10 60,30 T 100,20 L 100,60 Z" fill="#43A047" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <div className="mt-1 w-full">
+                            <span className="text-[11px] font-bold text-stone-900 group-hover:text-violet-900 truncate block">
+                              {frame.name}
+                            </span>
+                            <span className="text-[9px] text-stone-500 line-clamp-1 mt-0.5 block">
+                              {frame.description}
+                            </span>
+                          </div>
+
+                          {frame.badge && (
+                            <span className="absolute top-2 right-2 rounded-full bg-amber-100 text-amber-900 border border-amber-200 px-1.5 py-0.2 text-[8px] font-bold">
+                              {frame.badge}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Photo Vault Section */}
+                    <div className="pt-3 border-t border-stone-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                          Photo Vault (Click to Swap)
+                        </span>
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-[10px] font-bold text-violet-700 hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          <Upload className="h-3 w-3" />
+                          Upload
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-stone-500">
+                        Select any frame on the canvas, then click a photo below to drop it into the frame:
+                      </p>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedPhotos.map((photo) => (
+                          <button
+                            key={photo.id}
+                            onClick={() => {
+                              if (selectedElement && selectedElement.type === "image") {
+                                updateSelected("imageUrl", photo.url);
+                                updateSelected("content", photo.name);
+                              } else {
+                                addElement("image", photo.name, {
+                                  imageUrl: photo.url,
+                                  frameShape: "arch",
+                                  frameWidth: 170,
+                                  frameHeight: 220,
+                                  frameBorderWidth: 2,
+                                  frameBorderColor: "#d97706",
+                                });
+                              }
+                            }}
+                            className="group relative rounded-xl border border-stone-200 aspect-square overflow-hidden hover:border-violet-600 hover:shadow-xs transition-all cursor-pointer"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={photo.url} alt={photo.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-bold">
+                              Use
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. SACRED ELEMENTS & PHOTO FRAMES */}
                 {activeTab === "elements" && (
                   <div className="space-y-4">
+                    {/* Photo Frames Hero Spotlight */}
+                    <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50/70 via-white to-purple-50/50 p-3 space-y-2.5 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-violet-900">
+                          <Frame className="h-4 w-4 text-violet-700" />
+                          <span>Photo Frames (Canva Style)</span>
+                        </div>
+                        <button
+                          onClick={() => setActiveTab("frames")}
+                          className="text-[10px] font-bold text-violet-700 hover:underline cursor-pointer"
+                        >
+                          View All 12 →
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {[
+                          { id: "arch", name: "Arch", icon: "🏛️" },
+                          { id: "polaroid", name: "Polaroid", icon: "📷" },
+                          { id: "heart", name: "Heart", icon: "❤️" },
+                          { id: "jharokha", name: "Jharokha", icon: "👑" },
+                        ].map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => {
+                              addElement("image", f.name, {
+                                frameShape: f.id as any,
+                                imageUrl: SAMPLE_UPLOADED_PHOTOS[0].url,
+                                frameWidth: 170,
+                                frameHeight: 210,
+                                frameBorderWidth: 2,
+                                frameBorderColor: "#d97706",
+                              });
+                            }}
+                            className="flex flex-col items-center justify-center p-2 rounded-xl bg-white border border-stone-200 hover:border-violet-500 hover:shadow-xs transition-all cursor-pointer text-center"
+                          >
+                            <span className="text-lg">{f.icon}</span>
+                            <span className="text-[9px] font-bold text-stone-700 mt-0.5">{f.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <span className="block text-[11px] font-bold uppercase text-stone-400">
                       Sacred Vedic Motifs
                     </span>
@@ -1734,7 +3182,7 @@ export function InvitationStudioEditor() {
                         <button
                           key={idx}
                           onClick={() => addElement(m.type, m.icon)}
-                          className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-3 hover:border-purple-400 hover:bg-purple-50/30 transition-all cursor-pointer"
+                          className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 p-3 hover:border-rose-400 hover:bg-violet-50/30 transition-all cursor-pointer"
                         >
                           <span className="text-2xl">{m.icon}</span>
                           <span className="mt-1 text-[11px] font-semibold text-stone-800">{m.label}</span>
@@ -1752,7 +3200,7 @@ export function InvitationStudioEditor() {
                     </span>
                     <button
                       onClick={() => addElement("heading", "शुभ विवाह निमंत्रण")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-violet-50/40 transition-all cursor-pointer"
                     >
                       <span className="font-serif text-base font-bold text-stone-900 block">
                         Add Royal Heading
@@ -1761,7 +3209,7 @@ export function InvitationStudioEditor() {
                     </button>
                     <button
                       onClick={() => addElement("names", "Bride & Groom Names")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-violet-50/40 transition-all cursor-pointer"
                     >
                       <span className="font-serif text-sm font-bold text-stone-800 block">
                         Add Couple Names
@@ -1770,7 +3218,7 @@ export function InvitationStudioEditor() {
                     </button>
                     <button
                       onClick={() => addElement("message", "We cordially invite you to celebrate the marriage of...")}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-purple-400 hover:bg-purple-50/40 transition-all cursor-pointer"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-left hover:border-rose-400 hover:bg-violet-50/40 transition-all cursor-pointer"
                     >
                       <span className="text-xs font-semibold text-stone-800 block">
                         Add Invitation Body
@@ -1800,15 +3248,15 @@ export function InvitationStudioEditor() {
                           }}
                           className={`cursor-pointer flex items-center justify-between rounded-xl p-3 border transition-all ${
                             isCur
-                              ? "bg-purple-50 border-purple-400 text-purple-900 ring-1 ring-purple-300"
+                              ? "bg-violet-50 border-rose-400 text-violet-950 ring-1 ring-rose-300"
                               : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-white"
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-2">
-                            <Music className="h-3.5 w-3.5 text-purple-600 shrink-0" />
+                            <Music className="h-3.5 w-3.5 text-violet-700 shrink-0" />
                             <span className="text-xs font-semibold truncate">{song.name}</span>
                           </div>
-                          {isCur && <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0" />}
+                          {isCur && <CheckCircle2 className="h-4 w-4 text-violet-700 shrink-0" />}
                         </div>
                       );
                     })}
@@ -1827,7 +3275,7 @@ export function InvitationStudioEditor() {
                         onClick={() => setSelectedElementId(el.id)}
                         className={`flex items-center justify-between p-2 rounded-xl border text-xs cursor-pointer transition-colors ${
                           selectedElementId === el.id
-                            ? "bg-purple-50 border-purple-400 text-purple-900 font-bold"
+                            ? "bg-violet-50 border-rose-400 text-violet-950 font-bold"
                             : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-white"
                         }`}
                       >
@@ -1842,7 +3290,7 @@ export function InvitationStudioEditor() {
                               e.stopPropagation();
                               deleteElement(el.id);
                             }}
-                            className="p-1 text-stone-400 hover:text-rose-600"
+                            className="p-1 text-stone-400 hover:text-violet-700"
                           >
                             <Trash2 className="h-3 w-3" />
                           </button>
@@ -1918,6 +3366,18 @@ export function InvitationStudioEditor() {
               <div className="w-0.5 h-6 bg-gradient-to-b from-stone-400 to-amber-700 shadow-xs" />
             </div>
 
+            {/* SVG Defs for Frame Masks */}
+            <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+              <defs>
+                <clipPath id="frame-heart" clipPathUnits="objectBoundingBox">
+                  <path d="M 0.5, 0.88 C 0.5, 0.88 0.05, 0.55 0.05, 0.32 C 0.05, 0.12 0.22, 0.05 0.36, 0.05 C 0.44, 0.05 0.48, 0.12 0.5, 0.18 C 0.52, 0.12 0.56, 0.05 0.64, 0.05 C 0.78, 0.05 0.95, 0.12 0.95, 0.32 C 0.95, 0.55 0.5, 0.88 0.5, 0.88 Z" />
+                </clipPath>
+                <clipPath id="frame-stamp" clipPathUnits="objectBoundingBox">
+                  <path d="M 0.05,0.05 Q 0.1,0 0.15,0.05 Q 0.2,0 0.25,0.05 Q 0.3,0 0.35,0.05 Q 0.4,0 0.45,0.05 Q 0.5,0 0.55,0.05 Q 0.6,0 0.65,0.05 Q 0.7,0 0.75,0.05 Q 0.8,0 0.85,0.05 Q 0.9,0 0.95,0.05 L 0.95,0.05 Q 1,0.1 0.95,0.15 Q 1,0.2 0.95,0.25 Q 1,0.3 0.95,0.35 Q 1,0.4 0.95,0.45 Q 1,0.5 0.95,0.55 Q 1,0.6 0.95,0.65 Q 1,0.7 0.95,0.75 Q 1,0.8 0.95,0.85 Q 1,0.9 0.95,0.95 L 0.95,0.95 Q 0.9,1 0.85,0.95 Q 0.8,1 0.75,0.95 Q 0.7,1 0.65,0.95 Q 0.6,1 0.55,0.95 Q 0.5,1 0.45,0.95 Q 0.4,1 0.35,0.95 Q 0.3,1 0.25,0.95 Q 0.2,1 0.15,0.95 Q 0.1,1 0.05,0.95 L 0.05,0.95 Q 0,0.9 0.05,0.85 Q 0,0.8 0.05,0.75 Q 0,0.7 0.05,0.65 Q 0,0.6 0.05,0.55 Q 0,0.5 0.05,0.45 Q 0,0.4 0.05,0.35 Q 0,0.3 0.05,0.25 Q 0,0.2 0.05,0.15 Q 0,0.1 0.05,0.05 Z" />
+                </clipPath>
+              </defs>
+            </svg>
+
             {/* SEAMLESS CONTINUOUS SCROLL CARD STACK (WEB INVITATION STREAM) */}
             <div className="space-y-6">
               {pages.map((page, pageIdx) => {
@@ -1930,13 +3390,13 @@ export function InvitationStudioEditor() {
                       setActivePageIndex(pageIdx);
                     }}
                     className={`relative rounded-3xl border-2 transition-all ${
-                      isPageActive ? "border-purple-500/80 shadow-2xl" : "border-amber-400/80 shadow-xl"
+                      isPageActive ? "border-rose-500/80 shadow-2xl" : "border-amber-400/80 shadow-xl"
                     } bg-gradient-to-b ${currentTemplate.bg} p-6 sm:p-8 backdrop-blur-md overflow-hidden min-h-[500px] flex flex-col justify-between`}
                   >
                     {/* Section Header Controls Above Each Web Section */}
                     <div className="flex items-center justify-between border-b border-amber-300/40 pb-2 mb-4 -mt-2">
                       <div className="flex items-center gap-2">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-violet-700 text-[10px] font-bold text-white">
                           {pageIdx + 1}
                         </span>
                         <input
@@ -1978,7 +3438,7 @@ export function InvitationStudioEditor() {
                         </button>
                         <button
                           onClick={() => deletePage(pageIdx)}
-                          className="p-1 hover:text-rose-600 hover:bg-rose-50 rounded"
+                          className="p-1 hover:text-violet-700 hover:bg-violet-50 rounded"
                           title="Delete section"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -2033,18 +3493,18 @@ export function InvitationStudioEditor() {
                             }}
                             className={`group relative cursor-move p-2 rounded-xl transition-all ${
                               isSelected
-                                ? "ring-2 ring-purple-600 bg-purple-500/10 shadow-sm z-30"
+                                ? "ring-2 ring-rose-600 bg-violet-500/10 shadow-sm z-30"
                                 : "hover:ring-1 hover:ring-amber-400/50"
                             }`}
                           >
                             {isSelected && (
                               <>
-                                <div className="absolute -top-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
-                                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-purple-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -top-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
+                                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full bg-white border-2 border-rose-600 shadow-xs z-20 pointer-events-none" />
 
-                                <div className="absolute -top-6 right-0 flex items-center gap-1 rounded-md bg-purple-600 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs z-20">
+                                <div className="absolute -top-6 right-0 flex items-center gap-1 rounded-md bg-violet-700 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs z-20">
                                   <span>{el.type}</span>
                                   {el.isLocked && <Lock className="h-2.5 w-2.5 ml-0.5" />}
                                 </div>
@@ -2119,16 +3579,23 @@ export function InvitationStudioEditor() {
                               </p>
                             )}
 
-                            {el.type === "image" && el.imageUrl && (
-                              <div className="flex flex-col items-center">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                  src={el.imageUrl}
-                                  alt={el.content}
-                                  className="h-32 w-32 object-cover rounded-2xl border-2 border-amber-400 shadow-md"
-                                />
-                                <span className="mt-1 text-[10px] text-stone-600 font-semibold">{el.content}</span>
-                              </div>
+                            {el.type === "image" && (
+                              <CanvaImageFrame
+                                element={el}
+                                isSelected={isSelected}
+                                onReplaceImage={() => {
+                                  setSelectedElementId(el.id);
+                                  setActivePopover("frameImage");
+                                }}
+                                onOpenCrop={() => {
+                                  setSelectedElementId(el.id);
+                                  setActivePopover("frameZoom");
+                                }}
+                                onOpenShape={() => {
+                                  setSelectedElementId(el.id);
+                                  setActivePopover("frameShape");
+                                }}
+                              />
                             )}
 
                             {el.type === "qrcode" && (
@@ -2144,6 +3611,20 @@ export function InvitationStudioEditor() {
                             {el.type === "badge" && (
                               <div className="inline-flex items-center justify-center p-2 rounded-full border-2 border-amber-600 bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-md font-serif text-xs font-bold">
                                 <span>✦ {el.content} ✦</span>
+                              </div>
+                            )}
+
+                            {el.type === "video" && (
+                              <div className="relative w-full max-w-sm mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-stone-800 shadow-xl bg-black flex items-center justify-center">
+                                <video
+                                  src={el.videoUrl || el.content}
+                                  controls
+                                  playsInline
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-xs text-[9px] font-bold text-amber-300 uppercase tracking-wider pointer-events-none">
+                                  {el.fileFormat || "VIDEO"}
+                                </div>
                               </div>
                             )}
                           </motion.div>
@@ -2167,7 +3648,7 @@ export function InvitationStudioEditor() {
               <div className="flex flex-col items-center justify-center pt-2">
                 <button
                   onClick={() => addNewPage()}
-                  className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-purple-400 bg-white/80 hover:bg-purple-50 px-6 py-3.5 text-xs font-bold text-purple-700 shadow-sm transition-all hover:scale-102 cursor-pointer"
+                  className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-rose-400 bg-white/80 hover:bg-violet-50 px-6 py-3.5 text-xs font-bold text-violet-800 shadow-sm transition-all hover:scale-102 cursor-pointer"
                 >
                   <Plus className="h-4 w-4" />
                   <span>+ Add Page / Web Section</span>
@@ -2178,28 +3659,28 @@ export function InvitationStudioEditor() {
                   <span>Quick Add:</span>
                   <button
                     onClick={() => addNewPage("Ceremony Timeline")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-violet-800 underline cursor-pointer"
                   >
                     + Timeline
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Couple Photo Gallery")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-violet-800 underline cursor-pointer"
                   >
                     + Photos
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Venue & Google Directions")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-violet-800 underline cursor-pointer"
                   >
                     + Venue Map
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => addNewPage("Digital RSVP & Wishes")}
-                    className="hover:text-purple-700 underline cursor-pointer"
+                    className="hover:text-violet-800 underline cursor-pointer"
                   >
                     + RSVP
                   </button>
@@ -2224,7 +3705,7 @@ export function InvitationStudioEditor() {
                 onClick={() => setActivePageIndex(idx)}
                 className={`rounded-lg px-2.5 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
                   activePageIndex === idx
-                    ? "bg-purple-600 text-white shadow-xs font-bold"
+                    ? "bg-violet-700 text-white shadow-xs font-bold"
                     : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
               >
@@ -2233,7 +3714,7 @@ export function InvitationStudioEditor() {
             ))}
             <button
               onClick={() => addNewPage()}
-              className="rounded-lg border border-dashed border-purple-400 bg-purple-50/60 px-2 py-0.5 text-[11px] font-bold text-purple-700 hover:bg-purple-100 transition-colors cursor-pointer"
+              className="rounded-lg border border-dashed border-rose-400 bg-violet-50/60 px-2 py-0.5 text-[11px] font-bold text-violet-800 hover:bg-rose-100 transition-colors cursor-pointer"
               title="Add a new page/section"
             >
               + Add Page
@@ -2256,7 +3737,7 @@ export function InvitationStudioEditor() {
             max={140}
             value={zoomLevel}
             onChange={(e) => setZoomLevel(Number(e.target.value))}
-            className="w-20 accent-purple-600 cursor-pointer"
+            className="w-20 accent-rose-600 cursor-pointer"
           />
           <span className="font-mono text-[11px] font-bold text-stone-700 w-8 text-center">{zoomLevel}%</span>
           <button
@@ -2326,10 +3807,20 @@ export function InvitationStudioEditor() {
                           {el.type === "details" && (
                             <p className="text-xs text-stone-800 font-medium">{el.content}</p>
                           )}
+                          {el.type === "image" && (
+                            <div className="my-2 flex justify-center">
+                              <CanvaImageFrame element={el} isSelected={false} />
+                            </div>
+                          )}
                           {el.type === "qrcode" && (
                             <div className="p-2 bg-white rounded-xl shadow-xs inline-block my-1">
                               <QrCode className="h-12 w-12 text-stone-900 mx-auto" />
                               <span className="text-[9px] font-bold text-stone-600 block">{el.content}</span>
+                            </div>
+                          )}
+                          {el.type === "video" && (
+                            <div className="my-2 max-w-xs mx-auto rounded-xl overflow-hidden border border-stone-800 shadow-md aspect-video bg-black">
+                              <video src={el.videoUrl || el.content} controls className="w-full h-full object-cover" />
                             </div>
                           )}
                         </div>
@@ -2346,7 +3837,7 @@ export function InvitationStudioEditor() {
                 </span>
                 <button
                   onClick={() => setIsLivePreviewOpen(false)}
-                  className="rounded-xl bg-purple-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors cursor-pointer"
+                  className="rounded-xl bg-violet-700 px-4 py-1.5 text-xs font-bold text-white hover:bg-violet-800 transition-colors cursor-pointer"
                 >
                   Done Testing
                 </button>
@@ -2368,7 +3859,7 @@ export function InvitationStudioEditor() {
             >
               <div className="flex items-center justify-between border-b border-stone-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-purple-600" />
+                  <Share2 className="h-4 w-4 text-violet-700" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Share this Wedding Invitation
                   </span>
@@ -2384,10 +3875,10 @@ export function InvitationStudioEditor() {
               <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-1.5">
-                    <LinkIcon className="h-3.5 w-3.5 text-purple-600" />
+                    <LinkIcon className="h-3.5 w-3.5 text-violet-700" />
                     <span>Client View-Only Link</span>
                   </span>
-                  <span className="text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] text-violet-800 font-semibold bg-rose-100 px-2 py-0.5 rounded-full">
                     Continuous Scroll
                   </span>
                 </div>
@@ -2404,7 +3895,7 @@ export function InvitationStudioEditor() {
                       setShareCopied(true);
                       setTimeout(() => setShareCopied(false), 2000);
                     }}
-                    className="rounded-xl bg-purple-600 px-3 py-2 text-xs font-bold text-white hover:bg-purple-700 transition-colors shrink-0"
+                    className="rounded-xl bg-violet-700 px-3 py-2 text-xs font-bold text-white hover:bg-violet-800 transition-colors shrink-0"
                   >
                     {shareCopied ? "Copied" : "Copy"}
                   </button>
@@ -2417,11 +3908,11 @@ export function InvitationStudioEditor() {
                     setShareModalOpen(false);
                     setIsSaveModalOpen(true);
                   }}
-                  className="flex flex-col items-center justify-center p-3 rounded-2xl border border-purple-200 bg-purple-50/50 hover:bg-purple-50 hover:border-purple-400 transition-all text-center cursor-pointer"
+                  className="flex flex-col items-center justify-center p-3 rounded-2xl border border-violet-200 bg-violet-50/50 hover:bg-violet-50 hover:border-rose-400 transition-all text-center cursor-pointer"
                 >
-                  <Sparkles className="h-5 w-5 text-purple-600 mb-1" />
-                  <span className="text-xs font-bold text-purple-900">Community Marketplace</span>
-                  <span className="text-[10px] text-purple-700">Publish or Save to Library</span>
+                  <Sparkles className="h-5 w-5 text-violet-700 mb-1" />
+                  <span className="text-xs font-bold text-violet-950">Community Marketplace</span>
+                  <span className="text-[10px] text-violet-800">Publish or Save to Library</span>
                 </button>
 
                 <button
@@ -2461,7 +3952,7 @@ export function InvitationStudioEditor() {
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-purple-600" />
+                  <Share2 className="h-4 w-4 text-violet-700" />
                   <span className="font-serif font-bold text-sm text-stone-900">
                     Save or Share to Community
                   </span>
@@ -2480,7 +3971,7 @@ export function InvitationStudioEditor() {
                   onClick={() => setSaveActionType("library")}
                   className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all cursor-pointer ${
                     saveActionType === "library"
-                      ? "bg-white text-purple-700 shadow-xs"
+                      ? "bg-white text-violet-800 shadow-xs"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -2493,7 +3984,7 @@ export function InvitationStudioEditor() {
                   onClick={() => setSaveActionType("community")}
                   className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all cursor-pointer ${
                     saveActionType === "community"
-                      ? "bg-white text-purple-700 shadow-xs"
+                      ? "bg-white text-violet-800 shadow-xs"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -2519,7 +4010,7 @@ export function InvitationStudioEditor() {
                       type="text"
                       value={customTemplateTitle}
                       onChange={(e) => setCustomTemplateTitle(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2532,7 +4023,7 @@ export function InvitationStudioEditor() {
                       value={targetClientName}
                       onChange={(e) => setTargetClientName(e.target.value)}
                       placeholder="e.g. Aarav & Priya"
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2544,7 +4035,7 @@ export function InvitationStudioEditor() {
 
                   <button
                     onClick={handleSaveToLibrary}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-purple-700 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-700 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-violet-800 transition-all cursor-pointer"
                   >
                     <Layers className="h-3.5 w-3.5" />
                     <span>Save to My Library</span>
@@ -2562,7 +4053,7 @@ export function InvitationStudioEditor() {
                       type="text"
                       value={customTemplateTitle}
                       onChange={(e) => setCustomTemplateTitle(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
@@ -2574,7 +4065,7 @@ export function InvitationStudioEditor() {
                       <select
                         value={communityCategory}
                         onChange={(e) => setCommunityCategory(e.target.value as typeof communityCategory)}
-                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2 text-xs text-stone-900 focus:border-purple-500 focus:bg-white focus:outline-none"
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none"
                       >
                         <option value="LUXURY">Luxury Royal</option>
                         <option value="TRADITIONAL">Traditional</option>
@@ -2587,7 +4078,7 @@ export function InvitationStudioEditor() {
                       <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
                         Listing Price (INR)
                       </label>
-                      <div className="flex items-center rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs focus-within:bg-white focus-within:border-purple-500">
+                      <div className="flex items-center rounded-xl border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs focus-within:bg-white focus-within:border-rose-500">
                         <span className="text-stone-500 font-bold mr-1">₹</span>
                         <input
                           type="number"
@@ -2607,18 +4098,18 @@ export function InvitationStudioEditor() {
                       rows={2}
                       value={communityDescription}
                       onChange={(e) => setCommunityDescription(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs text-stone-900 focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
 
-                  <div className="rounded-2xl border border-purple-200 bg-purple-50/60 p-3 text-xs text-purple-900 flex items-center justify-between">
+                  <div className="rounded-2xl border border-violet-200 bg-violet-50/60 p-3 text-xs text-violet-950 flex items-center justify-between">
                     <span>Creator Royalties:</span>
                     <span className="font-bold">You earn 80% (₹{Math.round(communityPrice * 0.8)} per sale)</span>
                   </div>
 
                   <button
                     onClick={handleShareToCommunity}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-rose-600 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-105 transition-all cursor-pointer"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     <span>Publish & Share to Community</span>
