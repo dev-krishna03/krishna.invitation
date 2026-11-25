@@ -5,8 +5,8 @@ import { hasAdminCookie } from "@/lib/admin-access";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 export const metadata = {
-  title: "Super Admin Panel • Krishna Invitations",
-  description: "Global administration and platform governance for Krishna Invitations.",
+  title: "Super Admin Panel • Invitation",
+  description: "Global administration and platform governance for Invitation.",
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

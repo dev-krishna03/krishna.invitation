@@ -5,12 +5,12 @@ import { Sparkles, Heart, Globe, Award, ShieldCheck, TreePine, Music } from "luc
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Us • Krishna Invitations",
-  description: "Learn how Krishna Invitations helps families and event creators craft immersive, eco-friendly digital celebrations.",
+  title: "About Us • Invitation",
+  description: "Learn how Invitation helps families and event creators craft immersive, eco-friendly digital celebrations.",
 };
 
 export default async function AboutPage() {
-  const name = (await getSetting<string>("site_name")) ?? "Krishna Invitations";
+  const name = (await getSetting<string>("site_name")) ?? "Invitation";
   const customAbout = await getSetting<string>("about_content");
 
   return (

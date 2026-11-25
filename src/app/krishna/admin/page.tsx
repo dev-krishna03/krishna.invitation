@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { DashboardOverview } from "@/components/admin/DashboardOverview";
 
 export const metadata = {
-  title: "Dashboard • Krishna Super Admin",
+  title: "Dashboard • Invitation Super Admin",
 };
 
 export default async function AdminDashboard() {

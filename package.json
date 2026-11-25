@@ -1,5 +1,5 @@
 {
-  "name": "krishna.invitation",
+  "name": "invitation",
   "version": "0.1.0",
   "private": true,
   "prisma": {
@@ -7,8 +7,10 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
+    "postinstall": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
     "lint": "eslint"
   },
   "dependencies": {

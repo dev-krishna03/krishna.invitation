@@ -107,7 +107,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </div>
               <div className="flex flex-col">
                 <span className="font-serif text-lg font-bold tracking-tight text-stone-900 group-hover:text-rose-700 transition-colors">
-                  Krishna Super Admin
+                  Invitation Super Admin
                 </span>
                 <span className="text-[10px] font-mono tracking-widest uppercase text-rose-700/80 font-semibold">
                   Root Governance

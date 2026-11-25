@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { HostDashboardShell } from "@/components/dashboard/HostDashboardShell";
 
 export const metadata = {
-  title: "Host Dashboard • Krishna Invitations",
+  title: "Host Dashboard • Invitation",
   description: "Manage your digital invitations, guests, and RSVPs.",
 };
 

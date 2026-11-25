@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { TemplateManager } from "@/components/admin/TemplateManager";
 
 export const metadata = {
-  title: "Templates & Songs • Krishna Super Admin",
+  title: "Templates & Songs • Invitation Super Admin",
 };
 
 export default async function AdminTemplatesPage() {

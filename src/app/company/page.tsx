@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { AgencyFlowDashboard } from "@/components/company/AgencyFlowDashboard";
 
 export const metadata = {
-  title: "Agency Studio & Workflow Engine • Krishna Invitations",
+  title: "Agency Studio & Workflow Engine • Invitation",
   description: "Create, buy community templates, customize for clients, license guest quotas, and share access.",
 };
 

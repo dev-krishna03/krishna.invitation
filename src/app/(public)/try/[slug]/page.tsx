@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const dbTpl = await prisma.template.findUnique({ where: { slug } });
   return {
-    title: `Preview ${dbTpl?.name ?? "Invitation"} • Krishna Invitations`,
+    title: `Preview ${dbTpl?.name ?? "Invitation"} • Invitation`,
     description: "Interactive guest invitation preview with musical ambiance and WhatsApp RSVPs.",
   };
 }

@@ -27,7 +27,7 @@ export function EventEndedView({
         <div className="mx-auto max-w-4xl flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-serif text-lg font-bold tracking-tight text-white">
-              Krishna Invitations
+              Invitation
             </span>
           </Link>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-300">
@@ -114,7 +114,7 @@ export function EventEndedView({
 
       {/* Footer */}
       <footer className="border-t border-stone-900 py-6 text-center text-xs text-stone-600">
-        <p>© 2026 Krishna Invitations • Handcrafted with Cultural Devotion</p>
+        <p>© 2026 Invitation • Handcrafted with Cultural Devotion</p>
       </footer>
     </div>
   );

@@ -16,7 +16,7 @@ const serifFont = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Krishna Invitations • Luxury Digital Invitations for Every Celebration",
+  title: "Invitation • Luxury Digital Invitations for Every Celebration",
   description:
     "Design and share bespoke digital invitations for Weddings, Gruh Vastu, Engagements, Baby Showers, Birthdays, and cultural festivities with instant WhatsApp RSVPs.",
 };
