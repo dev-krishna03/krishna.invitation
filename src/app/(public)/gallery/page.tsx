@@ -5,7 +5,7 @@ import { PublicPageShell } from "@/components/public/PublicPageShell";
 import { Sparkles } from "lucide-react";
 
 export const metadata = {
-  title: "Invitation Designs Gallery • Krishna Invitations",
+  title: "Invitation Designs Gallery • Invitation",
   description: "Browse royal, minimalist, and traditional digital invitation templates for weddings, housewarmings, and celebrations.",
 };
 

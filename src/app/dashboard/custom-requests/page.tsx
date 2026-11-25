@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { CustomRequestsHub } from "@/components/dashboard/CustomRequestsHub";
 
 export const metadata = {
-  title: "Request a Design & Creator Bids • Krishna Invitations",
+  title: "Request a Design & Creator Bids • Invitation",
 };
 
 export default async function CustomRequestsPage() {

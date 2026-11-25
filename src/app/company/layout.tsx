@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { CompanyShell } from "@/components/company/CompanyShell";
 
 export const metadata = {
-  title: "Agency Studio & Invitation Editor • Krishna Invitations",
+  title: "Agency Studio & Invitation Editor • Invitation",
   description: "Visual web invitation editor for event planners and wedding studios.",
 };
 

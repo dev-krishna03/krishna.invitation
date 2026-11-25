@@ -5,7 +5,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Sparkles, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Pricing & Plans • Krishna Invitations",
+  title: "Pricing & Plans • Invitation",
   description: "Transparent, one-time payment pricing for individual invitations, and subscriptions for event planners.",
 };
 

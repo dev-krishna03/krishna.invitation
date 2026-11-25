@@ -368,7 +368,7 @@ export function CreateWizard({ templates }: { templates: Template[] }) {
                     />
                     <div>
                       <span className="font-semibold text-[#12042F] block">White Label (Remove Branding)</span>
-                      <span className="text-[11px] text-[#64748B]">Hide &ldquo;Powered by Krishna Invitations&rdquo; footer</span>
+                      <span className="text-[11px] text-[#64748B]">Hide &ldquo;Powered by Invitation&rdquo; footer</span>
                     </div>
                   </div>
                   <span className="font-bold text-[#12042F]">+₹299</span>
